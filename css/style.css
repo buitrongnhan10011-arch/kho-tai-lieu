@@ -1,0 +1,405 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap');
+
+/* ==============================
+   1. HỆ THỐNG MÀU SẮC
+============================== */
+
+:root {
+    --black: #050505;
+    --dark: #0c0c0c;
+    --card: #111111;
+    --white: #ffffff;
+    --gray: #999999;
+    --border: #292929;
+}
+
+/* ==============================
+   2. CÀI ĐẶT CHUNG
+============================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    line-height: 1.7;
+    overflow-x: hidden;
+}
+
+/* Ánh sáng nền */
+
+body::before {
+    content: "";
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    top: -200px;
+    right: -150px;
+    background: radial-gradient(
+        circle,
+        rgba(255,255,255,0.07),
+        transparent 70%
+    );
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ==============================
+   3. HEADER
+============================== */
+
+header {
+    min-height: 390px;
+    background: linear-gradient(
+        135deg,
+        #050505,
+        #151515,
+        #080808
+    );
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 70px 9%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Vòng tròn trang trí */
+
+header::before {
+    content: "";
+    position: absolute;
+    width: 450px;
+    height: 450px;
+    border: 1px solid #333;
+    border-radius: 50%;
+    right: 5%;
+    top: -180px;
+    animation: rotate 25s linear infinite;
+}
+
+header::after {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border: 1px solid #252525;
+    border-radius: 50%;
+    right: 12%;
+    top: -100px;
+    animation: rotate 18s linear infinite reverse;
+}
+
+.header-content {
+    position: relative;
+    z-index: 2;
+    animation: slideUp 1s ease forwards;
+}
+
+header h1 {
+    font-size: clamp(30px, 5vw, 55px);
+    font-weight: 800;
+    letter-spacing: 2px;
+    line-height: 1.3;
+    margin-bottom: 20px;
+}
+
+header p {
+    color: #999;
+    font-size: 15px;
+    letter-spacing: 1px;
+}
+
+/* ==============================
+   4. NỘI DUNG CHÍNH
+============================== */
+
+main {
+    max-width: 1250px;
+    width: 84%;
+    margin: 85px auto;
+}
+
+.intro {
+    margin-bottom: 45px;
+    animation: fadeIn 1.2s ease;
+}
+
+.intro h2 {
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.intro p {
+    color: var(--gray);
+    font-size: 14px;
+}
+
+/* Đường gạch trang trí */
+
+.intro h2::after {
+    content: "";
+    display: block;
+    width: 65px;
+    height: 3px;
+    background: white;
+    margin-top: 12px;
+    animation: expand 1s ease;
+}
+
+/* ==============================
+   5. DANH MỤC TÀI LIỆU
+============================== */
+
+.categories {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+}
+
+.category-card {
+    background: linear-gradient(
+        145deg,
+        #151515,
+        #0b0b0b
+    );
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 35px;
+    min-height: 205px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+
+    transition:
+        transform 0.4s ease,
+        border-color 0.4s ease,
+        box-shadow 0.4s ease;
+
+    animation: slideUp 0.8s ease both;
+}
+
+/* Ánh sáng chạy qua thẻ */
+
+.category-card::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: -120%;
+
+    background: linear-gradient(
+        110deg,
+        transparent,
+        rgba(255,255,255,0.06),
+        transparent
+    );
+
+    transition: 0.7s;
+}
+
+.category-card:hover::before {
+    left: 120%;
+}
+
+/* Hiệu ứng khi di chuột */
+
+.category-card:hover {
+    transform: translateY(-9px) scale(1.015);
+    border-color: #777;
+
+    box-shadow:
+        0 15px 40px rgba(255,255,255,0.07);
+}
+
+/* Số thứ tự */
+
+.category-number {
+    color: #777;
+    font-size: 12px;
+    letter-spacing: 3px;
+    font-weight: 700;
+}
+
+/* Tiêu đề danh mục */
+
+.category-card h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 18px;
+    transition: 0.3s;
+}
+
+.category-card:hover h3 {
+    letter-spacing: 1px;
+    color: #e5e5e5;
+}
+
+/* Mô tả */
+
+.category-card p {
+    color: #888;
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+/* Mũi tên */
+
+.category-arrow {
+    align-self: flex-end;
+    font-size: 25px;
+    color: #aaa;
+    transition: 0.4s;
+}
+
+.category-card:hover .category-arrow {
+    transform: translateX(10px);
+    color: white;
+}
+
+/* ==============================
+   6. FOOTER
+============================== */
+
+footer {
+    background: #080808;
+    border-top: 1px solid #252525;
+    padding: 35px 15px;
+    text-align: center;
+    margin-top: 120px;
+}
+
+footer p {
+    color: #777;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin: 5px;
+}
+
+/* ==============================
+   7. HIỆU ỨNG CHUYỂN ĐỘNG
+============================== */
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(35px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes expand {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 65px;
+    }
+}
+
+/* ==============================
+   8. GIAO DIỆN ĐIỆN THOẠI
+============================== */
+
+@media (max-width: 700px) {
+
+    header {
+        min-height: 300px;
+        padding: 55px 7%;
+    }
+
+    header::before {
+        right: -250px;
+    }
+
+    header::after {
+        right: -180px;
+    }
+
+    main {
+        width: 88%;
+        margin: 55px auto;
+    }
+
+    .categories {
+        grid-template-columns: 1fr;
+    }
+
+    .category-card {
+        min-height: 175px;
+        padding: 27px;
+    }
+
+    .intro h2 {
+        font-size: 25px;
+    }
+}
+
+/* ==============================
+   9. HỖ TRỢ NGƯỜI GIẢM CHUYỂN ĐỘNG
+============================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+.developer {
+    margin-top: 18px;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #555;
+    text-transform: uppercase;
+    transition: 0.4s ease;
+}
+
+.developer:hover {
+    color: #ffffff;
+    letter-spacing: 5px;
+}

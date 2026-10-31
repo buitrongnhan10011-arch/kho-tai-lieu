@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tài liệu học tập</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="header-content">
+            <h1 id="category-title">TÀI LIỆU HỌC TẬP</h1>
+            <p>Kho lưu trữ tài liệu học tập</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="intro">
+            <h2>Danh sách tài liệu</h2>
+            <p>Các tài liệu được lưu trữ tại đây.</p>
+        </section>
+
+        <section id="document-list" class="categories"></section>
+
+        <a href="index.html" class="back-button">← Quay lại trang chủ</a>
+    </main>
+
+    <footer>
+        <p>© 2026 KHO TÀI LIỆU HỌC TẬP</p>
+        <p>Không gian chia sẻ kiến thức</p>
+        <p class="developer">Developed by TN</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const SUPABASE_URL = "https://axmgzhcozkwekjxbofoh.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_SQPDN_7N8IBG92iMWFSQ4A_3PYj9ykP";
+
+        const supabaseClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+        const params = new URLSearchParams(window.location.search);
+        const folder = params.get("folder");
+
+        async function loadDocuments() {
+            const title = document.getElementById("category-title");
+            const list = document.getElementById("document-list");
+
+            list.textContent = "Đang tải tài liệu...";
+
+            if (!folder) {
+                title.textContent = "Không tìm thấy danh mục";
+                list.textContent = "Vui lòng quay lại trang chủ.";
+                return;
+            }
+
+            const { data: category, error: categoryError } =
+                await supabaseClient
+                    .from("categories")
+                    .select("id, name")
+                    .eq("slug", folder)
+                    .maybeSingle();
+
+            if (categoryError || !category) {
+                title.textContent = "Không tìm thấy danh mục";
+                list.textContent = "Danh mục không tồn tại.";
+                return;
+            }
+
+            title.textContent = category.name.toUpperCase();
+
+            const { data: documents, error } = await supabaseClient
+                .from("documents")
+                .select("*")
+                .eq("category_id", category.id)
+                .order("created_at", { ascending: false });
+
+            if (error) {
+                console.error(error);
+                list.textContent = "Không thể tải danh sách tài liệu.";
+                return;
+            }
+
+            list.innerHTML = "";
+
+            if (documents.length === 0) {
+                list.textContent = "Danh mục này chưa có tài liệu.";
+                return;
+            }
+
+            documents.forEach(document => {
+                const card = document.createElement("div");
+                card.className = "category-card";
+
+                const info = document.createElement("div");
+
+                const heading = document.createElement("h3");
+                heading.textContent = document.title;
+
+                const download = document.createElement("a");
+                download.href = document.file_url;
+                download.textContent = "Xem / Tải xuống →";
+                download.target = "_blank";
+                download.rel = "noopener noreferrer";
+
+                info.appendChild(heading);
+                info.appendChild(download);
+                card.appendChild(info);
+                list.appendChild(card);
+            });
+        }
+
+        loadDocuments();
+    </script>
+
+</body>
+</html>

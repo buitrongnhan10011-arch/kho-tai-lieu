@@ -1,0 +1,87 @@
+```html
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kho tài liệu học tập</title>
+
+    <meta name="description" content="Kho tài liệu học tập, đề cương và đề kiểm tra.">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .admin-access {
+            display: flex;
+            justify-content: center;
+            margin: 45px 0;
+        }
+
+        .admin-access a {
+            display: inline-block;
+            min-width: 150px;
+            padding: 15px 35px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            background: #151515;
+            border: 1px solid #555;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            transition: 0.3s ease;
+        }
+
+        .admin-access a:hover {
+            background: white;
+            color: black;
+            border-color: white;
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- PHẦN ĐẦU TRANG -->
+    <header>
+        <div class="header-content">
+            <h1>KHO TÀI LIỆU HỌC TẬP</h1>
+            <p>Hệ thống lưu trữ và chia sẻ tài liệu học tập</p>
+        </div>
+    </header>
+
+    <!-- NỘI DUNG CHÍNH -->
+    <main>
+
+        <section class="intro">
+            <h2>Danh mục tài liệu</h2>
+            <p>Lựa chọn học kì để tìm kiếm tài liệu.</p>
+        </section>
+
+        <!-- DANH SÁCH DANH MỤC -->
+        <section id="categories" class="categories">
+        </section>
+
+        <!-- NÚT ADMIN -->
+        <div class="admin-access">
+            <a href="admin.html">ADMIN</a>
+        </div>
+
+    </main>
+
+    <!-- CHÂN TRANG -->
+    <footer>
+        <p>© 2026 KHO TÀI LIỆU HỌC TẬP</p>
+        <p>Không gian chia sẻ kiến thức</p>
+        <p class="developer">Developed by TN</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>
+```
