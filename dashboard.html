@@ -65,6 +65,7 @@
 
         .item h3 {
             margin-bottom: 10px;
+            overflow-wrap: anywhere;
         }
 
         .status {
@@ -136,29 +137,113 @@
             color: #9be5b2;
         }
 
-        /* QUẢN LÝ TÀI LIỆU THEO DANH MỤC */
+        /* QUẢN LÝ TÀI LIỆU DẠNG THU GỌN */
+
         .document-group {
-            margin: 20px 0;
-            padding: 18px;
+            margin: 12px 0;
             background: #1c1c1c;
             border: 1px solid #444;
             border-radius: 10px;
+            overflow: hidden;
         }
 
-        .document-group h3 {
-            padding-bottom: 12px;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #444;
+        .document-group-header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 17px;
+            margin: 0;
+            background: #242424;
+            color: white;
+            border: none;
+            border-radius: 0;
+            text-align: left;
+            cursor: pointer;
+            font-size: 16px;
         }
 
-        .document-group .item {
+        .document-group-header:hover {
+            background: #303030;
+        }
+
+        .document-arrow {
+            display: inline-block;
+            width: 18px;
+            flex-shrink: 0;
+            font-size: 19px;
+        }
+
+        .document-group-name {
+            flex: 1;
+            min-width: 0;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .document-count {
+            color: #aaa;
+            font-size: 13px;
+            font-weight: normal;
+            white-space: nowrap;
+        }
+
+        .document-group-content {
+            display: none;
+            padding: 10px 15px 15px;
+            border-top: 1px solid #444;
+        }
+
+        .document-group.open .document-group-content {
+            display: block;
+        }
+
+        .document-group-content .item {
             background: #292929;
         }
 
         .document-empty {
             color: #999;
             font-size: 14px;
-            padding: 10px 0;
+            padding: 12px 5px;
+        }
+
+        .document-group-content a {
+            display: inline-block;
+            margin: 8px 0;
+            padding: 9px 13px;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .document-group-content a:hover {
+            background: #444;
+        }
+
+        @media (max-width: 600px) {
+            .dashboard {
+                padding: 12px;
+                margin: 20px auto;
+            }
+
+            .admin-section {
+                padding: 15px;
+            }
+
+            .document-group-header {
+                padding: 14px 10px;
+                gap: 8px;
+            }
+
+            .document-count {
+                font-size: 11px;
+            }
+
+            .document-group-content {
+                padding: 8px;
+            }
         }
     </style>
 </head>
@@ -586,7 +671,6 @@ async function loadCategories() {
         const title = document.createElement("h3");
         title.textContent = category.name;
 
-        // TRẠNG THÁI MẬT KHẨU NỔI BẬT
         const status = document.createElement("div");
 
         if (category.requires_password) {
@@ -926,6 +1010,45 @@ async function getDocumentViewUrl(doc) {
     return data.signedUrl;
 }
 
+// TẠO DANH MỤC CÓ THỂ ĐÓNG / MỞ
+function createDocumentGroup(name, count, icon = "📁") {
+    const group = document.createElement("div");
+    group.className = "document-group";
+
+    const header = document.createElement("button");
+    header.type = "button";
+    header.className = "document-group-header";
+    header.setAttribute("aria-expanded", "false");
+
+    const arrow = document.createElement("span");
+    arrow.className = "document-arrow";
+    arrow.textContent = "›";
+
+    const groupName = document.createElement("span");
+    groupName.className = "document-group-name";
+    groupName.textContent = `${icon} ${name}`;
+
+    const countElement = document.createElement("span");
+    countElement.className = "document-count";
+    countElement.textContent = `${count} tài liệu`;
+
+    header.append(arrow, groupName, countElement);
+
+    const content = document.createElement("div");
+    content.className = "document-group-content";
+
+    header.addEventListener("click", () => {
+        const isOpen = group.classList.toggle("open");
+
+        header.setAttribute("aria-expanded", String(isOpen));
+        arrow.textContent = isOpen ? "⌄" : "›";
+    });
+
+    group.append(header, content);
+
+    return { group, content };
+}
+
 // QUẢN LÝ TÀI LIỆU THEO TỪNG DANH MỤC
 async function loadDocuments() {
     const { data, error } = await supabaseClient
@@ -950,24 +1073,23 @@ async function loadDocuments() {
 
     // HIỂN THỊ TỪNG DANH MỤC
     for (const cat of categoriesCache) {
-        const group = document.createElement("div");
-        group.className = "document-group";
-
-        const heading = document.createElement("h3");
-        heading.textContent =
-            (cat.requires_password ? "🔒 " : "🔓 ") + cat.name;
-
-        group.appendChild(heading);
-
         const categoryDocs = documents.filter(
             doc => doc.category_id === cat.id
+        );
+
+        const icon = cat.requires_password ? "🔒" : "🔓";
+
+        const { group, content } = createDocumentGroup(
+            cat.name,
+            categoryDocs.length,
+            icon
         );
 
         if (categoryDocs.length === 0) {
             const empty = document.createElement("p");
             empty.className = "document-empty";
             empty.textContent = "Chưa có tài liệu trong mục này.";
-            group.appendChild(empty);
+            content.appendChild(empty);
         }
 
         for (const doc of categoryDocs) {
@@ -1123,7 +1245,7 @@ async function loadDocuments() {
                 remove
             );
 
-            group.appendChild(item);
+            content.appendChild(item);
         }
 
         list.appendChild(group);
@@ -1135,13 +1257,10 @@ async function loadDocuments() {
     );
 
     if (orphanDocs.length > 0) {
-        const group = document.createElement("div");
-        group.className = "document-group";
-
-        const heading = document.createElement("h3");
-        heading.textContent = "📁 Tài liệu chưa phân loại";
-
-        group.appendChild(heading);
+        const { group, content } = createDocumentGroup(
+            "Tài liệu chưa phân loại",
+            orphanDocs.length
+        );
 
         for (const doc of orphanDocs) {
             const item = document.createElement("div");
@@ -1151,7 +1270,7 @@ async function loadDocuments() {
             title.textContent = doc.title;
 
             item.appendChild(title);
-            group.appendChild(item);
+            content.appendChild(item);
         }
 
         list.appendChild(group);
