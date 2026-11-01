@@ -7,7 +7,7 @@
     <title>Tài liệu học tập</title>
     <link rel="stylesheet" href="css/style.css">
 
-
+```
 <style>
     .password-box {
         max-width: 420px;
@@ -49,17 +49,162 @@
         color: #dc2626;
     }
 
-    .document-link {
+    .document-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .document-button {
         display: inline-block;
-        margin-top: 10px;
+        padding: 9px 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .preview-button {
+        background: #2563eb;
+        color: white;
+    }
+
+    .download-button {
+        background: #16a34a;
+        color: white;
+    }
+
+    .preview-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.75);
+        z-index: 9999;
+        display: none;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .preview-overlay.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .preview-window {
+        width: min(1100px, 100%);
+        height: min(90vh, 900px);
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .preview-header {
+        min-height: 55px;
+        padding: 10px 15px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .preview-header strong {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .preview-close {
+        border: none;
+        background: #dc2626;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .preview-content {
+        flex: 1;
+        overflow: auto;
+        background: #f3f4f6;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .preview-content iframe {
+        width: 100%;
+        height: 100%;
+        min-height: 650px;
+        border: none;
+        background: white;
+    }
+
+    .preview-content img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 0 auto;
+    }
+
+    .docx-preview {
+        max-width: 850px;
+        margin: 0 auto;
+        padding: 45px;
+        background: white;
+        box-sizing: border-box;
+        line-height: 1.6;
+        color: #111;
+    }
+
+    .docx-preview img {
+        max-width: 100%;
+    }
+
+    .preview-loading {
+        text-align: center;
+        padding: 40px;
+        color: #555;
+    }
+
+    .preview-error {
+        max-width: 600px;
+        margin: 30px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        color: #b91c1c;
+        text-align: center;
+    }
+
+    @media (max-width: 600px) {
+        .preview-overlay {
+            padding: 5px;
+        }
+
+        .preview-window {
+            height: 96vh;
+        }
+
+        .preview-content {
+            padding: 10px;
+        }
+
+        .docx-preview {
+            padding: 20px;
+        }
     }
 </style>
-
+```
 
 </head>
 
 <body>
-
 
 <header>
     <div class="header-content">
@@ -74,9 +219,12 @@
         <p id="section-description">Các tài liệu được lưu trữ tại đây.</p>
     </section>
 
-    <section id="document-list" class="categories"></section>
+```
+<section id="document-list" class="categories"></section>
 
-    <a href="index.html" class="back-button">← Quay lại trang chủ</a>
+<a href="index.html" class="back-button">← Quay lại trang chủ</a>
+```
+
 </main>
 
 <footer>
@@ -85,7 +233,31 @@
     <p class="developer">Developed by TN</p>
 </footer>
 
+<!-- Cửa sổ xem trước -->
+
+<div id="preview-overlay" class="preview-overlay">
+    <div class="preview-window">
+
+```
+    <div class="preview-header">
+        <strong id="preview-title">Xem trước tài liệu</strong>
+        <button type="button" id="preview-close" class="preview-close">
+            Đóng
+        </button>
+    </div>
+
+    <div id="preview-content" class="preview-content"></div>
+
+</div>
+```
+
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Thư viện đọc Word DOCX -->
+
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 
 <script>
     const SUPABASE_URL = "https://axmgzhcozkwekjxbofoh.supabase.co";
@@ -104,9 +276,164 @@
     const sectionTitle = document.getElementById("section-title");
     const sectionDescription = document.getElementById("section-description");
 
+    const previewOverlay = document.getElementById("preview-overlay");
+    const previewTitle = document.getElementById("preview-title");
+    const previewContent = document.getElementById("preview-content");
+    const previewClose = document.getElementById("preview-close");
+
     function showMessage(message) {
         list.textContent = message;
     }
+
+    function getFileExtension(fileUrl, fileName) {
+        const source = fileName || fileUrl || "";
+        const cleanSource = source.split("?")[0].split("#")[0];
+        const parts = cleanSource.split(".");
+        if (parts.length < 2) {
+            return "";
+        }
+        return parts[parts.length - 1].toLowerCase();
+    }
+
+    function openPreview(doc) {
+        previewOverlay.classList.add("active");
+        previewTitle.textContent = doc.title || "Xem trước tài liệu";
+
+        previewContent.innerHTML =
+            '<div class="preview-loading">Đang tải bản xem trước...</div>';
+
+        const fileUrl = doc.file_url;
+        const extension = getFileExtension(fileUrl, doc.title);
+
+        if (!fileUrl) {
+            previewContent.innerHTML =
+                '<div class="preview-error">Không tìm thấy đường dẫn tài liệu.</div>';
+            return;
+        }
+
+        if (
+            extension === "jpg" ||
+            extension === "jpeg" ||
+            extension === "png" ||
+            extension === "gif" ||
+            extension === "webp"
+        ) {
+            const image = document.createElement("img");
+            image.src = fileUrl;
+            image.alt = doc.title || "Hình ảnh tài liệu";
+
+            image.onload = function () {
+                previewContent.innerHTML = "";
+                previewContent.appendChild(image);
+            };
+
+            image.onerror = function () {
+                previewContent.innerHTML =
+                    '<div class="preview-error">Không thể hiển thị hình ảnh.</div>';
+            };
+
+            return;
+        }
+
+        if (extension === "pdf") {
+            const iframe = document.createElement("iframe");
+            iframe.src = fileUrl;
+            iframe.title = "Xem trước PDF";
+
+            previewContent.innerHTML = "";
+            previewContent.appendChild(iframe);
+            return;
+        }
+
+        if (extension === "docx") {
+            fetch(fileUrl)
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error("Không thể tải tài liệu Word.");
+                    }
+
+                    return response.arrayBuffer();
+                })
+                .then(function (arrayBuffer) {
+                    return mammoth.convertToHtml(
+                        { arrayBuffer: arrayBuffer },
+                        {
+                            includeDefaultStyleMap: true
+                        }
+                    );
+                })
+                .then(function (result) {
+                    previewContent.innerHTML = "";
+
+                    const article = document.createElement("article");
+                    article.className = "docx-preview";
+
+                    article.innerHTML = result.value;
+
+                    previewContent.appendChild(article);
+                })
+                .catch(function (error) {
+                    console.error("Lỗi xem trước DOCX:", error);
+
+                    previewContent.innerHTML =
+                        '<div class="preview-error">' +
+                        'Không thể xem trước file Word này.<br>' +
+                        'Bạn có thể sử dụng nút "Tải xuống".' +
+                        '</div>';
+                });
+
+            return;
+        }
+
+        previewContent.innerHTML =
+            '<div class="preview-error">' +
+            'Định dạng này chưa hỗ trợ xem trước.<br>' +
+            'Bạn có thể sử dụng nút "Tải xuống".' +
+            '</div>';
+    }
+
+    function closePreview() {
+        previewOverlay.classList.remove("active");
+        previewContent.innerHTML = "";
+    }
+
+    previewClose.addEventListener("click", closePreview);
+
+    previewOverlay.addEventListener("click", function (event) {
+        if (event.target === previewOverlay) {
+            closePreview();
+        }
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            closePreview();
+        }
+
+        if (
+            previewOverlay.classList.contains("active") &&
+            (event.ctrlKey || event.metaKey) &&
+            event.key.toLowerCase() === "c"
+        ) {
+            event.preventDefault();
+        }
+    });
+
+    previewContent.addEventListener("contextmenu", function (event) {
+        event.preventDefault();
+    });
+
+    previewContent.addEventListener("copy", function (event) {
+        event.preventDefault();
+    });
+
+    previewContent.addEventListener("cut", function (event) {
+        event.preventDefault();
+    });
+
+    previewContent.addEventListener("selectstart", function (event) {
+        event.preventDefault();
+    });
 
     function renderDocuments(documents) {
         list.innerHTML = "";
@@ -116,7 +443,7 @@
             return;
         }
 
-        documents.forEach(doc => {
+        documents.forEach(function (doc) {
             const card = document.createElement("div");
             card.className = "category-card";
 
@@ -125,15 +452,32 @@
             const heading = document.createElement("h3");
             heading.textContent = doc.title;
 
+            const actions = document.createElement("div");
+            actions.className = "document-actions";
+
+            const preview = document.createElement("button");
+            preview.type = "button";
+            preview.textContent = "👁 Xem trước";
+            preview.className = "document-button preview-button";
+
+            preview.addEventListener("click", function () {
+                openPreview(doc);
+            });
+
             const download = document.createElement("a");
             download.href = doc.file_url;
-            download.textContent = "Xem / Tải xuống →";
+            download.textContent = "⬇ Tải xuống";
+            download.className = "document-button download-button";
             download.target = "_blank";
             download.rel = "noopener noreferrer";
-            download.className = "document-link";
+            download.download = "";
+
+            actions.appendChild(preview);
+            actions.appendChild(download);
 
             info.appendChild(heading);
-            info.appendChild(download);
+            info.appendChild(actions);
+
             card.appendChild(info);
             list.appendChild(card);
         });
@@ -182,7 +526,7 @@
             message.textContent = "Đang xác thực...";
 
             try {
-                const { data, error } =
+                const result =
                     await supabaseClient.functions.invoke(
                         "dynamic-responder",
                         {
@@ -193,6 +537,9 @@
                             }
                         }
                     );
+
+                const data = result.data;
+                const error = result.error;
 
                 if (error) {
                     throw error;
@@ -213,18 +560,24 @@
             } catch (error) {
                 console.error("Lỗi xác thực:", error);
 
-                let detail = error.message || "Lỗi không xác định";
+                let detail =
+                    error.message || "Lỗi không xác định";
 
                 if (error.context) {
                     try {
-                        const response = await error.context.json();
-                        detail = response.error || JSON.stringify(response);
+                        const response =
+                            await error.context.json();
+
+                        detail =
+                            response.error ||
+                            JSON.stringify(response);
                     } catch (e) {
-            // Giữ thông báo lỗi ban đầu
+                        // Giữ lỗi ban đầu
                     }
                 }
 
-                message.textContent = "Lỗi: " + detail;
+                message.textContent =
+                    "Lỗi: " + detail;
             } finally {
                 button.disabled = false;
             }
@@ -232,7 +585,7 @@
 
         button.addEventListener("click", verifyPassword);
 
-        input.addEventListener("keydown", event => {
+        input.addEventListener("keydown", function (event) {
             if (event.key === "Enter") {
                 verifyPassword();
             }
@@ -248,40 +601,55 @@
             return;
         }
 
-        const { data: category, error: categoryError } =
+        const result =
             await supabaseClient
                 .from("categories")
                 .select("id, name, requires_password")
                 .eq("slug", folder)
                 .maybeSingle();
 
+        const category = result.data;
+        const categoryError = result.error;
+
         if (categoryError || !category) {
             console.error(categoryError);
+
             title.textContent = "Không tìm thấy danh mục";
             showMessage("Danh mục không tồn tại.");
             return;
         }
 
-        title.textContent = category.name.toUpperCase();
+        title.textContent =
+            category.name.toUpperCase();
 
         if (category.requires_password) {
             showPasswordForm(category.id);
             return;
         }
 
-        sectionTitle.textContent = "Danh sách tài liệu";
+        sectionTitle.textContent =
+            "Danh sách tài liệu";
+
         sectionDescription.textContent =
             "Các tài liệu được lưu trữ tại đây.";
 
-        const { data: documents, error } = await supabaseClient
-            .from("documents")
-            .select("*")
-            .eq("category_id", category.id)
-            .order("created_at", { ascending: false });
+        const documentResult =
+            await supabaseClient
+                .from("documents")
+                .select("*")
+                .eq("category_id", category.id)
+                .order("created_at", {
+                    ascending: false
+                });
+
+        const documents = documentResult.data;
+        const error = documentResult.error;
 
         if (error) {
             console.error(error);
-            showMessage("Không thể tải danh sách tài liệu.");
+            showMessage(
+                "Không thể tải danh sách tài liệu."
+            );
             return;
         }
 
@@ -290,7 +658,6 @@
 
     loadDocuments();
 </script>
-
 
 </body>
 </html>
