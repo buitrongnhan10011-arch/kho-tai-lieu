@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -7,201 +6,237 @@
     <title>Tài liệu học tập</title>
     <link rel="stylesheet" href="css/style.css">
 
-```
-<style>
-    .password-box {
-        max-width: 420px;
-        margin: 25px auto;
-        padding: 24px;
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        text-align: center;
-    }
+    <style>
+        .password-box {
+            max-width: 420px;
+            margin: 25px auto;
+            padding: 24px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            text-align: center;
+        }
 
-    .password-box input {
-        width: 100%;
-        padding: 12px;
-        margin: 15px 0;
-        box-sizing: border-box;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        font-size: 16px;
-    }
+        .password-box input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
 
-    .password-box button {
-        padding: 11px 22px;
-        border: none;
-        border-radius: 6px;
-        background: #2563eb;
-        color: white;
-        cursor: pointer;
-        font-size: 16px;
-    }
+        .password-box button {
+            padding: 11px 22px;
+            border: none;
+            border-radius: 6px;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
-    .password-box button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
+        .password-box button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
 
-    #password-message {
-        margin-top: 12px;
-        color: #dc2626;
-    }
+        #password-message {
+            margin-top: 12px;
+            color: #dc2626;
+        }
 
-    .document-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 12px;
-    }
+        /* NÚT XEM TRƯỚC VÀ TẢI XUỐNG */
 
-    .document-button {
-        display: inline-block;
-        padding: 9px 14px;
-        border-radius: 6px;
-        text-decoration: none;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
-    }
+        .document-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 18px;
+        }
 
-    .preview-button {
-        background: #2563eb;
-        color: white;
-    }
+        .document-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 43px;
+            padding: 10px 20px;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+            background: #080808;
+            border: 1px solid #ffffff;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
 
-    .download-button {
-        background: #16a34a;
-        color: white;
-    }
+        .document-button:hover {
+            background: #ffffff;
+            color: #050505;
+            border-color: #ffffff;
+            transform: translateY(-4px);
+            box-shadow:
+                0 0 8px rgba(255,255,255,0.35),
+                0 0 20px rgba(255,255,255,0.15);
+        }
 
-    .preview-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.75);
-        z-index: 9999;
-        display: none;
-        padding: 20px;
-        box-sizing: border-box;
-    }
+        .document-button:active {
+            transform: translateY(-1px) scale(0.97);
+        }
 
-    .preview-overlay.active {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+        .document-button:focus-visible {
+            outline: 2px solid #ffffff;
+            outline-offset: 4px;
+        }
 
-    .preview-window {
-        width: min(1100px, 100%);
-        height: min(90vh, 900px);
-        background: white;
-        border-radius: 10px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
+        /* CỬA SỔ XEM TRƯỚC */
 
-    .preview-header {
-        min-height: 55px;
-        padding: 10px 15px;
-        box-sizing: border-box;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        border-bottom: 1px solid #ddd;
-    }
-
-    .preview-header strong {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .preview-close {
-        border: none;
-        background: #dc2626;
-        color: white;
-        padding: 8px 14px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-
-    .preview-content {
-        flex: 1;
-        overflow: auto;
-        background: #f3f4f6;
-        padding: 20px;
-        box-sizing: border-box;
-    }
-
-    .preview-content iframe {
-        width: 100%;
-        height: 100%;
-        min-height: 650px;
-        border: none;
-        background: white;
-    }
-
-    .preview-content img {
-        display: block;
-        max-width: 100%;
-        height: auto;
-        margin: 0 auto;
-    }
-
-    .docx-preview {
-        max-width: 850px;
-        margin: 0 auto;
-        padding: 45px;
-        background: white;
-        box-sizing: border-box;
-        line-height: 1.6;
-        color: #111;
-    }
-
-    .docx-preview img {
-        max-width: 100%;
-    }
-
-    .preview-loading {
-        text-align: center;
-        padding: 40px;
-        color: #555;
-    }
-
-    .preview-error {
-        max-width: 600px;
-        margin: 30px auto;
-        padding: 20px;
-        background: #fff;
-        border-radius: 8px;
-        color: #b91c1c;
-        text-align: center;
-    }
-
-    @media (max-width: 600px) {
         .preview-overlay {
-            padding: 5px;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 9999;
+            display: none;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .preview-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .preview-window {
-            height: 96vh;
+            width: min(1100px, 100%);
+            height: min(90vh, 900px);
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-header {
+            min-height: 55px;
+            padding: 10px 15px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .preview-header strong {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #111;
+        }
+
+        .preview-close {
+            border: none;
+            background: #dc2626;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .preview-close:hover {
+            background: #b91c1c;
         }
 
         .preview-content {
-            padding: 10px;
+            flex: 1;
+            overflow: auto;
+            background: #f3f4f6;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .preview-content iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 650px;
+            border: none;
+            background: white;
+        }
+
+        .preview-content img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
         }
 
         .docx-preview {
-            padding: 20px;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 45px;
+            background: white;
+            box-sizing: border-box;
+            line-height: 1.6;
+            color: #111;
         }
-    }
-</style>
-```
 
+        .docx-preview img {
+            max-width: 100%;
+        }
+
+        .preview-loading {
+            text-align: center;
+            padding: 40px;
+            color: #555;
+        }
+
+        .preview-error {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            color: #b91c1c;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .preview-overlay {
+                padding: 5px;
+            }
+
+            .preview-window {
+                height: 96vh;
+            }
+
+            .preview-content {
+                padding: 10px;
+            }
+
+            .docx-preview {
+                padding: 20px;
+            }
+
+            .document-actions {
+                gap: 8px;
+            }
+
+            .document-button {
+                flex: 1;
+                min-width: 0;
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -219,12 +254,9 @@
         <p id="section-description">Các tài liệu được lưu trữ tại đây.</p>
     </section>
 
-```
-<section id="document-list" class="categories"></section>
+    <section id="document-list" class="categories"></section>
 
-<a href="index.html" class="back-button">← Quay lại trang chủ</a>
-```
-
+    <a href="index.html" class="back-button">← Quay lại trang chủ</a>
 </main>
 
 <footer>
@@ -233,30 +265,24 @@
     <p class="developer">Developed by TN</p>
 </footer>
 
-<!-- Cửa sổ xem trước -->
+<!-- CỬA SỔ XEM TRƯỚC -->
 
 <div id="preview-overlay" class="preview-overlay">
     <div class="preview-window">
 
-```
-    <div class="preview-header">
-        <strong id="preview-title">Xem trước tài liệu</strong>
-        <button type="button" id="preview-close" class="preview-close">
-            Đóng
-        </button>
+        <div class="preview-header">
+            <strong id="preview-title">Xem trước tài liệu</strong>
+            <button type="button" id="preview-close" class="preview-close">
+                Đóng
+            </button>
+        </div>
+
+        <div id="preview-content" class="preview-content"></div>
+
     </div>
-
-    <div id="preview-content" class="preview-content"></div>
-
-</div>
-```
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- Thư viện đọc Word DOCX -->
-
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 
 <script>
@@ -289,9 +315,11 @@
         const source = fileName || fileUrl || "";
         const cleanSource = source.split("?")[0].split("#")[0];
         const parts = cleanSource.split(".");
+
         if (parts.length < 2) {
             return "";
         }
+
         return parts[parts.length - 1].toLowerCase();
     }
 
@@ -311,13 +339,7 @@
             return;
         }
 
-        if (
-            extension === "jpg" ||
-            extension === "jpeg" ||
-            extension === "png" ||
-            extension === "gif" ||
-            extension === "webp"
-        ) {
+        if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension)) {
             const image = document.createElement("img");
             image.src = fileUrl;
             image.alt = doc.title || "Hình ảnh tài liệu";
@@ -367,7 +389,6 @@
 
                     const article = document.createElement("article");
                     article.className = "docx-preview";
-
                     article.innerHTML = result.value;
 
                     previewContent.appendChild(article);
@@ -576,8 +597,8 @@
                     }
                 }
 
-                message.textContent =
-                    "Lỗi: " + detail;
+                message.textContent = "Lỗi: " + detail;
+
             } finally {
                 button.disabled = false;
             }
@@ -619,16 +640,14 @@
             return;
         }
 
-        title.textContent =
-            category.name.toUpperCase();
+        title.textContent = category.name.toUpperCase();
 
         if (category.requires_password) {
             showPasswordForm(category.id);
             return;
         }
 
-        sectionTitle.textContent =
-            "Danh sách tài liệu";
+        sectionTitle.textContent = "Danh sách tài liệu";
 
         sectionDescription.textContent =
             "Các tài liệu được lưu trữ tại đây.";
@@ -647,9 +666,7 @@
 
         if (error) {
             console.error(error);
-            showMessage(
-                "Không thể tải danh sách tài liệu."
-            );
+            showMessage("Không thể tải danh sách tài liệu.");
             return;
         }
 
