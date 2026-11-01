@@ -1,6 +1,5 @@
 // KẾT NỐI SUPABASE
 const SUPABASE_URL = "https://axmgzhcozkwekjxbofoh.supabase.co";
-
 const SUPABASE_KEY = "sb_publishable_SQPDN_7N8IBG92iMWFSQ4A_3PYj9ykP";
 
 const supabaseClient = window.supabase.createClient(
@@ -33,7 +32,7 @@ if (!categories || categories.length === 0) {
     return;
 }
 
-categories.forEach((category, index) => {
+categories.forEach(function(category, index) {
     const card = document.createElement("div");
     card.className = "category-card";
 
@@ -43,7 +42,8 @@ categories.forEach((category, index) => {
     const number = document.createElement("span");
     number.className = "category-number";
     number.textContent =
-        ${String(index + 1).padStart(2, "0")} / ${String(categories.length).padStart(2, "0")}`;
+        String(index + 1).padStart(2, "0") + " / " +
+        String(categories.length).padStart(2, "0");
 
     // TÊN DANH MỤC
     const heading = document.createElement("h3");
@@ -51,36 +51,23 @@ categories.forEach((category, index) => {
 
     // MÔ TẢ
     const description = document.createElement("p");
-    description.textContent =
-        `Tài liệu học tập ${category.name}.`;
+    description.textContent = "Tài liệu học tập " + category.name + ".";
 
     // TRẠNG THÁI MẬT KHẨU
     const badge = document.createElement("span");
 
-    if (category.requires_password) {
+    if (category.requires_password === true) {
         badge.textContent = "🔒 Cần mật khẩu";
-        badge.style.cssText = `
-            display: inline-block;
-            margin-top: 10px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            background: #fff0f0;
-            color: #c62828;
-            font-size: 13px;
-            font-weight: bold;
-        `;
+        badge.style.cssText =
+            "display:inline-block;margin-top:10px;padding:6px 12px;" +
+            "border-radius:20px;background:#fff0f0;color:#c62828;" +
+            "font-size:13px;font-weight:bold;";
     } else {
         badge.textContent = "🔓 Công khai";
-        badge.style.cssText = `
-            display: inline-block;
-            margin-top: 10px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            background: #eaf7ee;
-            color: #218838;
-            font-size: 13px;
-            font-weight: bold;
-        `;
+        badge.style.cssText =
+            "display:inline-block;margin-top:10px;padding:6px 12px;" +
+            "border-radius:20px;background:#eaf7ee;color:#218838;" +
+            "font-size:13px;font-weight:bold;";
     }
 
     // MŨI TÊN
@@ -98,9 +85,9 @@ categories.forEach((category, index) => {
     card.appendChild(arrow);
 
     // CHUYỂN ĐẾN DANH MỤC
-    card.addEventListener("click", () => {
+    card.addEventListener("click", function() {
         window.location.href =
-            `category.html?folder=${encodeURIComponent(category.slug)}`;
+            "category.html?folder=" + encodeURIComponent(category.slug);
     });
 
     categoryContainer.appendChild(card);
