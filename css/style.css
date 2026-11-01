@@ -390,6 +390,10 @@ footer p {
     }
 }
 
+/* ==============================
+   10. THÔNG TIN NHÀ PHÁT TRIỂN
+============================== */
+
 .developer {
     margin-top: 18px;
     font-size: 11px;
@@ -402,4 +406,112 @@ footer p {
 .developer:hover {
     color: #ffffff;
     letter-spacing: 5px;
+}
+
+/* ==============================
+   11. NÚT XEM TRƯỚC VÀ TẢI XUỐNG
+============================== */
+
+.document-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+/* Thiết kế chung */
+
+.document-actions button,
+.document-actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-height: 43px;
+    padding: 10px 20px;
+
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+
+    color: #ffffff;
+    background: #080808;
+
+    border: 1px solid #ffffff;
+    border-radius: 8px;
+
+    text-decoration: none;
+    cursor: pointer;
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+/* Nút xem trước */
+
+.btn-preview {
+    background: #080808;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+}
+
+/* Nút tải xuống */
+
+.btn-download {
+    background: #080808;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+}
+
+/* Hiệu ứng khi rê chuột */
+
+.document-actions button:hover,
+.document-actions a:hover {
+    background: #ffffff;
+    color: #050505;
+
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 0 8px rgba(255,255,255,0.35),
+        0 0 20px rgba(255,255,255,0.15);
+}
+
+/* Hiệu ứng khi nhấn */
+
+.document-actions button:active,
+.document-actions a:active {
+    transform: translateY(-1px) scale(0.97);
+}
+
+/* Hiệu ứng khi dùng bàn phím */
+
+.document-actions button:focus-visible,
+.document-actions a:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 4px;
+}
+
+/* ==============================
+   12. NÚT TRÊN ĐIỆN THOẠI
+============================== */
+
+@media (max-width: 500px) {
+
+    .document-actions {
+        gap: 9px;
+    }
+
+    .document-actions button,
+    .document-actions a {
+        flex: 1;
+        min-width: 0;
+        padding: 10px 12px;
+        font-size: 12px;
+    }
 }
