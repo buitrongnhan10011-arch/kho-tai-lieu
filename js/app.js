@@ -11,7 +11,7 @@ SUPABASE_KEY
 async function loadCategories() {
 const categoryContainer = document.getElementById("categories");
 
-```
+
 categoryContainer.innerHTML = "<p>Đang tải danh mục...</p>";
 
 const { data: categories, error } = await supabaseClient
