@@ -92,7 +92,7 @@ categories.forEach(function(category, index) {
 
     categoryContainer.appendChild(card);
 });
-```
+
 
 }
 
