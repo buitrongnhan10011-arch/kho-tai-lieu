@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="css/style.css">
 
     <style>
+        /* FORM MẬT KHẨU */
+
         .password-box {
             max-width: 420px;
             margin: 25px auto;
@@ -47,7 +49,7 @@
             color: #dc2626;
         }
 
-        /* NÚT XEM TRƯỚC VÀ TẢI XUỐNG */
+        /* NÚT TÀI LIỆU */
 
         .document-actions {
             display: flex;
@@ -142,6 +144,7 @@
         }
 
         .preview-close {
+            flex-shrink: 0;
             border: none;
             background: #dc2626;
             color: white;
@@ -178,6 +181,8 @@
             margin: 0 auto;
         }
 
+        /* WORD */
+
         .docx-preview {
             max-width: 850px;
             min-height: 100%;
@@ -206,6 +211,90 @@
             padding: 6px;
         }
 
+        /* EXCEL, CSV */
+
+        .spreadsheet-container {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            overflow: auto;
+        }
+
+        .spreadsheet-container table {
+            border-collapse: collapse;
+            width: 100%;
+            background: white;
+            color: #111;
+            font-size: 13px;
+        }
+
+        .spreadsheet-container td,
+        .spreadsheet-container th {
+            border: 1px solid #ccc;
+            padding: 8px;
+            min-width: 70px;
+        }
+
+        .spreadsheet-container th {
+            background: #e5e7eb;
+            font-weight: 700;
+        }
+
+        .spreadsheet-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .spreadsheet-tabs button {
+            border: 1px solid #222;
+            border-radius: 6px;
+            padding: 8px 14px;
+            background: white;
+            color: #111;
+            cursor: pointer;
+        }
+
+        .spreadsheet-tabs button.active {
+            background: #111;
+            color: white;
+        }
+
+        /* TXT */
+
+        .text-preview {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 25px;
+            background: white;
+            color: #111;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            font-family: monospace;
+            line-height: 1.6;
+        }
+
+        /* ZIP */
+
+        .zip-preview {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            color: #111;
+        }
+
+        .zip-file-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            overflow-wrap: anywhere;
+        }
+
+        /* THÔNG BÁO */
+
         .preview-loading {
             text-align: center;
             padding: 40px;
@@ -220,6 +309,16 @@
             border-radius: 8px;
             color: #b91c1c;
             text-align: center;
+            line-height: 1.7;
+        }
+
+        .preview-note {
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #fff7ed;
+            color: #9a3412;
+            border-radius: 6px;
+            font-size: 13px;
         }
 
         @media (max-width: 600px) {
@@ -297,11 +396,22 @@
     </div>
 </div>
 
+<!-- THƯ VIỆN -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+
 <script>
+    /* SUPABASE */
+
     const SUPABASE_URL = "https://axmgzhcozkwekjxbofoh.supabase.co";
+
     const SUPABASE_KEY = "sb_publishable_SQPDN_7N8IBG92iMWFSQ4A_3PYj9ykP";
 
     const supabaseClient = window.supabase.createClient(
@@ -309,18 +419,27 @@
         SUPABASE_KEY
     );
 
+
+    /* BIẾN */
+
     const params = new URLSearchParams(window.location.search);
+
     const folder = params.get("folder");
 
     const title = document.getElementById("category-title");
+
     const list = document.getElementById("document-list");
 
     const sectionTitle = document.getElementById("section-title");
+
     const sectionDescription = document.getElementById("section-description");
 
     const previewOverlay = document.getElementById("preview-overlay");
+
     const previewTitle = document.getElementById("preview-title");
+
     const previewContent = document.getElementById("preview-content");
+
     const previewClose = document.getElementById("preview-close");
 
 
@@ -331,9 +450,10 @@
     }
 
 
-    /* NHẬN DIỆN ĐỊNH DẠNG TỆP */
+    /* NHẬN DIỆN ĐỊNH DẠNG */
 
     function getFileExtension(doc) {
+
         const sources = [
             doc.storage_path,
             doc.file_url,
@@ -342,38 +462,81 @@
         ];
 
         for (const source of sources) {
+
             if (!source) continue;
 
             let value = String(source);
 
             try {
                 value = decodeURIComponent(value);
-            } catch (e) {
-                // Giữ nguyên nếu không giải mã được
-            }
+            } catch (e) {}
 
             value = value
                 .split("?")[0]
                 .split("#")[0]
-                .toLowerCase();
+                .toLowerCase()
+                .trim();
 
-            // Nhận diện qua MIME type
+            // MIME TYPE
 
-            if (
-                value.includes("wordprocessingml.document") ||
-                value.includes("application/vnd.openxmlformats")
-            ) {
+            if (value.includes("wordprocessingml.document")) {
                 return "docx";
+            }
+
+            if (value.includes("application/msword")) {
+                return "doc";
+            }
+
+            if (value.includes("presentationml.presentation")) {
+                return "pptx";
+            }
+
+            if (value.includes("application/vnd.ms-powerpoint")) {
+                return "ppt";
+            }
+
+            if (value.includes("spreadsheetml.sheet")) {
+                return "xlsx";
+            }
+
+            if (value.includes("application/vnd.ms-excel")) {
+                return "xls";
+            }
+
+            if (value.includes("text/csv")) {
+                return "csv";
+            }
+
+            if (value.includes("text/plain")) {
+                return "txt";
             }
 
             if (value.includes("application/pdf")) {
                 return "pdf";
             }
 
-            // Nhận diện qua đuôi tệp
+            // TRƯỜNG HỢP FILE_TYPE CHỈ GHI ĐUÔI TỆP
+
+            const normalized = value.replace(/^application\//, "");
+
+            const allowed = [
+                "docx", "doc",
+                "pptx", "ppt",
+                "xlsx", "xls",
+                "csv", "txt",
+                "pdf",
+                "jpg", "jpeg", "png", "gif", "webp",
+                "zip", "rar"
+            ];
+
+            if (allowed.includes(normalized)) {
+                return normalized;
+            }
+
+            // NHẬN DIỆN QUA ĐUÔI TỆP
 
             const match = value.match(
-                /\.(docx|doc|pdf|jpg|jpeg|png|gif|webp)$/i
+                /\.(docx|doc|pptx|ppt|xlsx|xls|csv|txt|pdf|jpg|jpeg|png|gif|webp|zip|rar)$/i
             );
 
             if (match) {
@@ -385,22 +548,355 @@
     }
 
 
-    /* HIỂN THỊ LỖI XEM TRƯỚC */
+    /* HIỂN THỊ LỖI */
 
     function showPreviewError(message) {
+
         previewContent.innerHTML = "";
 
         const errorBox = document.createElement("div");
+
         errorBox.className = "preview-error";
+
         errorBox.textContent = message;
 
         previewContent.appendChild(errorBox);
     }
 
 
-    /* XEM TRƯỚC TÀI LIỆU */
+    /* TẢI TỆP */
+
+    async function fetchFile(fileUrl) {
+
+        const response = await fetch(fileUrl);
+
+        if (!response.ok) {
+            throw new Error(
+                "Không thể tải tệp. Mã HTTP: " + response.status
+            );
+        }
+
+        return response;
+    }
+
+
+    /* XEM TRƯỚC WORD DOCX */
+
+    async function previewDOCX(fileUrl) {
+
+        if (typeof mammoth === "undefined") {
+            throw new Error("Không tải được thư viện Mammoth.");
+        }
+
+        const response = await fetchFile(fileUrl);
+
+        const arrayBuffer = await response.arrayBuffer();
+
+        const result = await mammoth.convertToHtml(
+            {
+                arrayBuffer: arrayBuffer
+            },
+            {
+                includeDefaultStyleMap: true
+            }
+        );
+
+        previewContent.innerHTML = "";
+
+        const article = document.createElement("article");
+
+        article.className = "docx-preview";
+
+        article.innerHTML = result.value;
+
+        previewContent.appendChild(article);
+
+        if (result.messages && result.messages.length > 0) {
+            console.warn(
+                "Một số nội dung Word không được chuyển đổi:",
+                result.messages
+            );
+        }
+    }
+
+
+    /* XEM TRƯỚC EXCEL XLSX */
+
+    async function previewXLSX(fileUrl) {
+
+        if (typeof XLSX === "undefined") {
+            throw new Error("Không tải được thư viện Excel.");
+        }
+
+        const response = await fetchFile(fileUrl);
+
+        const buffer = await response.arrayBuffer();
+
+        const workbook = XLSX.read(buffer, {
+            type: "array"
+        });
+
+        previewContent.innerHTML = "";
+
+        const tabs = document.createElement("div");
+
+        tabs.className = "spreadsheet-tabs";
+
+        const tableContainer = document.createElement("div");
+
+        tableContainer.className = "spreadsheet-container";
+
+        function showSheet(sheetName, button) {
+
+            tabs.querySelectorAll("button").forEach(function (item) {
+                item.classList.remove("active");
+            });
+
+            button.classList.add("active");
+
+            tableContainer.innerHTML = "";
+
+            const sheet = workbook.Sheets[sheetName];
+
+            const table = XLSX.utils.sheet_to_html(sheet);
+
+            tableContainer.innerHTML = table;
+
+            const generatedTable = tableContainer.querySelector("table");
+
+            if (generatedTable) {
+
+                generatedTable.style.borderCollapse = "collapse";
+
+                generatedTable.style.width = "100%";
+
+                generatedTable.querySelectorAll("td, th").forEach(
+                    function (cell) {
+                        cell.style.border = "1px solid #ccc";
+                        cell.style.padding = "8px";
+                    }
+                );
+            }
+        }
+
+        workbook.SheetNames.forEach(function (sheetName) {
+
+            const button = document.createElement("button");
+
+            button.type = "button";
+
+            button.textContent = sheetName;
+
+            button.addEventListener("click", function () {
+                showSheet(sheetName, button);
+            });
+
+            tabs.appendChild(button);
+        });
+
+        previewContent.appendChild(tabs);
+
+        previewContent.appendChild(tableContainer);
+
+        if (workbook.SheetNames.length > 0) {
+
+            const firstButton = tabs.querySelector("button");
+
+            if (firstButton) {
+                showSheet(workbook.SheetNames[0], firstButton);
+            }
+        }
+    }
+
+
+    /* XEM TRƯỚC CSV */
+
+    async function previewCSV(fileUrl) {
+
+        if (typeof XLSX === "undefined") {
+            throw new Error("Không tải được thư viện đọc CSV.");
+        }
+
+        const response = await fetchFile(fileUrl);
+
+        const text = await response.text();
+
+        const workbook = XLSX.read(text, {
+            type: "string"
+        });
+
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+        const table = XLSX.utils.sheet_to_html(sheet);
+
+        previewContent.innerHTML = "";
+
+        const container = document.createElement("div");
+
+        container.className = "spreadsheet-container";
+
+        container.innerHTML = table;
+
+        previewContent.appendChild(container);
+    }
+
+
+    /* XEM TRƯỚC TXT */
+
+    async function previewTXT(fileUrl) {
+
+        const response = await fetchFile(fileUrl);
+
+        const text = await response.text();
+
+        previewContent.innerHTML = "";
+
+        const pre = document.createElement("pre");
+
+        pre.className = "text-preview";
+
+        pre.textContent = text;
+
+        previewContent.appendChild(pre);
+    }
+
+
+    /* XEM TRƯỚC ZIP */
+
+    async function previewZIP(fileUrl) {
+
+        if (typeof JSZip === "undefined") {
+            throw new Error("Không tải được thư viện đọc ZIP.");
+        }
+
+        const response = await fetchFile(fileUrl);
+
+        const buffer = await response.arrayBuffer();
+
+        const zip = await JSZip.loadAsync(buffer);
+
+        const files = Object.values(zip.files).filter(
+            function (file) {
+                return !file.dir;
+            }
+        );
+
+        previewContent.innerHTML = "";
+
+        const container = document.createElement("div");
+
+        container.className = "zip-preview";
+
+        const heading = document.createElement("h3");
+
+        heading.textContent = "Danh sách tệp trong ZIP";
+
+        container.appendChild(heading);
+
+        const count = document.createElement("p");
+
+        count.textContent = "Số lượng tệp: " + files.length;
+
+        container.appendChild(count);
+
+        if (files.length === 0) {
+
+            const empty = document.createElement("p");
+
+            empty.textContent = "Tệp ZIP không có dữ liệu.";
+
+            container.appendChild(empty);
+        }
+
+        files.forEach(function (file) {
+
+            const item = document.createElement("div");
+
+            item.className = "zip-file-item";
+
+            item.textContent = "📄 " + file.name;
+
+            container.appendChild(item);
+        });
+
+        previewContent.appendChild(container);
+    }
+
+
+    /* OFFICE ONLINE */
+
+    function previewOfficeOnline(fileUrl) {
+
+        const note = document.createElement("div");
+
+        note.className = "preview-note";
+
+        note.textContent =
+            "Tài liệu được mở bằng Microsoft Office Online. " +
+            "Đường dẫn phải được Microsoft truy cập công khai.";
+
+        const iframe = document.createElement("iframe");
+
+        iframe.src =
+            "https://view.officeapps.live.com/op/embed.aspx?src=" +
+            encodeURIComponent(fileUrl);
+
+        iframe.title = "Xem trước tài liệu Office";
+
+        previewContent.innerHTML = "";
+
+        previewContent.appendChild(note);
+
+        previewContent.appendChild(iframe);
+    }
+
+
+    /* XEM TRƯỚC HÌNH ẢNH */
+
+    function previewImage(fileUrl, doc) {
+
+        const image = document.createElement("img");
+
+        image.src = fileUrl;
+
+        image.alt = doc.title || "Hình ảnh tài liệu";
+
+        image.onload = function () {
+
+            previewContent.innerHTML = "";
+
+            previewContent.appendChild(image);
+        };
+
+        image.onerror = function () {
+
+            showPreviewError(
+                "Không thể hiển thị hình ảnh. Vui lòng kiểm tra đường dẫn."
+            );
+        };
+    }
+
+
+    /* XEM TRƯỚC PDF */
+
+    function previewPDF(fileUrl) {
+
+        const iframe = document.createElement("iframe");
+
+        iframe.src = fileUrl;
+
+        iframe.title = "Xem trước PDF";
+
+        previewContent.innerHTML = "";
+
+        previewContent.appendChild(iframe);
+    }
+
+
+    /* HÀM XEM TRƯỚC CHÍNH */
 
     async function openPreview(doc) {
+
         previewOverlay.classList.add("active");
 
         previewTitle.textContent =
@@ -410,143 +906,125 @@
             '<div class="preview-loading">Đang tải bản xem trước...</div>';
 
         const fileUrl = doc.file_url;
+
         const extension = getFileExtension(doc);
 
+        console.log("Tài liệu:", doc);
+
+        console.log("Định dạng nhận diện:", extension);
+
         if (!fileUrl) {
+
             showPreviewError(
                 "Không tìm thấy đường dẫn tài liệu."
             );
-            return;
-        }
-
-        console.log("Thông tin tài liệu:", doc);
-        console.log("Định dạng nhận diện:", extension);
-
-
-        /* XEM TRƯỚC HÌNH ẢNH */
-
-        if (
-            ["jpg", "jpeg", "png", "gif", "webp"].includes(extension)
-        ) {
-            const image = document.createElement("img");
-
-            image.src = fileUrl;
-            image.alt = doc.title || "Hình ảnh tài liệu";
-
-            image.onload = function () {
-                previewContent.innerHTML = "";
-                previewContent.appendChild(image);
-            };
-
-            image.onerror = function () {
-                showPreviewError(
-                    "Không thể hiển thị hình ảnh. Vui lòng kiểm tra đường dẫn tệp."
-                );
-            };
 
             return;
         }
 
+        try {
 
-        /* XEM TRƯỚC PDF */
+            // HÌNH ẢNH
 
-        if (extension === "pdf") {
-            const iframe = document.createElement("iframe");
-
-            iframe.src = fileUrl;
-            iframe.title = "Xem trước PDF";
-
-            previewContent.innerHTML = "";
-            previewContent.appendChild(iframe);
-
-            return;
-        }
-
-
-        /* XEM TRƯỚC WORD DOCX */
-
-        if (extension === "docx") {
-            try {
-                if (typeof mammoth === "undefined") {
-                    throw new Error(
-                        "Không tải được thư viện xem trước Word."
-                    );
-                }
-
-                const response = await fetch(fileUrl);
-
-                if (!response.ok) {
-                    throw new Error(
-                        "Không thể tải tài liệu Word. Mã lỗi HTTP: " +
-                        response.status
-                    );
-                }
-
-                const arrayBuffer = await response.arrayBuffer();
-
-                const result = await mammoth.convertToHtml(
-                    {
-                        arrayBuffer: arrayBuffer
-                    },
-                    {
-                        includeDefaultStyleMap: true
-                    }
-                );
-
-                previewContent.innerHTML = "";
-
-                const article = document.createElement("article");
-                article.className = "docx-preview";
-
-                article.innerHTML = result.value;
-
-                previewContent.appendChild(article);
-
-                if (result.messages && result.messages.length > 0) {
-                    console.warn(
-                        "Một số nội dung Word không được chuyển đổi:",
-                        result.messages
-                    );
-                }
-
-            } catch (error) {
-                console.error("Lỗi xem trước DOCX:", error);
-
-                showPreviewError(
-                    "Không thể xem trước file Word. " +
-                    "Có thể đường dẫn tệp không hợp lệ, " +
-                    "tệp không tồn tại hoặc máy chủ chưa cho phép tải tệp."
-                );
+            if (
+                ["jpg", "jpeg", "png", "gif", "webp"].includes(extension)
+            ) {
+                previewImage(fileUrl, doc);
+                return;
             }
 
-            return;
+            // PDF
+
+            if (extension === "pdf") {
+                previewPDF(fileUrl);
+                return;
+            }
+
+            // DOCX
+
+            if (extension === "docx") {
+                await previewDOCX(fileUrl);
+                return;
+            }
+
+            // DOC, PPT, PPTX, XLS
+
+            if (
+                ["doc", "ppt", "pptx", "xls"].includes(extension)
+            ) {
+                previewOfficeOnline(fileUrl);
+                return;
+            }
+
+            // XLSX
+
+            if (extension === "xlsx") {
+                await previewXLSX(fileUrl);
+                return;
+            }
+
+            // CSV
+
+            if (extension === "csv") {
+                await previewCSV(fileUrl);
+                return;
+            }
+
+            // TXT
+
+            if (extension === "txt") {
+                await previewTXT(fileUrl);
+                return;
+            }
+
+            // ZIP
+
+            if (extension === "zip") {
+                await previewZIP(fileUrl);
+                return;
+            }
+
+            // RAR VÀ ĐỊNH DẠNG KHÁC
+
+            showPreviewError(
+                "Định dạng này chưa hỗ trợ xem trước. " +
+                "Bạn có thể sử dụng nút Tải xuống."
+            );
+
+        } catch (error) {
+
+            console.error("Lỗi xem trước:", error);
+
+            showPreviewError(
+                "Không thể xem trước tài liệu. " +
+                "Có thể tệp không tồn tại, đường dẫn không hợp lệ, " +
+                "hoặc máy chủ chưa cho phép tải tệp. " +
+                "Bạn có thể thử tải xuống."
+            );
         }
-
-
-        /* ĐỊNH DẠNG CHƯA HỖ TRỢ */
-
-        showPreviewError(
-            "Định dạng này chưa hỗ trợ xem trước. Bạn có thể sử dụng nút Tải xuống."
-        );
     }
 
 
-    /* ĐÓNG CỬA SỔ XEM TRƯỚC */
+    /* ĐÓNG CỬA SỔ */
 
     function closePreview() {
+
         previewOverlay.classList.remove("active");
+
         previewContent.innerHTML = "";
     }
 
     previewClose.addEventListener("click", closePreview);
 
     previewOverlay.addEventListener("click", function (event) {
+
         if (event.target === previewOverlay) {
             closePreview();
         }
     });
 
     document.addEventListener("keydown", function (event) {
+
         if (event.key === "Escape") {
             closePreview();
         }
@@ -561,7 +1039,7 @@
     });
 
 
-    /* HẠN CHẾ SAO CHÉP TRONG KHUNG XEM TRƯỚC */
+    /* HẠN CHẾ SAO CHÉP */
 
     previewContent.addEventListener("contextmenu", function (event) {
         event.preventDefault();
@@ -583,54 +1061,72 @@
     /* HIỂN THỊ DANH SÁCH TÀI LIỆU */
 
     function renderDocuments(documents) {
+
         list.innerHTML = "";
 
         if (!documents || documents.length === 0) {
+
             showMessage("Danh mục này chưa có tài liệu.");
+
             return;
         }
 
         documents.forEach(function (doc) {
+
             const card = document.createElement("div");
+
             card.className = "category-card";
 
             const info = document.createElement("div");
 
             const heading = document.createElement("h3");
-            heading.textContent = doc.title || "Tài liệu không có tên";
+
+            heading.textContent =
+                doc.title || "Tài liệu không có tên";
 
             const actions = document.createElement("div");
+
             actions.className = "document-actions";
 
 
-            /* NÚT XEM TRƯỚC */
+            // NÚT XEM TRƯỚC
 
             const preview = document.createElement("button");
 
             preview.type = "button";
+
             preview.textContent = "👁 Xem trước";
+
             preview.className = "document-button preview-button";
 
             preview.addEventListener("click", function () {
+
                 openPreview(doc);
             });
 
 
-            /* NÚT TẢI XUỐNG */
+            // NÚT TẢI XUỐNG
 
             const download = document.createElement("a");
 
             download.href = doc.file_url;
+
             download.textContent = "⬇ Tải xuống";
+
             download.className = "document-button download-button";
+
             download.target = "_blank";
+
             download.rel = "noopener noreferrer";
+
             download.download = "";
 
             actions.appendChild(preview);
+
             actions.appendChild(download);
 
             info.appendChild(heading);
+
             info.appendChild(actions);
 
             card.appendChild(info);
@@ -640,9 +1136,10 @@
     }
 
 
-    /* FORM NHẬP MẬT KHẨU */
+    /* FORM MẬT KHẨU */
 
     function showPasswordForm(categoryId) {
+
         list.innerHTML = "";
 
         sectionTitle.textContent = "Danh mục được bảo vệ";
@@ -651,28 +1148,37 @@
             "Vui lòng nhập mật khẩu để xem tài liệu.";
 
         const box = document.createElement("div");
+
         box.className = "password-box";
 
         const heading = document.createElement("h3");
+
         heading.textContent = "🔒 Nhập mật khẩu";
 
         const input = document.createElement("input");
 
         input.type = "password";
+
         input.placeholder = "Nhập mật khẩu danh mục";
+
         input.autocomplete = "current-password";
 
         const button = document.createElement("button");
 
         button.type = "button";
+
         button.textContent = "Mở khóa";
 
         const message = document.createElement("p");
+
         message.id = "password-message";
 
         box.appendChild(heading);
+
         box.appendChild(input);
+
         box.appendChild(button);
+
         box.appendChild(message);
 
         list.appendChild(box);
@@ -681,17 +1187,22 @@
         /* XÁC THỰC MẬT KHẨU */
 
         async function verifyPassword() {
+
             const password = input.value;
 
             if (!password) {
+
                 message.textContent = "Vui lòng nhập mật khẩu.";
+
                 return;
             }
 
             button.disabled = true;
+
             message.textContent = "Đang xác thực...";
 
             try {
+
                 const result =
                     await supabaseClient.functions.invoke(
                         "dynamic-responder",
@@ -705,6 +1216,7 @@
                     );
 
                 const data = result.data;
+
                 const error = result.error;
 
                 if (error) {
@@ -712,6 +1224,7 @@
                 }
 
                 if (!data || !data.success) {
+
                     message.textContent =
                         data?.error || "Mật khẩu không đúng.";
 
@@ -726,13 +1239,16 @@
                 renderDocuments(data.documents || []);
 
             } catch (error) {
+
                 console.error("Lỗi xác thực:", error);
 
                 let detail =
                     error.message || "Lỗi không xác định";
 
                 if (error.context) {
+
                     try {
+
                         const response =
                             await error.context.json();
 
@@ -748,6 +1264,7 @@
                 message.textContent = "Lỗi: " + detail;
 
             } finally {
+
                 button.disabled = false;
             }
         }
@@ -755,6 +1272,7 @@
         button.addEventListener("click", verifyPassword);
 
         input.addEventListener("keydown", function (event) {
+
             if (event.key === "Enter") {
                 verifyPassword();
             }
@@ -762,12 +1280,14 @@
     }
 
 
-    /* TẢI DANH MỤC VÀ TÀI LIỆU */
+    /* TẢI DANH MỤC */
 
     async function loadDocuments() {
+
         list.textContent = "Đang tải danh mục...";
 
         if (!folder) {
+
             title.textContent = "Không tìm thấy danh mục";
 
             showMessage("Vui lòng quay lại trang chủ.");
@@ -776,6 +1296,7 @@
         }
 
         try {
+
             const result =
                 await supabaseClient
                     .from("categories")
@@ -784,9 +1305,11 @@
                     .maybeSingle();
 
             const category = result.data;
+
             const categoryError = result.error;
 
             if (categoryError || !category) {
+
                 console.error(categoryError);
 
                 title.textContent = "Không tìm thấy danh mục";
@@ -799,15 +1322,17 @@
             title.textContent = category.name.toUpperCase();
 
 
-            /* DANH MỤC CÓ MẬT KHẨU */
+            // DANH MỤC CÓ MẬT KHẨU
 
             if (category.requires_password) {
+
                 showPasswordForm(category.id);
+
                 return;
             }
 
 
-            /* DANH MỤC CÔNG KHAI */
+            // DANH MỤC CÔNG KHAI
 
             sectionTitle.textContent = "Danh sách tài liệu";
 
@@ -824,9 +1349,11 @@
                     });
 
             const documents = documentResult.data;
+
             const error = documentResult.error;
 
             if (error) {
+
                 console.error(error);
 
                 showMessage("Không thể tải danh sách tài liệu.");
@@ -837,6 +1364,7 @@
             renderDocuments(documents);
 
         } catch (error) {
+
             console.error("Lỗi tải danh mục:", error);
 
             showMessage(
