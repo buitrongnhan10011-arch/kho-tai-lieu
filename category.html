@@ -1,124 +1,285 @@
 <!DOCTYPE html>
+
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Tài liệu học tập</title>
-
     <link rel="stylesheet" href="css/style.css">
+
+```
+<style>
+    .password-box {
+        max-width: 420px;
+        margin: 25px auto;
+        padding: 24px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+
+    .password-box input {
+        width: 100%;
+        padding: 12px;
+        margin: 15px 0;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 16px;
+    }
+
+    .password-box button {
+        padding: 11px 22px;
+        border: none;
+        border-radius: 6px;
+        background: #2563eb;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .password-box button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    #password-message {
+        margin-top: 12px;
+        color: #dc2626;
+    }
+
+    .document-link {
+        display: inline-block;
+        margin-top: 10px;
+    }
+</style>
+```
+
 </head>
 
 <body>
 
-    <header>
-        <div class="header-content">
-            <h1 id="category-title">Đang tải...</h1>
-            <p>Kho lưu trữ tài liệu</p>
-        </div>
-    </header>
+```
+<header>
+    <div class="header-content">
+        <h1 id="category-title">Đang tải...</h1>
+        <p>Kho lưu trữ tài liệu</p>
+    </div>
+</header>
 
-    <main>
-        <section class="intro">
-            <h2>Danh sách tài liệu</h2>
-            <p>Các tài liệu được lưu trữ tại đây.</p>
-        </section>
+<main>
+    <section class="intro">
+        <h2 id="section-title">Danh sách tài liệu</h2>
+        <p id="section-description">Các tài liệu được lưu trữ tại đây.</p>
+    </section>
 
-        <section id="document-list" class="categories"></section>
+    <section id="document-list" class="categories"></section>
 
-        <a href="index.html" class="back-button">← Quay lại trang chủ</a>
-    </main>
+    <a href="index.html" class="back-button">← Quay lại trang chủ</a>
+</main>
 
-    <footer>
-        <p>© 2026 KHO TÀI LIỆU</p>
-        <p>Không gian chia sẻ kiến thức</p>
-        <p class="developer">Developed by TN</p>
-    </footer>
+<footer>
+    <p>© 2026 KHO TÀI LIỆU</p>
+    <p>Không gian chia sẻ kiến thức</p>
+    <p class="developer">Developed by TN</p>
+</footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <script>
-        const SUPABASE_URL = "https://axmgzhcozkwekjxbofoh.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_SQPDN_7N8IBG92iMWFSQ4A_3PYj9ykP";
+<script>
+    const SUPABASE_URL = "https://axmgzhcozkwekjxbofoh.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_SQPDN_7N8IBG92iMWFSQ4A_3PYj9ykP";
 
-        const supabaseClient = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
+    const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
-        const params = new URLSearchParams(window.location.search);
-        const folder = params.get("folder");
+    const params = new URLSearchParams(window.location.search);
+    const folder = params.get("folder");
 
-        async function loadDocuments() {
-            const title = document.getElementById("category-title");
-            const list = document.getElementById("document-list");
+    const title = document.getElementById("category-title");
+    const list = document.getElementById("document-list");
+    const sectionTitle = document.getElementById("section-title");
+    const sectionDescription = document.getElementById("section-description");
 
-            list.textContent = "Đang tải tài liệu...";
+    function showMessage(message) {
+        list.textContent = message;
+    }
 
-            if (!folder) {
-                title.textContent = "Không tìm thấy danh mục";
-                list.textContent = "Vui lòng quay lại trang chủ.";
+    function renderDocuments(documents) {
+        list.innerHTML = "";
+
+        if (!documents || documents.length === 0) {
+            showMessage("Danh mục này chưa có tài liệu.");
+            return;
+        }
+
+        documents.forEach(doc => {
+            const card = document.createElement("div");
+            card.className = "category-card";
+
+            const info = document.createElement("div");
+
+            const heading = document.createElement("h3");
+            heading.textContent = doc.title;
+
+            const download = document.createElement("a");
+            download.href = doc.file_url;
+            download.textContent = "Xem / Tải xuống →";
+            download.target = "_blank";
+            download.rel = "noopener noreferrer";
+            download.className = "document-link";
+
+            info.appendChild(heading);
+            info.appendChild(download);
+            card.appendChild(info);
+            list.appendChild(card);
+        });
+    }
+
+    function showPasswordForm(categoryId) {
+        list.innerHTML = "";
+
+        sectionTitle.textContent = "Danh mục được bảo vệ";
+        sectionDescription.textContent =
+            "Vui lòng nhập mật khẩu để xem tài liệu.";
+
+        const box = document.createElement("div");
+        box.className = "password-box";
+
+        const heading = document.createElement("h3");
+        heading.textContent = "🔒 Nhập mật khẩu";
+
+        const input = document.createElement("input");
+        input.type = "password";
+        input.placeholder = "Nhập mật khẩu danh mục";
+        input.autocomplete = "current-password";
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "Mở khóa";
+
+        const message = document.createElement("p");
+        message.id = "password-message";
+
+        box.appendChild(heading);
+        box.appendChild(input);
+        box.appendChild(button);
+        box.appendChild(message);
+        list.appendChild(box);
+
+        async function verifyPassword() {
+            const password = input.value;
+
+            if (!password) {
+                message.textContent = "Vui lòng nhập mật khẩu.";
                 return;
             }
 
-            const { data: category, error: categoryError } =
-                await supabaseClient
-                    .from("categories")
-                    .select("id, name")
-                    .eq("slug", folder)
-                    .maybeSingle();
+            button.disabled = true;
+            message.textContent = "Đang xác thực...";
 
-            if (categoryError || !category) {
-                title.textContent = "Không tìm thấy danh mục";
-                list.textContent = "Danh mục không tồn tại.";
-                return;
-            }
+            try {
+                const { data, error } =
+                    await supabaseClient.functions.invoke(
+                        "dynamic-responder",
+                        {
+                            body: {
+                                action: "verify",
+                                category_id: categoryId,
+                                password: password
+                            }
+                        }
+                    );
 
-            title.textContent = category.name.toUpperCase();
+                if (error) {
+                    throw error;
+                }
 
-            const { data: documents, error } = await supabaseClient
-                .from("documents")
-                .select("*")
-                .eq("category_id", category.id)
-                .order("created_at", { ascending: false });
+                if (!data || !data.success) {
+                    message.textContent =
+                        data?.error || "Mật khẩu không đúng.";
+                    return;
+                }
 
-            if (error) {
+                sectionTitle.textContent = "Danh sách tài liệu";
+                sectionDescription.textContent =
+                    "Bạn đã mở khóa danh mục thành công.";
+
+                renderDocuments(data.documents || []);
+
+            } catch (error) {
                 console.error(error);
-                list.textContent = "Không thể tải danh sách tài liệu.";
-                return;
+                message.textContent =
+                    "Không thể xác thực. Vui lòng thử lại.";
+            } finally {
+                button.disabled = false;
             }
+        }
 
-            list.innerHTML = "";
+        button.addEventListener("click", verifyPassword);
 
-            if (documents.length === 0) {
-                list.textContent = "Danh mục này chưa có tài liệu.";
-                return;
+        input.addEventListener("keydown", event => {
+            if (event.key === "Enter") {
+                verifyPassword();
             }
+        });
+    }
 
-            documents.forEach(doc => {
-    const card = document.createElement("div");
-    card.className = "category-card";
+    async function loadDocuments() {
+        list.textContent = "Đang tải danh mục...";
 
-    const info = document.createElement("div");
+        if (!folder) {
+            title.textContent = "Không tìm thấy danh mục";
+            showMessage("Vui lòng quay lại trang chủ.");
+            return;
+        }
 
-    const heading = document.createElement("h3");
-    heading.textContent = doc.title;
+        const { data: category, error: categoryError } =
+            await supabaseClient
+                .from("categories")
+                .select("id, name, requires_password")
+                .eq("slug", folder)
+                .maybeSingle();
 
-    const download = document.createElement("a");
-    download.href = doc.file_url;
-    download.textContent = "Xem / Tải xuống →";
-    download.target = "_blank";
-    download.rel = "noopener noreferrer";
+        if (categoryError || !category) {
+            console.error(categoryError);
+            title.textContent = "Không tìm thấy danh mục";
+            showMessage("Danh mục không tồn tại.");
+            return;
+        }
 
-    info.appendChild(heading);
-    info.appendChild(download);
-    card.appendChild(info);
-    list.appendChild(card);
-});
-            }
+        title.textContent = category.name.toUpperCase();
 
-        loadDocuments();
-    </script>
+        if (category.requires_password) {
+            showPasswordForm(category.id);
+            return;
+        }
+
+        sectionTitle.textContent = "Danh sách tài liệu";
+        sectionDescription.textContent =
+            "Các tài liệu được lưu trữ tại đây.";
+
+        const { data: documents, error } = await supabaseClient
+            .from("documents")
+            .select("*")
+            .eq("category_id", category.id)
+            .order("created_at", { ascending: false });
+
+        if (error) {
+            console.error(error);
+            showMessage("Không thể tải danh sách tài liệu.");
+            return;
+        }
+
+        renderDocuments(documents);
+    }
+
+    loadDocuments();
+</script>
+```
+
 </body>
 </html>
-    
