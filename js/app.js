@@ -43,7 +43,7 @@ categories.forEach((category, index) => {
     const number = document.createElement("span");
     number.className = "category-number";
     number.textContent =
-        `${String(index + 1).padStart(2, "0")} / ${String(categories.length).padStart(2, "0")}`;
+        ${String(index + 1).padStart(2, "0")} / ${String(categories.length).padStart(2, "0")}`;
 
     // TÊN DANH MỤC
     const heading = document.createElement("h3");
