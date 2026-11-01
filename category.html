@@ -180,16 +180,30 @@
 
         .docx-preview {
             max-width: 850px;
+            min-height: 100%;
             margin: 0 auto;
             padding: 45px;
             background: white;
             box-sizing: border-box;
             line-height: 1.6;
             color: #111;
+            overflow-wrap: break-word;
         }
 
         .docx-preview img {
             max-width: 100%;
+            height: auto;
+        }
+
+        .docx-preview table {
+            max-width: 100%;
+            border-collapse: collapse;
+        }
+
+        .docx-preview td,
+        .docx-preview th {
+            border: 1px solid #ccc;
+            padding: 6px;
         }
 
         .preview-loading {
@@ -272,6 +286,7 @@
 
         <div class="preview-header">
             <strong id="preview-title">Xem trước tài liệu</strong>
+
             <button type="button" id="preview-close" class="preview-close">
                 Đóng
             </button>
@@ -299,6 +314,7 @@
 
     const title = document.getElementById("category-title");
     const list = document.getElementById("document-list");
+
     const sectionTitle = document.getElementById("section-title");
     const sectionDescription = document.getElementById("section-description");
 
@@ -307,40 +323,113 @@
     const previewContent = document.getElementById("preview-content");
     const previewClose = document.getElementById("preview-close");
 
+
+    /* HIỂN THỊ THÔNG BÁO */
+
     function showMessage(message) {
         list.textContent = message;
     }
 
-    function getFileExtension(fileUrl, fileName) {
-        const source = fileName || fileUrl || "";
-        const cleanSource = source.split("?")[0].split("#")[0];
-        const parts = cleanSource.split(".");
 
-        if (parts.length < 2) {
-            return "";
+    /* NHẬN DIỆN ĐỊNH DẠNG TỆP */
+
+    function getFileExtension(doc) {
+        const sources = [
+            doc.storage_path,
+            doc.file_url,
+            doc.file_type,
+            doc.title
+        ];
+
+        for (const source of sources) {
+            if (!source) continue;
+
+            let value = String(source);
+
+            try {
+                value = decodeURIComponent(value);
+            } catch (e) {
+                // Giữ nguyên nếu không giải mã được
+            }
+
+            value = value
+                .split("?")[0]
+                .split("#")[0]
+                .toLowerCase();
+
+            // Nhận diện qua MIME type
+
+            if (
+                value.includes("wordprocessingml.document") ||
+                value.includes("application/vnd.openxmlformats")
+            ) {
+                return "docx";
+            }
+
+            if (value.includes("application/pdf")) {
+                return "pdf";
+            }
+
+            // Nhận diện qua đuôi tệp
+
+            const match = value.match(
+                /\.(docx|doc|pdf|jpg|jpeg|png|gif|webp)$/i
+            );
+
+            if (match) {
+                return match[1].toLowerCase();
+            }
         }
 
-        return parts[parts.length - 1].toLowerCase();
+        return "";
     }
 
-    function openPreview(doc) {
+
+    /* HIỂN THỊ LỖI XEM TRƯỚC */
+
+    function showPreviewError(message) {
+        previewContent.innerHTML = "";
+
+        const errorBox = document.createElement("div");
+        errorBox.className = "preview-error";
+        errorBox.textContent = message;
+
+        previewContent.appendChild(errorBox);
+    }
+
+
+    /* XEM TRƯỚC TÀI LIỆU */
+
+    async function openPreview(doc) {
         previewOverlay.classList.add("active");
-        previewTitle.textContent = doc.title || "Xem trước tài liệu";
+
+        previewTitle.textContent =
+            doc.title || "Xem trước tài liệu";
 
         previewContent.innerHTML =
             '<div class="preview-loading">Đang tải bản xem trước...</div>';
 
         const fileUrl = doc.file_url;
-        const extension = getFileExtension(fileUrl, doc.title);
+        const extension = getFileExtension(doc);
 
         if (!fileUrl) {
-            previewContent.innerHTML =
-                '<div class="preview-error">Không tìm thấy đường dẫn tài liệu.</div>';
+            showPreviewError(
+                "Không tìm thấy đường dẫn tài liệu."
+            );
             return;
         }
 
-        if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension)) {
+        console.log("Thông tin tài liệu:", doc);
+        console.log("Định dạng nhận diện:", extension);
+
+
+        /* XEM TRƯỚC HÌNH ẢNH */
+
+        if (
+            ["jpg", "jpeg", "png", "gif", "webp"].includes(extension)
+        ) {
             const image = document.createElement("img");
+
             image.src = fileUrl;
             image.alt = doc.title || "Hình ảnh tài liệu";
 
@@ -350,68 +439,99 @@
             };
 
             image.onerror = function () {
-                previewContent.innerHTML =
-                    '<div class="preview-error">Không thể hiển thị hình ảnh.</div>';
+                showPreviewError(
+                    "Không thể hiển thị hình ảnh. Vui lòng kiểm tra đường dẫn tệp."
+                );
             };
 
             return;
         }
 
+
+        /* XEM TRƯỚC PDF */
+
         if (extension === "pdf") {
             const iframe = document.createElement("iframe");
+
             iframe.src = fileUrl;
             iframe.title = "Xem trước PDF";
 
             previewContent.innerHTML = "";
             previewContent.appendChild(iframe);
+
             return;
         }
+
+
+        /* XEM TRƯỚC WORD DOCX */
 
         if (extension === "docx") {
-            fetch(fileUrl)
-                .then(function (response) {
-                    if (!response.ok) {
-                        throw new Error("Không thể tải tài liệu Word.");
-                    }
-
-                    return response.arrayBuffer();
-                })
-                .then(function (arrayBuffer) {
-                    return mammoth.convertToHtml(
-                        { arrayBuffer: arrayBuffer },
-                        {
-                            includeDefaultStyleMap: true
-                        }
+            try {
+                if (typeof mammoth === "undefined") {
+                    throw new Error(
+                        "Không tải được thư viện xem trước Word."
                     );
-                })
-                .then(function (result) {
-                    previewContent.innerHTML = "";
+                }
 
-                    const article = document.createElement("article");
-                    article.className = "docx-preview";
-                    article.innerHTML = result.value;
+                const response = await fetch(fileUrl);
 
-                    previewContent.appendChild(article);
-                })
-                .catch(function (error) {
-                    console.error("Lỗi xem trước DOCX:", error);
+                if (!response.ok) {
+                    throw new Error(
+                        "Không thể tải tài liệu Word. Mã lỗi HTTP: " +
+                        response.status
+                    );
+                }
 
-                    previewContent.innerHTML =
-                        '<div class="preview-error">' +
-                        'Không thể xem trước file Word này.<br>' +
-                        'Bạn có thể sử dụng nút "Tải xuống".' +
-                        '</div>';
-                });
+                const arrayBuffer = await response.arrayBuffer();
+
+                const result = await mammoth.convertToHtml(
+                    {
+                        arrayBuffer: arrayBuffer
+                    },
+                    {
+                        includeDefaultStyleMap: true
+                    }
+                );
+
+                previewContent.innerHTML = "";
+
+                const article = document.createElement("article");
+                article.className = "docx-preview";
+
+                article.innerHTML = result.value;
+
+                previewContent.appendChild(article);
+
+                if (result.messages && result.messages.length > 0) {
+                    console.warn(
+                        "Một số nội dung Word không được chuyển đổi:",
+                        result.messages
+                    );
+                }
+
+            } catch (error) {
+                console.error("Lỗi xem trước DOCX:", error);
+
+                showPreviewError(
+                    "Không thể xem trước file Word. " +
+                    "Có thể đường dẫn tệp không hợp lệ, " +
+                    "tệp không tồn tại hoặc máy chủ chưa cho phép tải tệp."
+                );
+            }
 
             return;
         }
 
-        previewContent.innerHTML =
-            '<div class="preview-error">' +
-            'Định dạng này chưa hỗ trợ xem trước.<br>' +
-            'Bạn có thể sử dụng nút "Tải xuống".' +
-            '</div>';
+
+        /* ĐỊNH DẠNG CHƯA HỖ TRỢ */
+
+        showPreviewError(
+            "Định dạng này chưa hỗ trợ xem trước. Bạn có thể sử dụng nút Tải xuống."
+        );
     }
+
+
+    /* ĐÓNG CỬA SỔ XEM TRƯỚC */
 
     function closePreview() {
         previewOverlay.classList.remove("active");
@@ -440,6 +560,9 @@
         }
     });
 
+
+    /* HẠN CHẾ SAO CHÉP TRONG KHUNG XEM TRƯỚC */
+
     previewContent.addEventListener("contextmenu", function (event) {
         event.preventDefault();
     });
@@ -456,6 +579,9 @@
         event.preventDefault();
     });
 
+
+    /* HIỂN THỊ DANH SÁCH TÀI LIỆU */
+
     function renderDocuments(documents) {
         list.innerHTML = "";
 
@@ -471,12 +597,16 @@
             const info = document.createElement("div");
 
             const heading = document.createElement("h3");
-            heading.textContent = doc.title;
+            heading.textContent = doc.title || "Tài liệu không có tên";
 
             const actions = document.createElement("div");
             actions.className = "document-actions";
 
+
+            /* NÚT XEM TRƯỚC */
+
             const preview = document.createElement("button");
+
             preview.type = "button";
             preview.textContent = "👁 Xem trước";
             preview.className = "document-button preview-button";
@@ -485,7 +615,11 @@
                 openPreview(doc);
             });
 
+
+            /* NÚT TẢI XUỐNG */
+
             const download = document.createElement("a");
+
             download.href = doc.file_url;
             download.textContent = "⬇ Tải xuống";
             download.className = "document-button download-button";
@@ -500,14 +634,19 @@
             info.appendChild(actions);
 
             card.appendChild(info);
+
             list.appendChild(card);
         });
     }
+
+
+    /* FORM NHẬP MẬT KHẨU */
 
     function showPasswordForm(categoryId) {
         list.innerHTML = "";
 
         sectionTitle.textContent = "Danh mục được bảo vệ";
+
         sectionDescription.textContent =
             "Vui lòng nhập mật khẩu để xem tài liệu.";
 
@@ -518,11 +657,13 @@
         heading.textContent = "🔒 Nhập mật khẩu";
 
         const input = document.createElement("input");
+
         input.type = "password";
         input.placeholder = "Nhập mật khẩu danh mục";
         input.autocomplete = "current-password";
 
         const button = document.createElement("button");
+
         button.type = "button";
         button.textContent = "Mở khóa";
 
@@ -533,7 +674,11 @@
         box.appendChild(input);
         box.appendChild(button);
         box.appendChild(message);
+
         list.appendChild(box);
+
+
+        /* XÁC THỰC MẬT KHẨU */
 
         async function verifyPassword() {
             const password = input.value;
@@ -569,10 +714,12 @@
                 if (!data || !data.success) {
                     message.textContent =
                         data?.error || "Mật khẩu không đúng.";
+
                     return;
                 }
 
                 sectionTitle.textContent = "Danh sách tài liệu";
+
                 sectionDescription.textContent =
                     "Bạn đã mở khóa danh mục thành công.";
 
@@ -592,6 +739,7 @@
                         detail =
                             response.error ||
                             JSON.stringify(response);
+
                     } catch (e) {
                         // Giữ lỗi ban đầu
                     }
@@ -613,67 +761,95 @@
         });
     }
 
+
+    /* TẢI DANH MỤC VÀ TÀI LIỆU */
+
     async function loadDocuments() {
         list.textContent = "Đang tải danh mục...";
 
         if (!folder) {
             title.textContent = "Không tìm thấy danh mục";
+
             showMessage("Vui lòng quay lại trang chủ.");
+
             return;
         }
 
-        const result =
-            await supabaseClient
-                .from("categories")
-                .select("id, name, requires_password")
-                .eq("slug", folder)
-                .maybeSingle();
+        try {
+            const result =
+                await supabaseClient
+                    .from("categories")
+                    .select("id, name, requires_password")
+                    .eq("slug", folder)
+                    .maybeSingle();
 
-        const category = result.data;
-        const categoryError = result.error;
+            const category = result.data;
+            const categoryError = result.error;
 
-        if (categoryError || !category) {
-            console.error(categoryError);
+            if (categoryError || !category) {
+                console.error(categoryError);
 
-            title.textContent = "Không tìm thấy danh mục";
-            showMessage("Danh mục không tồn tại.");
-            return;
+                title.textContent = "Không tìm thấy danh mục";
+
+                showMessage("Danh mục không tồn tại.");
+
+                return;
+            }
+
+            title.textContent = category.name.toUpperCase();
+
+
+            /* DANH MỤC CÓ MẬT KHẨU */
+
+            if (category.requires_password) {
+                showPasswordForm(category.id);
+                return;
+            }
+
+
+            /* DANH MỤC CÔNG KHAI */
+
+            sectionTitle.textContent = "Danh sách tài liệu";
+
+            sectionDescription.textContent =
+                "Các tài liệu được lưu trữ tại đây.";
+
+            const documentResult =
+                await supabaseClient
+                    .from("documents")
+                    .select("*")
+                    .eq("category_id", category.id)
+                    .order("created_at", {
+                        ascending: false
+                    });
+
+            const documents = documentResult.data;
+            const error = documentResult.error;
+
+            if (error) {
+                console.error(error);
+
+                showMessage("Không thể tải danh sách tài liệu.");
+
+                return;
+            }
+
+            renderDocuments(documents);
+
+        } catch (error) {
+            console.error("Lỗi tải danh mục:", error);
+
+            showMessage(
+                "Đã xảy ra lỗi khi tải danh mục. Vui lòng thử lại."
+            );
         }
-
-        title.textContent = category.name.toUpperCase();
-
-        if (category.requires_password) {
-            showPasswordForm(category.id);
-            return;
-        }
-
-        sectionTitle.textContent = "Danh sách tài liệu";
-
-        sectionDescription.textContent =
-            "Các tài liệu được lưu trữ tại đây.";
-
-        const documentResult =
-            await supabaseClient
-                .from("documents")
-                .select("*")
-                .eq("category_id", category.id)
-                .order("created_at", {
-                    ascending: false
-                });
-
-        const documents = documentResult.data;
-        const error = documentResult.error;
-
-        if (error) {
-            console.error(error);
-            showMessage("Không thể tải danh sách tài liệu.");
-            return;
-        }
-
-        renderDocuments(documents);
     }
 
+
+    /* KHỞI CHẠY */
+
     loadDocuments();
+
 </script>
 
 </body>
