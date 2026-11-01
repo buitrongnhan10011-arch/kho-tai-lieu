@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -64,6 +65,12 @@
         }
 
         .item h3 {
+            margin-bottom: 10px;
+        }
+
+        .status {
+            color: #bbb;
+            font-size: 14px;
             margin-bottom: 10px;
         }
 
@@ -150,6 +157,7 @@ const supabaseClient = window.supabase.createClient(
 
 const ADMIN_UID = "1ec8a1fa-7f6f-4626-9890-84aee80f2f4b";
 const BUCKET = "study-documents";
+const FUNCTION_NAME = "dynamic-responder";
 
 const message = document.getElementById("message");
 
@@ -170,12 +178,32 @@ function makeSlug(text) {
 }
 
 function getStoragePath(url) {
+    if (!url) return null;
+
     const marker = `/storage/v1/object/public/${BUCKET}/`;
     const index = url.indexOf(marker);
 
     return index === -1
         ? null
         : decodeURIComponent(url.slice(index + marker.length));
+}
+
+// GỌI EDGE FUNCTION
+async function callPasswordFunction(body) {
+    const { data, error } = await supabaseClient.functions.invoke(
+        FUNCTION_NAME,
+        { body }
+    );
+
+    if (error) {
+        throw new Error(error.message || "Không thể kết nối Edge Function.");
+    }
+
+    if (data?.error) {
+        throw new Error(data.error);
+    }
+
+    return data;
 }
 
 // KIỂM TRA ADMIN
@@ -191,6 +219,58 @@ async function checkAdmin() {
     }
 
     return true;
+}
+
+// ĐẶT / ĐỔI MẬT KHẨU
+async function setCategoryPassword(category) {
+    const newPassword = prompt(
+        `Nhập mật khẩu cho danh mục "${category.name}" (ít nhất 6 ký tự):`
+    );
+
+    if (newPassword === null) return;
+
+    if (newPassword.length < 6 || newPassword.length > 128) {
+        showMessage("Mật khẩu phải có từ 6 đến 128 ký tự.");
+        return;
+    }
+
+    try {
+        showMessage("Đang cập nhật mật khẩu...");
+
+        await callPasswordFunction({
+            action: "set_password",
+            category_id: category.id,
+            password: newPassword
+        });
+
+        showMessage("Đã đặt / đổi mật khẩu thành công.");
+        await refreshAll();
+
+    } catch (error) {
+        showMessage("Lỗi mật khẩu: " + error.message);
+    }
+}
+
+// GỠ MẬT KHẨU
+async function removeCategoryPassword(category) {
+    if (!confirm(
+        `Bạn có chắc muốn gỡ mật khẩu của "${category.name}"?`
+    )) return;
+
+    try {
+        showMessage("Đang gỡ mật khẩu...");
+
+        await callPasswordFunction({
+            action: "remove_password",
+            category_id: category.id
+        });
+
+        showMessage("Đã gỡ mật khẩu danh mục.");
+        await refreshAll();
+
+    } catch (error) {
+        showMessage("Lỗi gỡ mật khẩu: " + error.message);
+    }
 }
 
 // TẢI DANH MỤC
@@ -223,12 +303,22 @@ async function loadCategories() {
         const title = document.createElement("h3");
         title.textContent = category.name;
 
+        const status = document.createElement("p");
+        status.className = "status";
+        status.textContent = category.requires_password
+            ? "🔒 Đang yêu cầu mật khẩu"
+            : "🔓 Không yêu cầu mật khẩu";
+
+        // ĐỔI TÊN
         const rename = document.createElement("button");
         rename.className = "primary";
         rename.textContent = "Đổi tên";
 
         rename.onclick = async () => {
-            const newName = prompt("Nhập tên danh mục mới:", category.name);
+            const newName = prompt(
+                "Nhập tên danh mục mới:",
+                category.name
+            );
 
             if (!newName || !newName.trim()) return;
 
@@ -246,6 +336,32 @@ async function loadCategories() {
             await refreshAll();
         };
 
+        // QUẢN LÝ MẬT KHẨU
+        const passwordButton = document.createElement("button");
+        passwordButton.className = "primary";
+
+        passwordButton.textContent = category.requires_password
+            ? "Đổi / Gỡ mật khẩu"
+            : "Đặt mật khẩu";
+
+        passwordButton.onclick = async () => {
+            if (category.requires_password) {
+                const choice = prompt(
+                    "Nhập 1 để đổi mật khẩu.\nNhập 2 để gỡ mật khẩu."
+                );
+
+                if (choice === "1") {
+                    await setCategoryPassword(category);
+                } else if (choice === "2") {
+                    await removeCategoryPassword(category);
+                }
+
+            } else {
+                await setCategoryPassword(category);
+            }
+        };
+
+        // XÓA DANH MỤC
         const remove = document.createElement("button");
         remove.className = "danger";
         remove.textContent = "Xóa danh mục";
@@ -262,7 +378,9 @@ async function loadCategories() {
                     .eq("category_id", category.id);
 
             if (fetchError) {
-                showMessage("Không thể kiểm tra tài liệu: " + fetchError.message);
+                showMessage(
+                    "Không thể kiểm tra tài liệu: " + fetchError.message
+                );
                 return;
             }
 
@@ -277,7 +395,9 @@ async function loadCategories() {
                         .remove(paths);
 
                 if (storageError) {
-                    showMessage("Không thể xóa file: " + storageError.message);
+                    showMessage(
+                        "Không thể xóa file: " + storageError.message
+                    );
                     return;
                 }
             }
@@ -296,7 +416,14 @@ async function loadCategories() {
             await refreshAll();
         };
 
-        item.append(title, rename, remove);
+        item.append(
+            title,
+            status,
+            rename,
+            passwordButton,
+            remove
+        );
+
         list.appendChild(item);
     });
 
@@ -425,7 +552,8 @@ async function loadDocuments() {
         title.textContent = doc.title;
 
         const category = document.createElement("p");
-        category.textContent = "Danh mục: " + (doc.categories?.name || "Không rõ");
+        category.textContent =
+            "Danh mục: " + (doc.categories?.name || "Không rõ");
 
         const view = document.createElement("a");
         view.href = doc.file_url;
@@ -462,6 +590,7 @@ async function loadDocuments() {
 
         move.onclick = async () => {
             const categories = await loadCategories();
+
             const choices = categories
                 .map(c => `${c.id} | ${c.name}`)
                 .join("\n");
@@ -529,8 +658,15 @@ async function loadDocuments() {
             await refreshAll();
         };
 
-        item.append(title, category, view, document.createElement("br"),
-            rename, move, remove);
+        item.append(
+            title,
+            category,
+            view,
+            document.createElement("br"),
+            rename,
+            move,
+            remove
+        );
 
         list.appendChild(item);
     });
@@ -565,3 +701,4 @@ init();
 
 </body>
 </html>
+```
