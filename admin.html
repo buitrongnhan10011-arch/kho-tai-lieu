@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -44,6 +45,26 @@
             font-weight: bold;
         }
 
+        /* NÚT QUAY LẠI */
+        .back-button {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            margin-top: 10px;
+            background: #333 !important;
+            color: white !important;
+            border: 1px solid #555 !important;
+            border-radius: 6px;
+            text-align: center;
+            text-decoration: none;
+            box-sizing: border-box;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background: #444 !important;
+        }
+
         #message {
             text-align: center;
             margin-top: 15px;
@@ -63,9 +84,11 @@
 
     <main>
         <div class="admin-box">
+
             <h2>ĐĂNG NHẬP</h2>
 
             <form id="login-form">
+
                 <input
                     type="email"
                     id="email"
@@ -80,60 +103,130 @@
                     required
                 >
 
-                <button type="submit">Đăng nhập</button>
+                <button type="submit">
+                    Đăng nhập
+                </button>
+
             </form>
 
+            <!-- QUAY LẠI -->
+            <a href="index.html" class="back-button">
+                ↩ Quay lại
+            </a>
+
             <p id="message"></p>
+
         </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        const SUPABASE_URL = "https://axmgzhcozkwekjxbofoh.supabase.co";
 
-        const SUPABASE_KEY = "sb_publishable_SQPDN_7N8IBG92iMWFSQ4A_3PYj9ykP";
+        const SUPABASE_URL =
+            "https://axmgzhcozkwekjxbofoh.supabase.co";
 
-        const supabaseClient = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
+        const SUPABASE_KEY =
+            "sb_publishable_SQPDN_7N8IBG92iMWFSQ4A_3PYj9ykP";
 
-        const ADMIN_UID = "1ec8a1fa-7f6f-4626-9890-84aee80f2f4b";
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
 
-        document.getElementById("login-form").addEventListener("submit", async function(event) {
-            event.preventDefault();
+        const ADMIN_UID =
+            "1ec8a1fa-7f6f-4626-9890-84aee80f2f4b";
 
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const message = document.getElementById("message");
 
-            message.textContent = "Đang đăng nhập...";
+        document
+            .getElementById("login-form")
+            .addEventListener(
+                "submit",
+                async function(event) {
 
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password
-            });
+                    event.preventDefault();
 
-            if (error) {
-                message.textContent = "Email hoặc mật khẩu không chính xác.";
-                return;
-            }
+                    const email =
+                        document.getElementById(
+                            "email"
+                        ).value;
 
-            if (data.user.id !== ADMIN_UID) {
-                await supabaseClient.auth.signOut();
-                message.textContent = "Tài khoản không có quyền Admin.";
-                return;
-            }
+                    const password =
+                        document.getElementById(
+                            "password"
+                        ).value;
 
-            message.textContent = "Đăng nhập thành công!";
+                    const message =
+                        document.getElementById(
+                            "message"
+                        );
 
-            setTimeout(() => {
-                window.location.href = "dashboard.html";
-            }, 1000);
-        });
+
+                    message.textContent =
+                        "Đang đăng nhập...";
+
+
+                    const {
+                        data,
+                        error
+                    } =
+                        await supabaseClient.auth
+                            .signInWithPassword({
+
+                                email:
+                                    email,
+
+                                password:
+                                    password
+
+                            });
+
+
+                    if (error) {
+
+                        message.textContent =
+                            "Email hoặc mật khẩu không chính xác.";
+
+                        return;
+                    }
+
+
+                    if (
+                        data.user.id !==
+                        ADMIN_UID
+                    ) {
+
+                        await supabaseClient
+                            .auth
+                            .signOut();
+
+                        message.textContent =
+                            "Tài khoản không có quyền Admin.";
+
+                        return;
+                    }
+
+
+                    message.textContent =
+                        "Đăng nhập thành công!";
+
+
+                    setTimeout(
+                        () => {
+
+                            window.location.href =
+                                "dashboard.html";
+
+                        },
+                        1000
+                    );
+
+                }
+            );
+
     </script>
 
 </body>
 </html>
-
+```
