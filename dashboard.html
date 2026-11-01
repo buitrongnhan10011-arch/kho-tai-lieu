@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -7,117 +6,161 @@
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
 
+    <style>
+        .dashboard {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
 
-<style>
-    .dashboard {
-        max-width: 1000px;
-        margin: 40px auto;
-        padding: 20px;
-    }
+        .admin-section {
+            background: #151515;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
 
-    .admin-section {
-        background: #151515;
-        border: 1px solid #333;
-        border-radius: 12px;
-        padding: 25px;
-        margin-bottom: 25px;
-    }
+        .admin-section h2 {
+            margin-bottom: 20px;
+        }
 
-    .admin-section h2 {
-        margin-bottom: 20px;
-    }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
 
-    input, select {
-        width: 100%;
-        padding: 12px;
-        margin: 8px 0;
-        background: #222;
-        color: white;
-        border: 1px solid #444;
-        border-radius: 6px;
-        box-sizing: border-box;
-    }
+        button {
+            padding: 11px 18px;
+            margin: 5px 3px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
 
-    button {
-        padding: 11px 18px;
-        margin: 5px 3px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: bold;
-    }
+        .primary {
+            background: white;
+            color: black;
+        }
 
-    .primary {
-        background: white;
-        color: black;
-    }
+        .danger {
+            background: #a83232;
+            color: white;
+        }
 
-    .danger {
-        background: #a83232;
-        color: white;
-    }
+        .item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+        }
 
-    .item {
-        padding: 15px;
-        margin: 10px 0;
-        background: #222;
-        border: 1px solid #444;
-        border-radius: 8px;
-    }
+        .item h3 {
+            margin-bottom: 10px;
+        }
 
-    .item h3 {
-        margin-bottom: 10px;
-    }
+        .status {
+            color: #bbb;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
 
-    .status {
-        color: #bbb;
-        font-size: 14px;
-        margin-bottom: 10px;
-    }
+        .logout-button {
+            background: #444;
+            color: white;
+        }
 
-    .logout-button {
-        background: #444;
-        color: white;
-    }
+        #message {
+            margin: 15px 0;
+            color: #ddd;
+            overflow-wrap: anywhere;
+        }
 
-    #message {
-        margin: 15px 0;
-        color: #ddd;
-        overflow-wrap: anywhere;
-    }
+        .password-setting {
+            margin-top: 12px;
+            padding: 12px;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+        }
 
-    .password-setting {
-        margin-top: 12px;
-        padding: 12px;
-        background: #222;
-        border: 1px solid #444;
-        border-radius: 8px;
-    }
+        .password-setting label {
+            display: block;
+            margin: 10px 0;
+            cursor: pointer;
+        }
 
-    .password-setting label {
-        display: block;
-        margin: 10px 0;
-        cursor: pointer;
-    }
+        .password-setting input[type="checkbox"],
+        .password-setting input[type="radio"] {
+            width: auto;
+            margin-right: 8px;
+        }
 
-    .password-setting input[type="checkbox"],
-    .password-setting input[type="radio"] {
-        width: auto;
-        margin-right: 8px;
-    }
+        .hint {
+            color: #aaa;
+            font-size: 13px;
+            line-height: 1.5;
+        }
 
-    .hint {
-        color: #aaa;
-        font-size: 13px;
-        line-height: 1.5;
-    }
+        a {
+            color: white;
+        }
 
-    a {
-        color: white;
-    }
-</style>
+        /* TRẠNG THÁI BẢO MẬT DANH MỤC */
+        .category-security {
+            display: block;
+            padding: 12px 15px;
+            margin: 12px 0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
 
+        .category-security.protected {
+            background: #4a2020;
+            border: 1px solid #c94b4b;
+            color: #ffaaaa;
+        }
 
+        .category-security.public {
+            background: #1d402b;
+            border: 1px solid #3d9b60;
+            color: #9be5b2;
+        }
+
+        /* QUẢN LÝ TÀI LIỆU THEO DANH MỤC */
+        .document-group {
+            margin: 20px 0;
+            padding: 18px;
+            background: #1c1c1c;
+            border: 1px solid #444;
+            border-radius: 10px;
+        }
+
+        .document-group h3 {
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #444;
+        }
+
+        .document-group .item {
+            background: #292929;
+        }
+
+        .document-empty {
+            color: #999;
+            font-size: 14px;
+            padding: 10px 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -131,82 +174,80 @@
 
 <main class="dashboard">
 
+    <p id="message">Đang kiểm tra quyền Admin...</p>
 
-<p id="message">Đang kiểm tra quyền Admin...</p>
+    <section class="admin-section">
+        <h2>THÊM DANH MỤC</h2>
 
-<section class="admin-section">
-    <h2>THÊM DANH MỤC</h2>
+        <input id="new-category" type="text"
+            placeholder="Tên danh mục mới">
 
-    <input id="new-category" type="text"
-        placeholder="Tên danh mục mới">
+        <div class="password-setting">
+            <strong>Bảo vệ danh mục</strong>
 
-    <div class="password-setting">
-        <strong>Bảo vệ danh mục</strong>
+            <label>
+                <input type="radio" name="new-category-security"
+                    value="public" checked>
+                🔓 Không yêu cầu mật khẩu
+            </label>
 
-        <label>
-            <input type="radio" name="new-category-security"
-                value="public" checked>
-            🔓 Không yêu cầu mật khẩu
-        </label>
+            <label>
+                <input type="radio" name="new-category-security"
+                    value="protected">
+                🔒 Yêu cầu mật khẩu
+            </label>
 
-        <label>
-            <input type="radio" name="new-category-security"
-                value="protected">
-            🔒 Yêu cầu mật khẩu
-        </label>
+            <input id="new-category-password" type="password"
+                placeholder="Nhập mật khẩu (ít nhất 6 ký tự)"
+                autocomplete="new-password"
+                style="display:none;">
 
-        <input id="new-category-password" type="password"
-            placeholder="Nhập mật khẩu (ít nhất 6 ký tự)"
-            autocomplete="new-password"
-            style="display:none;">
+            <p class="hint">
+                Mỗi danh mục có một mật khẩu riêng.
+                Có thể đổi hoặc gỡ mật khẩu sau khi tạo.
+            </p>
+        </div>
 
-        <p class="hint">
-            Mỗi danh mục có một mật khẩu riêng.
-            Có thể đổi hoặc gỡ mật khẩu sau khi tạo.
+        <button class="primary" id="add-category">
+            + Thêm danh mục
+        </button>
+    </section>
+
+    <section class="admin-section">
+        <h2>QUẢN LÝ DANH MỤC</h2>
+        <div id="category-list">Đang tải...</div>
+    </section>
+
+    <section class="admin-section">
+        <h2>THÊM TÀI LIỆU</h2>
+
+        <input id="document-title" type="text"
+            placeholder="Tên tài liệu">
+
+        <select id="document-category">
+            <option value="">Chọn danh mục</option>
+        </select>
+
+        <p class="hint" id="upload-storage-info">
+            Chọn danh mục để xem chế độ lưu trữ.
         </p>
-    </div>
 
-    <button class="primary" id="add-category">
-        + Thêm danh mục
+        <input id="document-file" type="file"
+            accept=".pdf,.doc,.docx">
+
+        <button class="primary" id="upload-document">
+            Tải tài liệu lên
+        </button>
+    </section>
+
+    <section class="admin-section">
+        <h2>QUẢN LÝ TÀI LIỆU</h2>
+        <div id="document-list">Đang tải...</div>
+    </section>
+
+    <button class="logout-button" id="logout">
+        Đăng xuất
     </button>
-</section>
-
-<section class="admin-section">
-    <h2>QUẢN LÝ DANH MỤC</h2>
-    <div id="category-list">Đang tải...</div>
-</section>
-
-<section class="admin-section">
-    <h2>THÊM TÀI LIỆU</h2>
-
-    <input id="document-title" type="text"
-        placeholder="Tên tài liệu">
-
-    <select id="document-category">
-        <option value="">Chọn danh mục</option>
-    </select>
-
-    <p class="hint" id="upload-storage-info">
-        Chọn danh mục để xem chế độ lưu trữ.
-    </p>
-
-    <input id="document-file" type="file"
-        accept=".pdf,.doc,.docx">
-
-    <button class="primary" id="upload-document">
-        Tải tài liệu lên
-    </button>
-</section>
-
-<section class="admin-section">
-    <h2>QUẢN LÝ TÀI LIỆU</h2>
-    <div id="document-list">Đang tải...</div>
-</section>
-
-<button class="logout-button" id="logout">
-    Đăng xuất
-</button>
-
 
 </main>
 
@@ -545,12 +586,18 @@ async function loadCategories() {
         const title = document.createElement("h3");
         title.textContent = category.name;
 
-        const status = document.createElement("p");
-        status.className = "status";
-        status.textContent = category.requires_password
-            ? "🔒 Đang yêu cầu mật khẩu – Kho riêng tư"
-            : "🔓 Không yêu cầu mật khẩu – Kho công khai";
+        // TRẠNG THÁI MẬT KHẨU NỔI BẬT
+        const status = document.createElement("div");
 
+        if (category.requires_password) {
+            status.className = "category-security protected";
+            status.textContent = "🔒 CẦN MẬT KHẨU – KHO RIÊNG TƯ";
+        } else {
+            status.className = "category-security public";
+            status.textContent = "🔓 KHÔNG CẦN MẬT KHẨU – KHO CÔNG KHAI";
+        }
+
+        // ĐỔI TÊN
         const rename = document.createElement("button");
         rename.className = "primary";
         rename.textContent = "Đổi tên";
@@ -577,6 +624,7 @@ async function loadCategories() {
             await refreshAll();
         };
 
+        // ĐẶT / ĐỔI / GỠ MẬT KHẨU
         const passwordButton = document.createElement("button");
         passwordButton.className = "primary";
 
@@ -600,6 +648,7 @@ async function loadCategories() {
             }
         };
 
+        // XÓA DANH MỤC
         const remove = document.createElement("button");
         remove.className = "danger";
         remove.textContent = "Xóa danh mục";
@@ -877,7 +926,7 @@ async function getDocumentViewUrl(doc) {
     return data.signedUrl;
 }
 
-// QUẢN LÝ TÀI LIỆU
+// QUẢN LÝ TÀI LIỆU THEO TỪNG DANH MỤC
 async function loadDocuments() {
     const { data, error } = await supabaseClient
         .from("documents")
@@ -892,155 +941,220 @@ async function loadDocuments() {
         return;
     }
 
-    if (!data || data.length === 0) {
-        list.textContent = "Chưa có tài liệu.";
+    const documents = data || [];
+
+    if (categoriesCache.length === 0) {
+        list.textContent = "Chưa có danh mục.";
         return;
     }
 
-    for (const doc of data) {
-        const item = document.createElement("div");
-        item.className = "item";
+    // HIỂN THỊ TỪNG DANH MỤC
+    for (const cat of categoriesCache) {
+        const group = document.createElement("div");
+        group.className = "document-group";
 
-        const title = document.createElement("h3");
-        title.textContent = doc.title;
+        const heading = document.createElement("h3");
+        heading.textContent =
+            (cat.requires_password ? "🔒 " : "🔓 ") + cat.name;
 
-        const category = document.createElement("p");
-        category.textContent =
-            "Danh mục: " + (doc.categories?.name || "Không rõ");
+        group.appendChild(heading);
 
-        const storageStatus = document.createElement("p");
-        storageStatus.className = "status";
-        storageStatus.textContent = getBucket(doc) === PRIVATE_BUCKET
-            ? "🔒 Kho riêng tư"
-            : "🔓 Kho công khai";
-
-        const view = document.createElement("a");
-        view.href = "#";
-        view.textContent = "Đang chuẩn bị liên kết...";
-        view.target = "_blank";
-        view.rel = "noopener noreferrer";
-
-        try {
-            view.href = await getDocumentViewUrl(doc);
-            view.textContent = "Xem tài liệu";
-        } catch (viewError) {
-            view.textContent = "Không tạo được liên kết xem";
-            view.onclick = event => {
-                event.preventDefault();
-                showMessage(viewError.message);
-            };
-        }
-
-        const rename = document.createElement("button");
-        rename.className = "primary";
-        rename.textContent = "Đổi tên";
-
-        rename.onclick = async () => {
-            const newTitle = prompt("Nhập tên mới:", doc.title);
-
-            if (!newTitle || !newTitle.trim()) return;
-
-            const { error } = await supabaseClient
-                .from("documents")
-                .update({ title: newTitle.trim() })
-                .eq("id", doc.id);
-
-            if (error) {
-                showMessage("Lỗi đổi tên: " + error.message);
-                return;
-            }
-
-            showMessage("Đã đổi tên tài liệu.");
-            await refreshAll();
-        };
-
-        const move = document.createElement("button");
-        move.className = "primary";
-        move.textContent = "Chuyển danh mục";
-
-        move.onclick = async () => {
-            const categories = categoriesCache;
-
-            const choices = categories
-                .map(c => `${c.id} | ${c.name} ${c.requires_password ? "(Riêng tư)" : "(Công khai)"}`)
-                .join("\n");
-
-            const selected = prompt(
-                "Nhập ID danh mục muốn chuyển đến:\n\n" + choices
-            );
-
-            if (!selected) return;
-
-            const targetId = selected.split("|")[0].trim();
-            const targetCategory = categories.find(c => c.id === targetId);
-
-            if (!targetCategory) {
-                showMessage("ID danh mục không hợp lệ.");
-                return;
-            }
-
-            if (targetCategory.id === doc.category_id) {
-                showMessage("Tài liệu đã thuộc danh mục này.");
-                return;
-            }
-
-            try {
-                await moveDocumentStorage(doc, targetCategory);
-                showMessage("Đã chuyển tài liệu và cập nhật kho lưu trữ.");
-                await refreshAll();
-            } catch (moveError) {
-                showMessage("Lỗi chuyển tài liệu: " + moveError.message);
-            }
-        };
-
-        const remove = document.createElement("button");
-        remove.className = "danger";
-        remove.textContent = "Xóa tài liệu";
-
-        remove.onclick = async () => {
-            if (!confirm(`Bạn có chắc muốn xóa "${doc.title}"?`)) return;
-
-            const bucket = getBucket(doc);
-            const path = getStoragePath(doc);
-
-            if (path) {
-                const { error: storageError } =
-                    await supabaseClient.storage
-                        .from(bucket)
-                        .remove([path]);
-
-                if (storageError) {
-                    showMessage("Lỗi xóa file: " + storageError.message);
-                    return;
-                }
-            }
-
-            const { error } = await supabaseClient
-                .from("documents")
-                .delete()
-                .eq("id", doc.id);
-
-            if (error) {
-                showMessage("Lỗi xóa dữ liệu: " + error.message);
-                return;
-            }
-
-            showMessage("Đã xóa tài liệu.");
-            await refreshAll();
-        };
-
-        item.append(
-            title,
-            category,
-            storageStatus,
-            view,
-            document.createElement("br"),
-            rename,
-            move,
-            remove
+        const categoryDocs = documents.filter(
+            doc => doc.category_id === cat.id
         );
 
-        list.appendChild(item);
+        if (categoryDocs.length === 0) {
+            const empty = document.createElement("p");
+            empty.className = "document-empty";
+            empty.textContent = "Chưa có tài liệu trong mục này.";
+            group.appendChild(empty);
+        }
+
+        for (const doc of categoryDocs) {
+            const item = document.createElement("div");
+            item.className = "item";
+
+            const title = document.createElement("h3");
+            title.textContent = doc.title;
+
+            const category = document.createElement("p");
+            category.textContent = "Danh mục: " + cat.name;
+
+            const storageStatus = document.createElement("p");
+            storageStatus.className = "status";
+            storageStatus.textContent =
+                getBucket(doc) === PRIVATE_BUCKET
+                    ? "🔒 Kho riêng tư"
+                    : "🔓 Kho công khai";
+
+            // XEM TÀI LIỆU
+            const view = document.createElement("a");
+            view.href = "#";
+            view.textContent = "Đang chuẩn bị liên kết...";
+            view.target = "_blank";
+            view.rel = "noopener noreferrer";
+
+            try {
+                view.href = await getDocumentViewUrl(doc);
+                view.textContent = "Xem tài liệu";
+            } catch (viewError) {
+                view.textContent = "Không tạo được liên kết xem";
+                view.onclick = event => {
+                    event.preventDefault();
+                    showMessage(viewError.message);
+                };
+            }
+
+            // ĐỔI TÊN
+            const rename = document.createElement("button");
+            rename.className = "primary";
+            rename.textContent = "Đổi tên";
+
+            rename.onclick = async () => {
+                const newTitle = prompt("Nhập tên mới:", doc.title);
+
+                if (!newTitle || !newTitle.trim()) return;
+
+                const { error } = await supabaseClient
+                    .from("documents")
+                    .update({ title: newTitle.trim() })
+                    .eq("id", doc.id);
+
+                if (error) {
+                    showMessage("Lỗi đổi tên: " + error.message);
+                    return;
+                }
+
+                showMessage("Đã đổi tên tài liệu.");
+                await refreshAll();
+            };
+
+            // CHUYỂN DANH MỤC
+            const move = document.createElement("button");
+            move.className = "primary";
+            move.textContent = "Chuyển danh mục";
+
+            move.onclick = async () => {
+                const choices = categoriesCache
+                    .map(c =>
+                        c.id + " | " + c.name +
+                        (c.requires_password
+                            ? " (Riêng tư)"
+                            : " (Công khai)")
+                    )
+                    .join("\n");
+
+                const selected = prompt(
+                    "Nhập ID danh mục muốn chuyển đến:\n\n" + choices
+                );
+
+                if (!selected) return;
+
+                const targetId = selected.split("|")[0].trim();
+
+                const targetCategory = categoriesCache.find(
+                    c => c.id === targetId
+                );
+
+                if (!targetCategory) {
+                    showMessage("ID danh mục không hợp lệ.");
+                    return;
+                }
+
+                if (targetCategory.id === doc.category_id) {
+                    showMessage("Tài liệu đã thuộc danh mục này.");
+                    return;
+                }
+
+                try {
+                    await moveDocumentStorage(doc, targetCategory);
+                    showMessage("Đã chuyển tài liệu và cập nhật kho lưu trữ.");
+                    await refreshAll();
+                } catch (moveError) {
+                    showMessage("Lỗi chuyển tài liệu: " + moveError.message);
+                }
+            };
+
+            // XÓA TÀI LIỆU
+            const remove = document.createElement("button");
+            remove.className = "danger";
+            remove.textContent = "Xóa tài liệu";
+
+            remove.onclick = async () => {
+                if (!confirm(`Bạn có chắc muốn xóa "${doc.title}"?`)) return;
+
+                const bucket = getBucket(doc);
+                const path = getStoragePath(doc);
+
+                if (path) {
+                    const { error: storageError } =
+                        await supabaseClient.storage
+                            .from(bucket)
+                            .remove([path]);
+
+                    if (storageError) {
+                        showMessage("Lỗi xóa file: " + storageError.message);
+                        return;
+                    }
+                }
+
+                const { error } = await supabaseClient
+                    .from("documents")
+                    .delete()
+                    .eq("id", doc.id);
+
+                if (error) {
+                    showMessage("Lỗi xóa dữ liệu: " + error.message);
+                    return;
+                }
+
+                showMessage("Đã xóa tài liệu.");
+                await refreshAll();
+            };
+
+            item.append(
+                title,
+                category,
+                storageStatus,
+                view,
+                document.createElement("br"),
+                rename,
+                move,
+                remove
+            );
+
+            group.appendChild(item);
+        }
+
+        list.appendChild(group);
+    }
+
+    // TÀI LIỆU KHÔNG CÒN DANH MỤC
+    const orphanDocs = documents.filter(doc =>
+        !categoriesCache.some(cat => cat.id === doc.category_id)
+    );
+
+    if (orphanDocs.length > 0) {
+        const group = document.createElement("div");
+        group.className = "document-group";
+
+        const heading = document.createElement("h3");
+        heading.textContent = "📁 Tài liệu chưa phân loại";
+
+        group.appendChild(heading);
+
+        for (const doc of orphanDocs) {
+            const item = document.createElement("div");
+            item.className = "item";
+
+            const title = document.createElement("h3");
+            title.textContent = doc.title;
+
+            item.appendChild(title);
+            group.appendChild(item);
+        }
+
+        list.appendChild(group);
     }
 }
 
