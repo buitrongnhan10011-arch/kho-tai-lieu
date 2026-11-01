@@ -1701,6 +1701,43 @@ async function getDocumentViewUrl(doc) {
 }
 
 
+// ==================== XÁC ĐỊNH LOẠI FILE ====================
+
+function getDocumentExtension(doc) {
+
+    // Ưu tiên đường dẫn lưu trữ vì tên file thường có phần mở rộng.
+    const path =
+        getStoragePath(doc) || "";
+
+    const pathName =
+        path.split("/").pop() || "";
+
+    const pathExtension =
+        pathName.includes(".")
+            ? pathName.split(".").pop().toLowerCase()
+            : "";
+
+    if (
+        ["pdf", "doc", "docx"].includes(pathExtension)
+    ) {
+        return pathExtension;
+    }
+
+    const fileType =
+        (doc.file_type || "")
+            .replace(".", "")
+            .toLowerCase();
+
+    if (
+        ["pdf", "doc", "docx"].includes(fileType)
+    ) {
+        return fileType;
+    }
+
+    return "";
+}
+
+
 // ==================== TẠO GROUP TÀI LIỆU ====================
 
 function createDocumentGroup(
@@ -1993,14 +2030,33 @@ async function loadDocuments() {
 
                         previewWindow.opener = null;
 
-                        previewWindow.document.title =
-                            "Đang tải tài liệu...";
-
                         const url =
                             await getDocumentViewUrl(doc);
 
-                        previewWindow.location.href =
-                            url;
+                        const extension =
+                            getDocumentExtension(doc);
+
+                        // DOC và DOCX:
+                        // Dùng Microsoft Office Online để hiển thị.
+                        if (
+                            extension === "doc" ||
+                            extension === "docx"
+                        ) {
+
+                            const officeViewerUrl =
+                                "https://view.officeapps.live.com/op/view.aspx?src=" +
+                                encodeURIComponent(url);
+
+                            previewWindow.location.href =
+                                officeViewerUrl;
+
+                        } else {
+
+                            // PDF:
+                            // Mở trực tiếp trong tab mới.
+                            previewWindow.location.href =
+                                url;
+                        }
 
                         showMessage(
                             `Đang mở xem trước "${doc.title}".`
