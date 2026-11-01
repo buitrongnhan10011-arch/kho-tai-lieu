@@ -138,7 +138,6 @@
         }
 
         /* QUẢN LÝ TÀI LIỆU DẠNG THU GỌN */
-
         .document-group {
             margin: 12px 0;
             background: #1c1c1c;
@@ -222,6 +221,23 @@
             background: #444;
         }
 
+        .document-preview {
+            background: #245c8a !important;
+            color: white;
+        }
+
+        .document-download {
+            background: #267343 !important;
+            color: white;
+        }
+
+        .document-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
         @media (max-width: 600px) {
             .dashboard {
                 padding: 12px;
@@ -261,6 +277,7 @@
 
     <p id="message">Đang kiểm tra quyền Admin...</p>
 
+    <!-- THÊM DANH MỤC -->
     <section class="admin-section">
         <h2>THÊM DANH MỤC</h2>
 
@@ -298,11 +315,13 @@
         </button>
     </section>
 
+    <!-- QUẢN LÝ DANH MỤC -->
     <section class="admin-section">
         <h2>QUẢN LÝ DANH MỤC</h2>
         <div id="category-list">Đang tải...</div>
     </section>
 
+    <!-- THÊM TÀI LIỆU -->
     <section class="admin-section">
         <h2>THÊM TÀI LIỆU</h2>
 
@@ -325,6 +344,7 @@
         </button>
     </section>
 
+    <!-- QUẢN LÝ TÀI LIỆU -->
     <section class="admin-section">
         <h2>QUẢN LÝ TÀI LIỆU</h2>
         <div id="document-list">Đang tải...</div>
@@ -988,7 +1008,7 @@ async function uploadDocument() {
     await refreshAll();
 }
 
-// XEM FILE: TẠO SIGNED URL CHO FILE RIÊNG TƯ
+// TẠO ĐƯỜNG DẪN XEM TRƯỚC
 async function getDocumentViewUrl(doc) {
     const bucket = getBucket(doc);
     const path = getStoragePath(doc);
@@ -998,12 +1018,38 @@ async function getDocumentViewUrl(doc) {
     }
 
     if (bucket === PUBLIC_BUCKET) {
-        return doc.file_url;
+        return getPublicUrl(bucket, path);
     }
 
     const { data, error } = await supabaseClient.storage
         .from(PRIVATE_BUCKET)
         .createSignedUrl(path, 600);
+
+    if (error) throw error;
+
+    return data.signedUrl;
+}
+
+// TẠO ĐƯỜNG DẪN TẢI XUỐNG
+async function getDocumentDownloadUrl(doc) {
+    const bucket = getBucket(doc);
+    const path = getStoragePath(doc);
+
+    if (!path) {
+        throw new Error("Không xác định được đường dẫn tài liệu.");
+    }
+
+    if (bucket === PUBLIC_BUCKET) {
+        const url = new URL(getPublicUrl(bucket, path));
+        url.searchParams.set("download", doc.title);
+        return url.toString();
+    }
+
+    const { data, error } = await supabaseClient.storage
+        .from(PRIVATE_BUCKET)
+        .createSignedUrl(path, 600, {
+            download: doc.title
+        });
 
     if (error) throw error;
 
@@ -1109,23 +1155,50 @@ async function loadDocuments() {
                     ? "🔒 Kho riêng tư"
                     : "🔓 Kho công khai";
 
-            // XEM TÀI LIỆU
-            const view = document.createElement("a");
-            view.href = "#";
-            view.textContent = "Đang chuẩn bị liên kết...";
-            view.target = "_blank";
-            view.rel = "noopener noreferrer";
+            // NÚT XEM TRƯỚC
+            const preview = document.createElement("button");
+            preview.className = "document-preview";
+            preview.textContent = "👁 Xem trước";
 
-            try {
-                view.href = await getDocumentViewUrl(doc);
-                view.textContent = "Xem tài liệu";
-            } catch (viewError) {
-                view.textContent = "Không tạo được liên kết xem";
-                view.onclick = event => {
-                    event.preventDefault();
-                    showMessage(viewError.message);
-                };
-            }
+            preview.onclick = async () => {
+                try {
+                    const url = await getDocumentViewUrl(doc);
+                    window.open(url, "_blank", "noopener,noreferrer");
+                } catch (previewError) {
+                    showMessage(
+                        "Không thể xem trước: " + previewError.message
+                    );
+                }
+            };
+
+            // NÚT TẢI XUỐNG
+            const download = document.createElement("button");
+            download.className = "document-download";
+            download.textContent = "⬇ Tải xuống";
+
+            download.onclick = async () => {
+                try {
+                    showMessage("Đang chuẩn bị tải tài liệu...");
+
+                    const url = await getDocumentDownloadUrl(doc);
+
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = doc.title;
+                    link.target = "_blank";
+                    link.rel = "noopener noreferrer";
+
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+
+                    showMessage("Đã gửi yêu cầu tải xuống.");
+                } catch (downloadError) {
+                    showMessage(
+                        "Không thể tải tài liệu: " + downloadError.message
+                    );
+                }
+            };
 
             // ĐỔI TÊN
             const rename = document.createElement("button");
@@ -1234,15 +1307,22 @@ async function loadDocuments() {
                 await refreshAll();
             };
 
+            const actions = document.createElement("div");
+            actions.className = "document-actions";
+
+            actions.append(
+                preview,
+                download,
+                rename,
+                move,
+                remove
+            );
+
             item.append(
                 title,
                 category,
                 storageStatus,
-                view,
-                document.createElement("br"),
-                rename,
-                move,
-                remove
+                actions
             );
 
             content.appendChild(item);
