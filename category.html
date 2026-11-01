@@ -95,30 +95,23 @@
                 return;
             }
 
-            documents.forEach(document => {
-                const card = document.createElement("div");
-                card.className = "category-card";
+            documents.forEach(doc => {
+    const card = document.createElement("div");
+    card.className = "category-card";
 
-                const info = document.createElement("div");
+    const info = document.createElement("div");
 
-                const heading = document.createElement("h3");
-                heading.textContent = document.title;
+    const heading = document.createElement("h3");
+    heading.textContent = doc.title;
 
-                const download = document.createElement("a");
-                download.href = document.file_url;
-                download.textContent = "Xem / Tải xuống →";
-                download.target = "_blank";
-                download.rel = "noopener noreferrer";
+    const download = document.createElement("a");
+    download.href = doc.file_url;
+    download.textContent = "Xem / Tải xuống →";
+    download.target = "_blank";
+    download.rel = "noopener noreferrer";
 
-                info.appendChild(heading);
-                info.appendChild(download);
-                card.appendChild(info);
-                list.appendChild(card);
-            });
-        }
-
-        loadDocuments();
-    </script>
-
-</body>
-</html>
+    info.appendChild(heading);
+    info.appendChild(download);
+    card.appendChild(info);
+    list.appendChild(card);
+});
