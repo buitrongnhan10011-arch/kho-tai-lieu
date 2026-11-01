@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
+
     <link rel="stylesheet" href="css/style.css">
 
     <style>
@@ -25,7 +26,8 @@
             margin-bottom: 20px;
         }
 
-        input, select {
+        input,
+        select {
             width: 100%;
             padding: 12px;
             margin: 8px 0;
@@ -115,7 +117,7 @@
             color: white;
         }
 
-        /* TRẠNG THÁI BẢO MẬT DANH MỤC */
+        /* TRẠNG THÁI BẢO MẬT */
         .category-security {
             display: block;
             padding: 12px 15px;
@@ -207,20 +209,6 @@
             padding: 12px 5px;
         }
 
-        .document-group-content a {
-            display: inline-block;
-            margin: 8px 0;
-            padding: 9px 13px;
-            background: #333;
-            border: 1px solid #555;
-            border-radius: 6px;
-            text-decoration: none;
-        }
-
-        .document-group-content a:hover {
-            background: #444;
-        }
-
         .document-preview {
             background: #245c8a !important;
             color: white;
@@ -277,37 +265,52 @@
 
     <p id="message">Đang kiểm tra quyền Admin...</p>
 
-    <!-- THÊM DANH MỤC -->
+    <!-- ==================== THÊM DANH MỤC ==================== -->
     <section class="admin-section">
         <h2>THÊM DANH MỤC</h2>
 
-        <input id="new-category" type="text"
-            placeholder="Tên danh mục mới">
+        <input
+            id="new-category"
+            type="text"
+            placeholder="Tên danh mục mới"
+        >
 
         <div class="password-setting">
+
             <strong>Bảo vệ danh mục</strong>
 
             <label>
-                <input type="radio" name="new-category-security"
-                    value="public" checked>
+                <input
+                    type="radio"
+                    name="new-category-security"
+                    value="public"
+                    checked
+                >
                 🔓 Không yêu cầu mật khẩu
             </label>
 
             <label>
-                <input type="radio" name="new-category-security"
-                    value="protected">
+                <input
+                    type="radio"
+                    name="new-category-security"
+                    value="protected"
+                >
                 🔒 Yêu cầu mật khẩu
             </label>
 
-            <input id="new-category-password" type="password"
+            <input
+                id="new-category-password"
+                type="password"
                 placeholder="Nhập mật khẩu (ít nhất 6 ký tự)"
                 autocomplete="new-password"
-                style="display:none;">
+                style="display:none;"
+            >
 
             <p class="hint">
                 Mỗi danh mục có một mật khẩu riêng.
                 Có thể đổi hoặc gỡ mật khẩu sau khi tạo.
             </p>
+
         </div>
 
         <button class="primary" id="add-category">
@@ -315,18 +318,29 @@
         </button>
     </section>
 
-    <!-- QUẢN LÝ DANH MỤC -->
+
+    <!-- ==================== QUẢN LÝ DANH MỤC ==================== -->
     <section class="admin-section">
+
         <h2>QUẢN LÝ DANH MỤC</h2>
-        <div id="category-list">Đang tải...</div>
+
+        <div id="category-list">
+            Đang tải...
+        </div>
+
     </section>
 
-    <!-- THÊM TÀI LIỆU -->
+
+    <!-- ==================== THÊM TÀI LIỆU ==================== -->
     <section class="admin-section">
+
         <h2>THÊM TÀI LIỆU</h2>
 
-        <input id="document-title" type="text"
-            placeholder="Tên tài liệu">
+        <input
+            id="document-title"
+            type="text"
+            placeholder="Tên tài liệu"
+        >
 
         <select id="document-category">
             <option value="">Chọn danh mục</option>
@@ -336,19 +350,30 @@
             Chọn danh mục để xem chế độ lưu trữ.
         </p>
 
-        <input id="document-file" type="file"
-            accept=".pdf,.doc,.docx">
+        <input
+            id="document-file"
+            type="file"
+            accept=".pdf,.doc,.docx"
+        >
 
         <button class="primary" id="upload-document">
             Tải tài liệu lên
         </button>
+
     </section>
 
-    <!-- QUẢN LÝ TÀI LIỆU -->
+
+    <!-- ==================== QUẢN LÝ TÀI LIỆU ==================== -->
     <section class="admin-section">
+
         <h2>QUẢN LÝ TÀI LIỆU</h2>
-        <div id="document-list">Đang tải...</div>
+
+        <div id="document-list">
+            Đang tải...
+        </div>
+
     </section>
+
 
     <button class="logout-button" id="logout">
         Đăng xuất
@@ -356,32 +381,56 @@
 
 </main>
 
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const SUPABASE_URL = "https://axmgzhcozkwekjxbofoh.supabase.co";
-const SUPABASE_KEY = "sb_publishable_SQPDN_7N8IBG92iMWFSQ4A_3PYj9ykP";
 
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+const SUPABASE_URL =
+    "https://axmgzhcozkwekjxbofoh.supabase.co";
 
-const ADMIN_UID = "1ec8a1fa-7f6f-4626-9890-84aee80f2f4b";
+const SUPABASE_KEY =
+    "sb_publishable_SQPDN_7N8IBG92iMWFSQ4A_3PYj9ykP";
 
-const PUBLIC_BUCKET = "study-documents";
-const PRIVATE_BUCKET = "protected-documents";
-const FUNCTION_NAME = "dynamic-responder";
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
-const message = document.getElementById("message");
+
+const ADMIN_UID =
+    "1ec8a1fa-7f6f-4626-9890-84aee80f2f4b";
+
+
+const PUBLIC_BUCKET =
+    "study-documents";
+
+const PRIVATE_BUCKET =
+    "protected-documents";
+
+const FUNCTION_NAME =
+    "dynamic-responder";
+
+
+const message =
+    document.getElementById("message");
+
 
 let categoriesCache = [];
+
+
+// ==================== THÔNG BÁO ====================
 
 function showMessage(text) {
     message.textContent = text;
 }
 
+
+// ==================== TẠO SLUG ====================
+
 function makeSlug(text) {
+
     return text
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
@@ -393,50 +442,93 @@ function makeSlug(text) {
         .replace(/^-|-$/g, "");
 }
 
+
+// ==================== XÁC ĐỊNH BUCKET ====================
+
 function getBucket(doc) {
+
     return doc.storage_bucket ||
-        (doc.file_url?.includes("/storage/v1/object/public/protected-documents/")
-            ? PRIVATE_BUCKET
-            : PUBLIC_BUCKET);
+        (
+            doc.file_url?.includes(
+                "/storage/v1/object/public/protected-documents/"
+            )
+                ? PRIVATE_BUCKET
+                : PUBLIC_BUCKET
+        );
 }
 
+
+// ==================== XÁC ĐỊNH PATH ====================
+
 function getStoragePath(doc) {
+
     if (doc.storage_path) {
         return doc.storage_path;
     }
 
-    if (!doc.file_url) return null;
+    if (!doc.file_url) {
+        return null;
+    }
 
     const bucket = getBucket(doc);
-    const marker = `/storage/v1/object/public/${bucket}/`;
-    const index = doc.file_url.indexOf(marker);
 
-    if (index === -1) return null;
+    const marker =
+        `/storage/v1/object/public/${bucket}/`;
 
-    return decodeURIComponent(doc.file_url.slice(index + marker.length));
+    const index =
+        doc.file_url.indexOf(marker);
+
+    if (index === -1) {
+        return null;
+    }
+
+    return decodeURIComponent(
+        doc.file_url.slice(
+            index + marker.length
+        )
+    );
 }
+
+
+// ==================== PUBLIC URL ====================
 
 function getPublicUrl(bucket, path) {
+
     return supabaseClient.storage
         .from(bucket)
-        .getPublicUrl(path).data.publicUrl;
+        .getPublicUrl(path)
+        .data.publicUrl;
 }
 
+
+// ==================== BUCKET THEO DANH MỤC ====================
+
 function getTargetBucket(category) {
+
     return category.requires_password
         ? PRIVATE_BUCKET
         : PUBLIC_BUCKET;
 }
 
-// GỌI EDGE FUNCTION
+
+// ==================== EDGE FUNCTION ====================
+
 async function callPasswordFunction(body) {
-    const { data, error } = await supabaseClient.functions.invoke(
-        FUNCTION_NAME,
-        { body }
-    );
+
+    const { data, error } =
+        await supabaseClient.functions.invoke(
+            FUNCTION_NAME,
+            {
+                body
+            }
+        );
 
     if (error) {
-        throw new Error(error.message || "Không thể kết nối Edge Function.");
+
+        throw new Error(
+            error.message ||
+            "Không thể kết nối Edge Function."
+        );
     }
 
     if (data?.error) {
@@ -446,115 +538,223 @@ async function callPasswordFunction(body) {
     return data;
 }
 
-// KIỂM TRA ADMIN
+
+// ==================== KIỂM TRA ADMIN ====================
+
 async function checkAdmin() {
-    const { data, error } =
-        await supabaseClient.auth.getSession();
 
-    const user = data.session?.user;
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.getSession();
 
-    if (error || !user || user.id !== ADMIN_UID) {
-        window.location.href = "admin.html";
+    const user =
+        data.session?.user;
+
+    if (
+        error ||
+        !user ||
+        user.id !== ADMIN_UID
+    ) {
+
+        window.location.href =
+            "admin.html";
+
         return false;
     }
 
     return true;
 }
 
-// LẤY THÔNG TIN FILE TỪ STORAGE
+
+// ==================== TẢI FILE STORAGE ====================
+
 async function downloadStoredFile(doc) {
-    const bucket = getBucket(doc);
-    const path = getStoragePath(doc);
+
+    const bucket =
+        getBucket(doc);
+
+    const path =
+        getStoragePath(doc);
 
     if (!path) {
+
         throw new Error(
             `Không xác định được đường dẫn file "${doc.title}".`
         );
     }
 
-    const { data, error } = await supabaseClient.storage
+    const {
+        data,
+        error
+    } = await supabaseClient.storage
         .from(bucket)
         .download(path);
 
     if (error) {
+
         throw new Error(
             `Không tải được "${doc.title}": ${error.message}`
         );
     }
 
-    return { data, path, bucket };
+    return {
+        data,
+        path,
+        bucket
+    };
 }
 
-// CHUYỂN FILE GIỮA KHO CÔNG KHAI VÀ RIÊNG TƯ
-async function moveDocumentStorage(doc, targetCategory) {
-    const targetBucket = getTargetBucket(targetCategory);
-    const sourceBucket = getBucket(doc);
-    const sourcePath = getStoragePath(doc);
+
+// ==================== CHUYỂN FILE ====================
+
+async function moveDocumentStorage(
+    doc,
+    targetCategory
+) {
+
+    const targetBucket =
+        getTargetBucket(targetCategory);
+
+    const sourceBucket =
+        getBucket(doc);
+
+    const sourcePath =
+        getStoragePath(doc);
 
     if (!sourcePath) {
+
         throw new Error(
             `Không xác định được đường dẫn của "${doc.title}".`
         );
     }
 
-    if (sourceBucket === targetBucket) {
-        const { error } = await supabaseClient
+
+    // Cùng bucket
+    if (
+        sourceBucket === targetBucket
+    ) {
+
+        const {
+            error
+        } = await supabaseClient
             .from("documents")
             .update({
-                category_id: targetCategory.id,
-                storage_bucket: targetBucket,
-                storage_path: sourcePath,
-                file_url: targetBucket === PUBLIC_BUCKET
-                    ? getPublicUrl(targetBucket, sourcePath)
-                    : "private://" + sourcePath
+
+                category_id:
+                    targetCategory.id,
+
+                storage_bucket:
+                    targetBucket,
+
+                storage_path:
+                    sourcePath,
+
+                file_url:
+                    targetBucket === PUBLIC_BUCKET
+                        ? getPublicUrl(
+                            targetBucket,
+                            sourcePath
+                        )
+                        : "private://" +
+                          sourcePath
+
             })
             .eq("id", doc.id);
 
-        if (error) throw error;
+        if (error) {
+            throw error;
+        }
+
         return;
     }
 
-    showMessage(`Đang chuyển file "${doc.title}"...`);
 
-    const { data: fileData, error: downloadError } =
+    showMessage(
+        `Đang chuyển file "${doc.title}"...`
+    );
+
+
+    // Tải file từ bucket cũ
+    const {
+        data: fileData,
+        error: downloadError
+    } =
         await supabaseClient.storage
             .from(sourceBucket)
             .download(sourcePath);
 
+
     if (downloadError) {
+
         throw new Error(
             `Không tải được file "${doc.title}": ${downloadError.message}`
         );
     }
 
-    const newPath =
-        `${targetCategory.id}/${Date.now()}-${sourcePath.split("/").pop()}`;
 
-    const { error: uploadError } = await supabaseClient.storage
-        .from(targetBucket)
-        .upload(newPath, fileData);
+    // Path mới
+    const newPath =
+        `${targetCategory.id}/${Date.now()}-${sourcePath
+            .split("/")
+            .pop()}`;
+
+
+    // Upload sang bucket mới
+    const {
+        error: uploadError
+    } =
+        await supabaseClient.storage
+            .from(targetBucket)
+            .upload(
+                newPath,
+                fileData
+            );
+
 
     if (uploadError) {
+
         throw new Error(
             `Không thể chuyển file sang kho mới: ${uploadError.message}`
         );
     }
 
-    const newUrl = targetBucket === PUBLIC_BUCKET
-        ? getPublicUrl(targetBucket, newPath)
-        : "private://" + newPath;
 
-    const { error: updateError } = await supabaseClient
-        .from("documents")
-        .update({
-            category_id: targetCategory.id,
-            storage_bucket: targetBucket,
-            storage_path: newPath,
-            file_url: newUrl
-        })
-        .eq("id", doc.id);
+    const newUrl =
+        targetBucket === PUBLIC_BUCKET
+            ? getPublicUrl(
+                targetBucket,
+                newPath
+            )
+            : "private://" + newPath;
+
+
+    // Cập nhật database
+    const {
+        error: updateError
+    } =
+        await supabaseClient
+            .from("documents")
+            .update({
+
+                category_id:
+                    targetCategory.id,
+
+                storage_bucket:
+                    targetBucket,
+
+                storage_path:
+                    newPath,
+
+                file_url:
+                    newUrl
+
+            })
+            .eq("id", doc.id);
+
 
     if (updateError) {
+
         await supabaseClient.storage
             .from(targetBucket)
             .remove([newPath]);
@@ -564,11 +764,18 @@ async function moveDocumentStorage(doc, targetCategory) {
         );
     }
 
-    const { error: removeError } = await supabaseClient.storage
-        .from(sourceBucket)
-        .remove([sourcePath]);
+
+    // Xóa file cũ
+    const {
+        error: removeError
+    } =
+        await supabaseClient.storage
+            .from(sourceBucket)
+            .remove([sourcePath]);
+
 
     if (removeError) {
+
         console.error(
             "File cũ chưa xóa được:",
             removeError.message
@@ -576,340 +783,753 @@ async function moveDocumentStorage(doc, targetCategory) {
     }
 }
 
-// CHUYỂN TOÀN BỘ TÀI LIỆU CỦA DANH MỤC
-async function migrateCategoryFiles(category, targetProtected) {
+
+// ==================== DI CHUYỂN TÀI LIỆU DANH MỤC ====================
+
+async function migrateCategoryFiles(
+    category,
+    targetProtected
+) {
+
     const targetCategory = {
+
         ...category,
-        requires_password: targetProtected
+
+        requires_password:
+            targetProtected
+
     };
 
-    const { data: docs, error } = await supabaseClient
-        .from("documents")
-        .select("*")
-        .eq("category_id", category.id);
+
+    const {
+        data: docs,
+        error
+    } =
+        await supabaseClient
+            .from("documents")
+            .select("*")
+            .eq(
+                "category_id",
+                category.id
+            );
+
 
     if (error) {
+
         throw new Error(
-            "Không thể lấy danh sách tài liệu: " + error.message
+            "Không thể lấy danh sách tài liệu: " +
+            error.message
         );
     }
 
+
     for (const doc of docs || []) {
-        await moveDocumentStorage(doc, targetCategory);
+
+        await moveDocumentStorage(
+            doc,
+            targetCategory
+        );
     }
 }
 
-// ĐẶT / ĐỔI MẬT KHẨU
-async function setCategoryPassword(category) {
-    const newPassword = prompt(
-        `Nhập mật khẩu cho danh mục "${category.name}" (ít nhất 6 ký tự):`
-    );
 
-    if (newPassword === null) return;
+// ==================== ĐẶT / ĐỔI MẬT KHẨU ====================
 
-    if (newPassword.length < 6 || newPassword.length > 128) {
-        showMessage("Mật khẩu phải có từ 6 đến 128 ký tự.");
+async function setCategoryPassword(
+    category
+) {
+
+    const newPassword =
+        prompt(
+            `Nhập mật khẩu cho danh mục "${category.name}" (ít nhất 6 ký tự):`
+        );
+
+
+    if (newPassword === null) {
         return;
     }
 
+
+    if (
+        newPassword.length < 6 ||
+        newPassword.length > 128
+    ) {
+
+        showMessage(
+            "Mật khẩu phải có từ 6 đến 128 ký tự."
+        );
+
+        return;
+    }
+
+
     try {
-        showMessage("Đang chuyển tài liệu sang kho riêng tư...");
 
-        await migrateCategoryFiles(category, true);
+        showMessage(
+            "Đang chuyển tài liệu sang kho riêng tư..."
+        );
 
-        showMessage("Đang cập nhật mật khẩu...");
+
+        await migrateCategoryFiles(
+            category,
+            true
+        );
+
+
+        showMessage(
+            "Đang cập nhật mật khẩu..."
+        );
+
 
         await callPasswordFunction({
-            action: "set_password",
-            category_id: category.id,
-            password: newPassword
+
+            action:
+                "set_password",
+
+            category_id:
+                category.id,
+
+            password:
+                newPassword
+
         });
 
-        showMessage("Đã đặt / đổi mật khẩu thành công.");
+
+        showMessage(
+            "Đã đặt / đổi mật khẩu thành công."
+        );
+
+
         await refreshAll();
 
     } catch (error) {
-        showMessage("Lỗi: " + error.message);
+
+        showMessage(
+            "Lỗi: " + error.message
+        );
     }
 }
 
-// GỠ MẬT KHẨU
-async function removeCategoryPassword(category) {
-    if (!confirm(
-        `Gỡ mật khẩu sẽ chuyển toàn bộ tài liệu của "${category.name}" sang kho công khai.\n\nBạn có chắc chắn muốn tiếp tục?`
-    )) return;
+
+// ==================== GỠ MẬT KHẨU ====================
+
+async function removeCategoryPassword(
+    category
+) {
+
+    if (
+        !confirm(
+            `Gỡ mật khẩu sẽ chuyển toàn bộ tài liệu của "${category.name}" sang kho công khai.\n\nBạn có chắc chắn muốn tiếp tục?`
+        )
+    ) {
+        return;
+    }
+
 
     try {
-        showMessage("Đang chuyển tài liệu sang kho công khai...");
 
-        await migrateCategoryFiles(category, false);
+        showMessage(
+            "Đang chuyển tài liệu sang kho công khai..."
+        );
 
-        showMessage("Đang gỡ mật khẩu...");
+
+        await migrateCategoryFiles(
+            category,
+            false
+        );
+
+
+        showMessage(
+            "Đang gỡ mật khẩu..."
+        );
+
 
         await callPasswordFunction({
-            action: "remove_password",
-            category_id: category.id
+
+            action:
+                "remove_password",
+
+            category_id:
+                category.id
+
         });
 
-        showMessage("Đã gỡ mật khẩu. Danh mục hiện công khai.");
+
+        showMessage(
+            "Đã gỡ mật khẩu. Danh mục hiện công khai."
+        );
+
+
         await refreshAll();
 
     } catch (error) {
-        showMessage("Lỗi gỡ mật khẩu: " + error.message);
+
+        showMessage(
+            "Lỗi gỡ mật khẩu: " +
+            error.message
+        );
     }
 }
 
-// TẢI DANH MỤC
+
+// ==================== TẢI DANH MỤC ====================
+
 async function loadCategories() {
-    const { data, error } = await supabaseClient
-        .from("categories")
-        .select("*")
-        .order("created_at");
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("categories")
+            .select("*")
+            .order("created_at");
+
 
     if (error) {
-        showMessage("Lỗi tải danh mục: " + error.message);
+
+        showMessage(
+            "Lỗi tải danh mục: " +
+            error.message
+        );
+
         return [];
     }
 
-    categoriesCache = data || [];
 
-    const list = document.getElementById("category-list");
-    const select = document.getElementById("document-category");
+    categoriesCache =
+        data || [];
 
-    list.innerHTML = "";
-    select.innerHTML = '<option value="">Chọn danh mục</option>';
 
-    categoriesCache.forEach(category => {
-        const option = document.createElement("option");
-        option.value = category.id;
-        option.textContent = category.name;
-        select.appendChild(option);
-
-        const item = document.createElement("div");
-        item.className = "item";
-
-        const title = document.createElement("h3");
-        title.textContent = category.name;
-
-        const status = document.createElement("div");
-
-        if (category.requires_password) {
-            status.className = "category-security protected";
-            status.textContent = "🔒 CẦN MẬT KHẨU – KHO RIÊNG TƯ";
-        } else {
-            status.className = "category-security public";
-            status.textContent = "🔓 KHÔNG CẦN MẬT KHẨU – KHO CÔNG KHAI";
-        }
-
-        // ĐỔI TÊN
-        const rename = document.createElement("button");
-        rename.className = "primary";
-        rename.textContent = "Đổi tên";
-
-        rename.onclick = async () => {
-            const newName = prompt(
-                "Nhập tên danh mục mới:",
-                category.name
-            );
-
-            if (!newName || !newName.trim()) return;
-
-            const { error } = await supabaseClient
-                .from("categories")
-                .update({ name: newName.trim() })
-                .eq("id", category.id);
-
-            if (error) {
-                showMessage("Lỗi đổi tên: " + error.message);
-                return;
-            }
-
-            showMessage("Đã đổi tên danh mục.");
-            await refreshAll();
-        };
-
-        // ĐẶT / ĐỔI / GỠ MẬT KHẨU
-        const passwordButton = document.createElement("button");
-        passwordButton.className = "primary";
-
-        passwordButton.textContent = category.requires_password
-            ? "Đổi / Gỡ mật khẩu"
-            : "Đặt mật khẩu";
-
-        passwordButton.onclick = async () => {
-            if (category.requires_password) {
-                const choice = prompt(
-                    "Nhập 1 để đổi mật khẩu.\nNhập 2 để gỡ mật khẩu."
-                );
-
-                if (choice === "1") {
-                    await setCategoryPassword(category);
-                } else if (choice === "2") {
-                    await removeCategoryPassword(category);
-                }
-            } else {
-                await setCategoryPassword(category);
-            }
-        };
-
-        // XÓA DANH MỤC
-        const remove = document.createElement("button");
-        remove.className = "danger";
-        remove.textContent = "Xóa danh mục";
-
-        remove.onclick = async () => {
-            if (!confirm(
-                `Xóa danh mục "${category.name}" và toàn bộ tài liệu thuộc danh mục này?`
-            )) return;
-
-            const { data: docs, error: fetchError } =
-                await supabaseClient
-                    .from("documents")
-                    .select("*")
-                    .eq("category_id", category.id);
-
-            if (fetchError) {
-                showMessage(
-                    "Không thể kiểm tra tài liệu: " + fetchError.message
-                );
-                return;
-            }
-
-            const grouped = {};
-
-            for (const doc of docs || []) {
-                const bucket = getBucket(doc);
-                const path = getStoragePath(doc);
-
-                if (!path) continue;
-
-                if (!grouped[bucket]) grouped[bucket] = [];
-                grouped[bucket].push(path);
-            }
-
-            for (const bucket of Object.keys(grouped)) {
-                const { error: storageError } =
-                    await supabaseClient.storage
-                        .from(bucket)
-                        .remove(grouped[bucket]);
-
-                if (storageError) {
-                    showMessage(
-                        "Không thể xóa file: " + storageError.message
-                    );
-                    return;
-                }
-            }
-
-            const { error } = await supabaseClient
-                .from("categories")
-                .delete()
-                .eq("id", category.id);
-
-            if (error) {
-                showMessage("Lỗi xóa danh mục: " + error.message);
-                return;
-            }
-
-            showMessage("Đã xóa danh mục và tài liệu thuộc danh mục.");
-            await refreshAll();
-        };
-
-        item.append(
-            title,
-            status,
-            rename,
-            passwordButton,
-            remove
+    const list =
+        document.getElementById(
+            "category-list"
         );
 
-        list.appendChild(item);
-    });
+
+    const select =
+        document.getElementById(
+            "document-category"
+        );
+
+
+    list.innerHTML = "";
+
+    select.innerHTML =
+        '<option value="">Chọn danh mục</option>';
+
+
+    categoriesCache.forEach(
+        category => {
+
+            // Option
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                category.id;
+
+            option.textContent =
+                category.name;
+
+            select.appendChild(
+                option
+            );
+
+
+            // Item
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "item";
+
+
+            // Title
+            const title =
+                document.createElement(
+                    "h3"
+                );
+
+            title.textContent =
+                category.name;
+
+
+            // Security
+            const status =
+                document.createElement(
+                    "div"
+                );
+
+
+            if (
+                category.requires_password
+            ) {
+
+                status.className =
+                    "category-security protected";
+
+                status.textContent =
+                    "🔒 CẦN MẬT KHẨU – KHO RIÊNG TƯ";
+
+            } else {
+
+                status.className =
+                    "category-security public";
+
+                status.textContent =
+                    "🔓 KHÔNG CẦN MẬT KHẨU – KHO CÔNG KHAI";
+            }
+
+
+            // ĐỔI TÊN
+            const rename =
+                document.createElement(
+                    "button"
+                );
+
+            rename.className =
+                "primary";
+
+            rename.textContent =
+                "Đổi tên";
+
+
+            rename.onclick =
+                async () => {
+
+                    const newName =
+                        prompt(
+                            "Nhập tên danh mục mới:",
+                            category.name
+                        );
+
+
+                    if (
+                        !newName ||
+                        !newName.trim()
+                    ) {
+                        return;
+                    }
+
+
+                    const {
+                        error
+                    } =
+                        await supabaseClient
+                            .from("categories")
+                            .update({
+
+                                name:
+                                    newName.trim()
+
+                            })
+                            .eq(
+                                "id",
+                                category.id
+                            );
+
+
+                    if (error) {
+
+                        showMessage(
+                            "Lỗi đổi tên: " +
+                            error.message
+                        );
+
+                        return;
+                    }
+
+
+                    showMessage(
+                        "Đã đổi tên danh mục."
+                    );
+
+
+                    await refreshAll();
+                };
+
+
+            // MẬT KHẨU
+            const passwordButton =
+                document.createElement(
+                    "button"
+                );
+
+            passwordButton.className =
+                "primary";
+
+
+            passwordButton.textContent =
+                category.requires_password
+                    ? "Đổi / Gỡ mật khẩu"
+                    : "Đặt mật khẩu";
+
+
+            passwordButton.onclick =
+                async () => {
+
+                    if (
+                        category.requires_password
+                    ) {
+
+                        const choice =
+                            prompt(
+                                "Nhập 1 để đổi mật khẩu.\nNhập 2 để gỡ mật khẩu."
+                            );
+
+
+                        if (choice === "1") {
+
+                            await setCategoryPassword(
+                                category
+                            );
+
+                        } else if (
+                            choice === "2"
+                        ) {
+
+                            await removeCategoryPassword(
+                                category
+                            );
+                        }
+
+                    } else {
+
+                        await setCategoryPassword(
+                            category
+                        );
+                    }
+                };
+
+
+            // XÓA
+            const remove =
+                document.createElement(
+                    "button"
+                );
+
+            remove.className =
+                "danger";
+
+            remove.textContent =
+                "Xóa danh mục";
+
+
+            remove.onclick =
+                async () => {
+
+                    if (
+                        !confirm(
+                            `Xóa danh mục "${category.name}" và toàn bộ tài liệu thuộc danh mục này?`
+                        )
+                    ) {
+                        return;
+                    }
+
+
+                    const {
+                        data: docs,
+                        error: fetchError
+                    } =
+                        await supabaseClient
+                            .from("documents")
+                            .select("*")
+                            .eq(
+                                "category_id",
+                                category.id
+                            );
+
+
+                    if (fetchError) {
+
+                        showMessage(
+                            "Không thể kiểm tra tài liệu: " +
+                            fetchError.message
+                        );
+
+                        return;
+                    }
+
+
+                    const grouped = {};
+
+
+                    for (
+                        const doc of docs || []
+                    ) {
+
+                        const bucket =
+                            getBucket(doc);
+
+                        const path =
+                            getStoragePath(doc);
+
+
+                        if (!path) {
+                            continue;
+                        }
+
+
+                        if (
+                            !grouped[bucket]
+                        ) {
+                            grouped[bucket] = [];
+                        }
+
+
+                        grouped[bucket].push(
+                            path
+                        );
+                    }
+
+
+                    for (
+                        const bucket of Object.keys(
+                            grouped
+                        )
+                    ) {
+
+                        const {
+                            error:
+                                storageError
+                        } =
+                            await supabaseClient.storage
+                                .from(bucket)
+                                .remove(
+                                    grouped[bucket]
+                                );
+
+
+                        if (
+                            storageError
+                        ) {
+
+                            showMessage(
+                                "Không thể xóa file: " +
+                                storageError.message
+                            );
+
+                            return;
+                        }
+                    }
+
+
+                    const {
+                        error
+                    } =
+                        await supabaseClient
+                            .from("categories")
+                            .delete()
+                            .eq(
+                                "id",
+                                category.id
+                            );
+
+
+                    if (error) {
+
+                        showMessage(
+                            "Lỗi xóa danh mục: " +
+                            error.message
+                        );
+
+                        return;
+                    }
+
+
+                    showMessage(
+                        "Đã xóa danh mục và tài liệu thuộc danh mục."
+                    );
+
+
+                    await refreshAll();
+                };
+
+
+            item.append(
+                title,
+                status,
+                rename,
+                passwordButton,
+                remove
+            );
+
+
+            list.appendChild(item);
+        }
+    );
+
 
     updateUploadStorageInfo();
 
     return categoriesCache;
 }
 
-// THÊM DANH MỤC
+
+// ==================== THÊM DANH MỤC ====================
+
 async function addCategory() {
-    const input = document.getElementById("new-category");
-    const passwordInput = document.getElementById("new-category-password");
 
-    const name = input.value.trim();
+    const input =
+        document.getElementById(
+            "new-category"
+        );
 
-    const security = document.querySelector(
-        'input[name="new-category-security"]:checked'
-    )?.value || "public";
 
-    const password = passwordInput.value;
+    const passwordInput =
+        document.getElementById(
+            "new-category-password"
+        );
+
+
+    const name =
+        input.value.trim();
+
+
+    const security =
+        document.querySelector(
+            'input[name="new-category-security"]:checked'
+        )?.value ||
+        "public";
+
+
+    const password =
+        passwordInput.value;
+
 
     if (!name) {
-        showMessage("Hãy nhập tên danh mục.");
+
+        showMessage(
+            "Hãy nhập tên danh mục."
+        );
+
         return;
     }
 
-    const slug = makeSlug(name);
+
+    const slug =
+        makeSlug(name);
+
 
     if (!slug) {
-        showMessage("Tên danh mục không hợp lệ.");
+
+        showMessage(
+            "Tên danh mục không hợp lệ."
+        );
+
         return;
     }
+
 
     if (
         security === "protected" &&
-        (password.length < 6 || password.length > 128)
+        (
+            password.length < 6 ||
+            password.length > 128
+        )
     ) {
-        showMessage("Mật khẩu phải có từ 6 đến 128 ký tự.");
+
+        showMessage(
+            "Mật khẩu phải có từ 6 đến 128 ký tự."
+        );
+
         return;
     }
 
-    showMessage("Đang tạo danh mục...");
 
-    const { data: category, error } = await supabaseClient
-        .from("categories")
-        .insert({
-            name,
-            slug,
-            requires_password: false
-        })
-        .select()
-        .single();
+    showMessage(
+        "Đang tạo danh mục..."
+    );
+
+
+    const {
+        data: category,
+        error
+    } =
+        await supabaseClient
+            .from("categories")
+            .insert({
+
+                name,
+                slug,
+                requires_password:
+                    false
+
+            })
+            .select()
+            .single();
+
 
     if (error) {
-        showMessage("Không thể thêm danh mục: " + error.message);
+
+        showMessage(
+            "Không thể thêm danh mục: " +
+            error.message
+        );
+
         return;
     }
 
-    if (security === "protected") {
+
+    if (
+        security === "protected"
+    ) {
+
         try {
+
             await callPasswordFunction({
-                action: "set_password",
-                category_id: category.id,
+
+                action:
+                    "set_password",
+
+                category_id:
+                    category.id,
+
                 password
+
             });
-        } catch (passwordError) {
+
+        } catch (
+            passwordError
+        ) {
+
             await supabaseClient
                 .from("categories")
                 .delete()
-                .eq("id", category.id);
+                .eq(
+                    "id",
+                    category.id
+                );
+
 
             showMessage(
                 "Không tạo được mật khẩu. Danh mục vừa tạo đã được hủy: " +
                 passwordError.message
             );
+
             return;
         }
     }
 
+
     input.value = "";
+
     passwordInput.value = "";
+
 
     document.querySelector(
         'input[name="new-category-security"][value="public"]'
     ).checked = true;
 
-    passwordInput.style.display = "none";
+
+    passwordInput.style.display =
+        "none";
+
 
     showMessage(
         security === "protected"
@@ -917,406 +1537,1088 @@ async function addCategory() {
             : "Đã tạo danh mục công khai."
     );
 
+
     await refreshAll();
 }
 
-// HIỂN THỊ KHO LƯU TRỮ KHI CHỌN DANH MỤC
-function updateUploadStorageInfo() {
-    const categoryId = document.getElementById("document-category").value;
-    const info = document.getElementById("upload-storage-info");
 
-    const category = categoriesCache.find(c => c.id === categoryId);
+// ==================== HIỂN THỊ STORAGE ====================
+
+function updateUploadStorageInfo() {
+
+    const categoryId =
+        document.getElementById(
+            "document-category"
+        ).value;
+
+
+    const info =
+        document.getElementById(
+            "upload-storage-info"
+        );
+
+
+    const category =
+        categoriesCache.find(
+            c => c.id === categoryId
+        );
+
 
     if (!category) {
-        info.textContent = "Chọn danh mục để xem chế độ lưu trữ.";
+
+        info.textContent =
+            "Chọn danh mục để xem chế độ lưu trữ.";
+
         return;
     }
 
-    info.textContent = category.requires_password
-        ? "🔒 Tài liệu sẽ được lưu trong kho riêng tư."
-        : "🔓 Tài liệu sẽ được lưu trong kho công khai.";
+
+    info.textContent =
+        category.requires_password
+            ? "🔒 Tài liệu sẽ được lưu trong kho riêng tư."
+            : "🔓 Tài liệu sẽ được lưu trong kho công khai.";
 }
 
-// TẢI TÀI LIỆU LÊN
-async function uploadDocument() {
-    const title = document.getElementById("document-title").value.trim();
-    const categoryId = document.getElementById("document-category").value;
-    const file = document.getElementById("document-file").files[0];
 
-    if (!title || !categoryId || !file) {
-        showMessage("Hãy nhập tên, chọn danh mục và chọn file.");
+// ==================== UPLOAD TÀI LIỆU ====================
+
+async function uploadDocument() {
+
+    const title =
+        document.getElementById(
+            "document-title"
+        ).value.trim();
+
+
+    const categoryId =
+        document.getElementById(
+            "document-category"
+        ).value;
+
+
+    const file =
+        document.getElementById(
+            "document-file"
+        ).files[0];
+
+
+    if (
+        !title ||
+        !categoryId ||
+        !file
+    ) {
+
+        showMessage(
+            "Hãy nhập tên, chọn danh mục và chọn file."
+        );
+
         return;
     }
 
-    const category = categoriesCache.find(c => c.id === categoryId);
+
+    const category =
+        categoriesCache.find(
+            c => c.id === categoryId
+        );
+
 
     if (!category) {
-        showMessage("Không tìm thấy danh mục.");
+
+        showMessage(
+            "Không tìm thấy danh mục."
+        );
+
         return;
     }
 
-    if (!/\.(pdf|doc|docx)$/i.test(file.name)) {
-        showMessage("Chỉ chấp nhận file PDF, DOC hoặc DOCX.");
+
+    if (
+        !/\.(pdf|doc|docx)$/i.test(
+            file.name
+        )
+    ) {
+
+        showMessage(
+            "Chỉ chấp nhận file PDF, DOC hoặc DOCX."
+        );
+
         return;
     }
 
-    if (file.size > 50 * 1024 * 1024) {
-        showMessage("File vượt quá giới hạn 50 MB.");
+
+    if (
+        file.size >
+        50 * 1024 * 1024
+    ) {
+
+        showMessage(
+            "File vượt quá giới hạn 50 MB."
+        );
+
         return;
     }
 
-    const bucket = getTargetBucket(category);
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const path = `${categoryId}/${Date.now()}-${safeName}`;
 
-    showMessage("Đang tải file lên...");
+    const bucket =
+        getTargetBucket(category);
 
-    const { error: uploadError } = await supabaseClient.storage
-        .from(bucket)
-        .upload(path, file);
+
+    const safeName =
+        file.name.replace(
+            /[^a-zA-Z0-9._-]/g,
+            "_"
+        );
+
+
+    const path =
+        `${categoryId}/${Date.now()}-${safeName}`;
+
+
+    showMessage(
+        "Đang tải file lên..."
+    );
+
+
+    const {
+        error: uploadError
+    } =
+        await supabaseClient.storage
+            .from(bucket)
+            .upload(
+                path,
+                file
+            );
+
 
     if (uploadError) {
-        showMessage("Lỗi tải file: " + uploadError.message);
+
+        showMessage(
+            "Lỗi tải file: " +
+            uploadError.message
+        );
+
         return;
     }
 
-    const fileUrl = bucket === PUBLIC_BUCKET
-        ? getPublicUrl(bucket, path)
-        : "private://" + path;
 
-    const { error } = await supabaseClient
-        .from("documents")
-        .insert({
-            category_id: categoryId,
-            title,
-            file_url: fileUrl,
-            file_type: file.name.split(".").pop().toLowerCase(),
-            storage_bucket: bucket,
-            storage_path: path
-        });
+    const fileUrl =
+        bucket === PUBLIC_BUCKET
+            ? getPublicUrl(
+                bucket,
+                path
+            )
+            : "private://" + path;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("documents")
+            .insert({
+
+                category_id:
+                    categoryId,
+
+                title,
+
+                file_url:
+                    fileUrl,
+
+                file_type:
+                    file.name
+                        .split(".")
+                        .pop()
+                        .toLowerCase(),
+
+                storage_bucket:
+                    bucket,
+
+                storage_path:
+                    path
+            });
+
 
     if (error) {
-        await supabaseClient.storage.from(bucket).remove([path]);
-        showMessage("Lỗi lưu thông tin: " + error.message);
+
+        await supabaseClient.storage
+            .from(bucket)
+            .remove([path]);
+
+
+        showMessage(
+            "Lỗi lưu thông tin: " +
+            error.message
+        );
+
         return;
     }
 
-    document.getElementById("document-title").value = "";
-    document.getElementById("document-file").value = "";
 
-    showMessage("Đã tải tài liệu thành công.");
+    document.getElementById(
+        "document-title"
+    ).value = "";
+
+
+    document.getElementById(
+        "document-file"
+    ).value = "";
+
+
+    showMessage(
+        "Đã tải tài liệu thành công."
+    );
+
+
     await refreshAll();
 }
 
-// TẠO ĐƯỜNG DẪN XEM TRƯỚC
-async function getDocumentViewUrl(doc) {
-    const bucket = getBucket(doc);
-    const path = getStoragePath(doc);
+
+// ==================== URL XEM TÀI LIỆU ====================
+
+async function getDocumentViewUrl(
+    doc
+) {
+
+    const bucket =
+        getBucket(doc);
+
+    const path =
+        getStoragePath(doc);
+
 
     if (!path) {
-        throw new Error("Không xác định được đường dẫn tài liệu.");
+
+        throw new Error(
+            "Không xác định được đường dẫn tài liệu."
+        );
     }
 
-    if (bucket === PUBLIC_BUCKET) {
-        return getPublicUrl(bucket, path);
+
+    // File công khai
+    if (
+        bucket === PUBLIC_BUCKET
+    ) {
+
+        return getPublicUrl(
+            bucket,
+            path
+        );
     }
 
-    const { data, error } = await supabaseClient.storage
-        .from(PRIVATE_BUCKET)
-        .createSignedUrl(path, 600);
 
-    if (error) throw error;
+    // File riêng tư
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.storage
+            .from(PRIVATE_BUCKET)
+            .createSignedUrl(
+                path,
+                600
+            );
 
-    return data.signedUrl;
-}
-
-// TẠO ĐƯỜNG DẪN TẢI XUỐNG
-async function getDocumentDownloadUrl(doc) {
-    const bucket = getBucket(doc);
-    const path = getStoragePath(doc);
-
-    if (!path) {
-        throw new Error("Không xác định được đường dẫn tài liệu.");
-    }
-
-    if (bucket === PUBLIC_BUCKET) {
-        const url = new URL(getPublicUrl(bucket, path));
-        url.searchParams.set("download", doc.title);
-        return url.toString();
-    }
-
-    const { data, error } = await supabaseClient.storage
-        .from(PRIVATE_BUCKET)
-        .createSignedUrl(path, 600, {
-            download: doc.title
-        });
-
-    if (error) throw error;
-
-    return data.signedUrl;
-}
-
-// TẠO DANH MỤC CÓ THỂ ĐÓNG / MỞ
-function createDocumentGroup(name, count, icon = "📁") {
-    const group = document.createElement("div");
-    group.className = "document-group";
-
-    const header = document.createElement("button");
-    header.type = "button";
-    header.className = "document-group-header";
-    header.setAttribute("aria-expanded", "false");
-
-    const arrow = document.createElement("span");
-    arrow.className = "document-arrow";
-    arrow.textContent = "›";
-
-    const groupName = document.createElement("span");
-    groupName.className = "document-group-name";
-    groupName.textContent = `${icon} ${name}`;
-
-    const countElement = document.createElement("span");
-    countElement.className = "document-count";
-    countElement.textContent = `${count} tài liệu`;
-
-    header.append(arrow, groupName, countElement);
-
-    const content = document.createElement("div");
-    content.className = "document-group-content";
-
-    header.addEventListener("click", () => {
-        const isOpen = group.classList.toggle("open");
-
-        header.setAttribute("aria-expanded", String(isOpen));
-        arrow.textContent = isOpen ? "⌄" : "›";
-    });
-
-    group.append(header, content);
-
-    return { group, content };
-}
-
-// QUẢN LÝ TÀI LIỆU THEO TỪNG DANH MỤC
-async function loadDocuments() {
-    const { data, error } = await supabaseClient
-        .from("documents")
-        .select("*, categories(name)")
-        .order("created_at", { ascending: false });
-
-    const list = document.getElementById("document-list");
-    list.innerHTML = "";
 
     if (error) {
-        list.textContent = "Lỗi tải tài liệu: " + error.message;
+        throw error;
+    }
+
+
+    return data.signedUrl;
+}
+
+
+// ==================== TẠO GROUP TÀI LIỆU ====================
+
+function createDocumentGroup(
+    name,
+    count,
+    icon = "📁"
+) {
+
+    const group =
+        document.createElement(
+            "div"
+        );
+
+    group.className =
+        "document-group";
+
+
+    const header =
+        document.createElement(
+            "button"
+        );
+
+    header.type =
+        "button";
+
+    header.className =
+        "document-group-header";
+
+    header.setAttribute(
+        "aria-expanded",
+        "false"
+    );
+
+
+    const arrow =
+        document.createElement(
+            "span"
+        );
+
+    arrow.className =
+        "document-arrow";
+
+    arrow.textContent =
+        "›";
+
+
+    const groupName =
+        document.createElement(
+            "span"
+        );
+
+    groupName.className =
+        "document-group-name";
+
+    groupName.textContent =
+        `${icon} ${name}`;
+
+
+    const countElement =
+        document.createElement(
+            "span"
+        );
+
+    countElement.className =
+        "document-count";
+
+    countElement.textContent =
+        `${count} tài liệu`;
+
+
+    header.append(
+        arrow,
+        groupName,
+        countElement
+    );
+
+
+    const content =
+        document.createElement(
+            "div"
+        );
+
+    content.className =
+        "document-group-content";
+
+
+    header.addEventListener(
+        "click",
+        () => {
+
+            const isOpen =
+                group.classList.toggle(
+                    "open"
+                );
+
+
+            header.setAttribute(
+                "aria-expanded",
+                String(isOpen)
+            );
+
+
+            arrow.textContent =
+                isOpen
+                    ? "⌄"
+                    : "›";
+        }
+    );
+
+
+    group.append(
+        header,
+        content
+    );
+
+
+    return {
+        group,
+        content
+    };
+}
+
+
+// ==================== QUẢN LÝ TÀI LIỆU ====================
+
+async function loadDocuments() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("documents")
+            .select("*, categories(name)")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    const list =
+        document.getElementById(
+            "document-list"
+        );
+
+
+    list.innerHTML = "";
+
+
+    if (error) {
+
+        list.textContent =
+            "Lỗi tải tài liệu: " +
+            error.message;
+
         return;
     }
 
-    const documents = data || [];
 
-    if (categoriesCache.length === 0) {
-        list.textContent = "Chưa có danh mục.";
+    const documents =
+        data || [];
+
+
+    if (
+        categoriesCache.length === 0
+    ) {
+
+        list.textContent =
+            "Chưa có danh mục.";
+
         return;
     }
 
-    // HIỂN THỊ TỪNG DANH MỤC
-    for (const cat of categoriesCache) {
-        const categoryDocs = documents.filter(
-            doc => doc.category_id === cat.id
-        );
 
-        const icon = cat.requires_password ? "🔒" : "🔓";
+    // TỪNG DANH MỤC
+    for (
+        const cat of categoriesCache
+    ) {
 
-        const { group, content } = createDocumentGroup(
-            cat.name,
-            categoryDocs.length,
-            icon
-        );
+        const categoryDocs =
+            documents.filter(
+                doc =>
+                    doc.category_id ===
+                    cat.id
+            );
 
-        if (categoryDocs.length === 0) {
-            const empty = document.createElement("p");
-            empty.className = "document-empty";
-            empty.textContent = "Chưa có tài liệu trong mục này.";
-            content.appendChild(empty);
+
+        const icon =
+            cat.requires_password
+                ? "🔒"
+                : "🔓";
+
+
+        const {
+            group,
+            content
+        } =
+            createDocumentGroup(
+                cat.name,
+                categoryDocs.length,
+                icon
+            );
+
+
+        if (
+            categoryDocs.length === 0
+        ) {
+
+            const empty =
+                document.createElement(
+                    "p"
+                );
+
+            empty.className =
+                "document-empty";
+
+            empty.textContent =
+                "Chưa có tài liệu trong mục này.";
+
+            content.appendChild(
+                empty
+            );
         }
 
-        for (const doc of categoryDocs) {
-            const item = document.createElement("div");
-            item.className = "item";
 
-            const title = document.createElement("h3");
-            title.textContent = doc.title;
+        // TỪNG FILE
+        for (
+            const doc of categoryDocs
+        ) {
 
-            const category = document.createElement("p");
-            category.textContent = "Danh mục: " + cat.name;
+            const item =
+                document.createElement(
+                    "div"
+                );
 
-            const storageStatus = document.createElement("p");
-            storageStatus.className = "status";
+            item.className =
+                "item";
+
+
+            // TÊN
+            const title =
+                document.createElement(
+                    "h3"
+                );
+
+            title.textContent =
+                doc.title;
+
+
+            // DANH MỤC
+            const category =
+                document.createElement(
+                    "p"
+                );
+
+            category.textContent =
+                "Danh mục: " +
+                cat.name;
+
+
+            // STORAGE
+            const storageStatus =
+                document.createElement(
+                    "p"
+                );
+
+            storageStatus.className =
+                "status";
+
+
             storageStatus.textContent =
-                getBucket(doc) === PRIVATE_BUCKET
+                getBucket(doc) ===
+                PRIVATE_BUCKET
+
                     ? "🔒 Kho riêng tư"
+
                     : "🔓 Kho công khai";
 
-            // NÚT XEM TRƯỚC
-            const preview = document.createElement("button");
-            preview.className = "document-preview";
-            preview.textContent = "👁 Xem trước";
 
-            preview.onclick = async () => {
-                try {
-                    const url = await getDocumentViewUrl(doc);
-                    window.open(url, "_blank", "noopener,noreferrer");
-                } catch (previewError) {
-                    showMessage(
-                        "Không thể xem trước: " + previewError.message
-                    );
-                }
-            };
+            // ====================
+            // NÚT XEM TÀI LIỆU
+            // ====================
 
+            const view =
+                document.createElement(
+                    "button"
+                );
+
+            view.className =
+                "document-preview";
+
+
+            // ĐÚNG TÊN: XEM TÀI LIỆU
+            view.textContent =
+                "👁 Xem tài liệu";
+
+
+            view.onclick =
+                async () => {
+
+                    try {
+
+                        const url =
+                            await getDocumentViewUrl(
+                                doc
+                            );
+
+
+                        // MỞ FILE ĐỂ XEM
+                        window.open(
+                            url,
+                            "_blank",
+                            "noopener,noreferrer"
+                        );
+
+                    } catch (
+                        viewError
+                    ) {
+
+                        showMessage(
+                            "Không thể xem tài liệu: " +
+                            viewError.message
+                        );
+                    }
+                };
+
+
+            // ====================
             // NÚT TẢI XUỐNG
-            const download = document.createElement("button");
-            download.className = "document-download";
-            download.textContent = "⬇ Tải xuống";
+            // ====================
 
-            download.onclick = async () => {
-                try {
-                    showMessage("Đang chuẩn bị tải tài liệu...");
+            const download =
+                document.createElement(
+                    "button"
+                );
 
-                    const url = await getDocumentDownloadUrl(doc);
+            download.className =
+                "document-download";
 
-                    const link = document.createElement("a");
-                    link.href = url;
-                    link.download = doc.title;
-                    link.target = "_blank";
-                    link.rel = "noopener noreferrer";
 
-                    document.body.appendChild(link);
-                    link.click();
-                    link.remove();
+            download.textContent =
+                "⬇ Tải xuống";
 
-                    showMessage("Đã gửi yêu cầu tải xuống.");
-                } catch (downloadError) {
-                    showMessage(
-                        "Không thể tải tài liệu: " + downloadError.message
-                    );
-                }
-            };
 
+            download.onclick =
+                async () => {
+
+                    try {
+
+                        showMessage(
+                            `Đang tải "${doc.title}"...`
+                        );
+
+
+                        const bucket =
+                            getBucket(doc);
+
+
+                        const path =
+                            getStoragePath(doc);
+
+
+                        if (!path) {
+
+                            throw new Error(
+                                "Không xác định được đường dẫn file."
+                            );
+                        }
+
+
+                        // TẢI FILE TỪ STORAGE
+                        const {
+                            data,
+                            error
+                        } =
+                            await supabaseClient
+                                .storage
+                                .from(bucket)
+                                .download(
+                                    path
+                                );
+
+
+                        if (error) {
+                            throw error;
+                        }
+
+
+                        // TÊN FILE
+                        let fileName =
+                            doc.title ||
+                            "tai-lieu";
+
+
+                        const fileType =
+                            (
+                                doc.file_type ||
+                                ""
+                            )
+                                .replace(
+                                    ".",
+                                    ""
+                                )
+                                .toLowerCase();
+
+
+                        if (
+                            fileType &&
+                            !fileName
+                                .toLowerCase()
+                                .endsWith(
+                                    "." +
+                                    fileType
+                                )
+                        ) {
+
+                            fileName +=
+                                "." +
+                                fileType;
+                        }
+
+
+                        // TẠO URL TẠM
+                        const blobUrl =
+                            URL.createObjectURL(
+                                data
+                            );
+
+
+                        // TẠO LINK TẢI
+                        const link =
+                            document.createElement(
+                                "a"
+                            );
+
+
+                        link.href =
+                            blobUrl;
+
+
+                        link.download =
+                            fileName;
+
+
+                        document.body.appendChild(
+                            link
+                        );
+
+
+                        link.click();
+
+
+                        link.remove();
+
+
+                        // GIẢI PHÓNG URL
+                        setTimeout(
+                            () => {
+
+                                URL.revokeObjectURL(
+                                    blobUrl
+                                );
+
+                            },
+                            1000
+                        );
+
+
+                        showMessage(
+                            `Đã bắt đầu tải "${fileName}".`
+                        );
+
+
+                    } catch (
+                        downloadError
+                    ) {
+
+                        showMessage(
+                            "Không thể tải tài liệu: " +
+                            downloadError.message
+                        );
+                    }
+                };
+
+
+            // ====================
             // ĐỔI TÊN
-            const rename = document.createElement("button");
-            rename.className = "primary";
-            rename.textContent = "Đổi tên";
+            // ====================
 
-            rename.onclick = async () => {
-                const newTitle = prompt("Nhập tên mới:", doc.title);
-
-                if (!newTitle || !newTitle.trim()) return;
-
-                const { error } = await supabaseClient
-                    .from("documents")
-                    .update({ title: newTitle.trim() })
-                    .eq("id", doc.id);
-
-                if (error) {
-                    showMessage("Lỗi đổi tên: " + error.message);
-                    return;
-                }
-
-                showMessage("Đã đổi tên tài liệu.");
-                await refreshAll();
-            };
-
-            // CHUYỂN DANH MỤC
-            const move = document.createElement("button");
-            move.className = "primary";
-            move.textContent = "Chuyển danh mục";
-
-            move.onclick = async () => {
-                const choices = categoriesCache
-                    .map(c =>
-                        c.id + " | " + c.name +
-                        (c.requires_password
-                            ? " (Riêng tư)"
-                            : " (Công khai)")
-                    )
-                    .join("\n");
-
-                const selected = prompt(
-                    "Nhập ID danh mục muốn chuyển đến:\n\n" + choices
+            const rename =
+                document.createElement(
+                    "button"
                 );
 
-                if (!selected) return;
+            rename.className =
+                "primary";
 
-                const targetId = selected.split("|")[0].trim();
+            rename.textContent =
+                "Đổi tên";
 
-                const targetCategory = categoriesCache.find(
-                    c => c.id === targetId
-                );
 
-                if (!targetCategory) {
-                    showMessage("ID danh mục không hợp lệ.");
-                    return;
-                }
+            rename.onclick =
+                async () => {
 
-                if (targetCategory.id === doc.category_id) {
-                    showMessage("Tài liệu đã thuộc danh mục này.");
-                    return;
-                }
+                    const newTitle =
+                        prompt(
+                            "Nhập tên mới:",
+                            doc.title
+                        );
 
-                try {
-                    await moveDocumentStorage(doc, targetCategory);
-                    showMessage("Đã chuyển tài liệu và cập nhật kho lưu trữ.");
-                    await refreshAll();
-                } catch (moveError) {
-                    showMessage("Lỗi chuyển tài liệu: " + moveError.message);
-                }
-            };
 
-            // XÓA TÀI LIỆU
-            const remove = document.createElement("button");
-            remove.className = "danger";
-            remove.textContent = "Xóa tài liệu";
-
-            remove.onclick = async () => {
-                if (!confirm(`Bạn có chắc muốn xóa "${doc.title}"?`)) return;
-
-                const bucket = getBucket(doc);
-                const path = getStoragePath(doc);
-
-                if (path) {
-                    const { error: storageError } =
-                        await supabaseClient.storage
-                            .from(bucket)
-                            .remove([path]);
-
-                    if (storageError) {
-                        showMessage("Lỗi xóa file: " + storageError.message);
+                    if (
+                        !newTitle ||
+                        !newTitle.trim()
+                    ) {
                         return;
                     }
-                }
 
-                const { error } = await supabaseClient
-                    .from("documents")
-                    .delete()
-                    .eq("id", doc.id);
 
-                if (error) {
-                    showMessage("Lỗi xóa dữ liệu: " + error.message);
-                    return;
-                }
+                    const {
+                        error
+                    } =
+                        await supabaseClient
+                            .from("documents")
+                            .update({
 
-                showMessage("Đã xóa tài liệu.");
-                await refreshAll();
-            };
+                                title:
+                                    newTitle.trim()
 
-            const actions = document.createElement("div");
-            actions.className = "document-actions";
+                            })
+                            .eq(
+                                "id",
+                                doc.id
+                            );
+
+
+                    if (error) {
+
+                        showMessage(
+                            "Lỗi đổi tên: " +
+                            error.message
+                        );
+
+                        return;
+                    }
+
+
+                    showMessage(
+                        "Đã đổi tên tài liệu."
+                    );
+
+
+                    await refreshAll();
+                };
+
+
+            // ====================
+            // CHUYỂN DANH MỤC
+            // ====================
+
+            const move =
+                document.createElement(
+                    "button"
+                );
+
+            move.className =
+                "primary";
+
+            move.textContent =
+                "Chuyển danh mục";
+
+
+            move.onclick =
+                async () => {
+
+                    const choices =
+                        categoriesCache
+                            .map(
+                                c =>
+                                    c.id +
+                                    " | " +
+                                    c.name +
+                                    (
+                                        c.requires_password
+                                            ? " (Riêng tư)"
+                                            : " (Công khai)"
+                                    )
+                            )
+                            .join("\n");
+
+
+                    const selected =
+                        prompt(
+                            "Nhập ID danh mục muốn chuyển đến:\n\n" +
+                            choices
+                        );
+
+
+                    if (!selected) {
+                        return;
+                    }
+
+
+                    const targetId =
+                        selected
+                            .split("|")[0]
+                            .trim();
+
+
+                    const targetCategory =
+                        categoriesCache.find(
+                            c =>
+                                c.id ===
+                                targetId
+                        );
+
+
+                    if (
+                        !targetCategory
+                    ) {
+
+                        showMessage(
+                            "ID danh mục không hợp lệ."
+                        );
+
+                        return;
+                    }
+
+
+                    if (
+                        targetCategory.id ===
+                        doc.category_id
+                    ) {
+
+                        showMessage(
+                            "Tài liệu đã thuộc danh mục này."
+                        );
+
+                        return;
+                    }
+
+
+                    try {
+
+                        await moveDocumentStorage(
+                            doc,
+                            targetCategory
+                        );
+
+
+                        showMessage(
+                            "Đã chuyển tài liệu và cập nhật kho lưu trữ."
+                        );
+
+
+                        await refreshAll();
+
+                    } catch (
+                        moveError
+                    ) {
+
+                        showMessage(
+                            "Lỗi chuyển tài liệu: " +
+                            moveError.message
+                        );
+                    }
+                };
+
+
+            // ====================
+            // XÓA TÀI LIỆU
+            // ====================
+
+            const remove =
+                document.createElement(
+                    "button"
+                );
+
+            remove.className =
+                "danger";
+
+            remove.textContent =
+                "Xóa tài liệu";
+
+
+            remove.onclick =
+                async () => {
+
+                    if (
+                        !confirm(
+                            `Bạn có chắc muốn xóa "${doc.title}"?`
+                        )
+                    ) {
+                        return;
+                    }
+
+
+                    const bucket =
+                        getBucket(doc);
+
+
+                    const path =
+                        getStoragePath(doc);
+
+
+                    // Xóa file
+                    if (path) {
+
+                        const {
+                            error:
+                                storageError
+                        } =
+                            await supabaseClient
+                                .storage
+                                .from(bucket)
+                                .remove(
+                                    [path]
+                                );
+
+
+                        if (
+                            storageError
+                        ) {
+
+                            showMessage(
+                                "Lỗi xóa file: " +
+                                storageError.message
+                            );
+
+                            return;
+                        }
+                    }
+
+
+                    // Xóa database
+                    const {
+                        error
+                    } =
+                        await supabaseClient
+                            .from("documents")
+                            .delete()
+                            .eq(
+                                "id",
+                                doc.id
+                            );
+
+
+                    if (error) {
+
+                        showMessage(
+                            "Lỗi xóa dữ liệu: " +
+                            error.message
+                        );
+
+                        return;
+                    }
+
+
+                    showMessage(
+                        "Đã xóa tài liệu."
+                    );
+
+
+                    await refreshAll();
+                };
+
+
+            // ====================
+            // CÁC NÚT
+            // ====================
+
+            const actions =
+                document.createElement(
+                    "div"
+                );
+
+            actions.className =
+                "document-actions";
+
 
             actions.append(
-                preview,
+                view,
                 download,
                 rename,
                 move,
                 remove
             );
+
 
             item.append(
                 title,
@@ -1325,90 +2627,203 @@ async function loadDocuments() {
                 actions
             );
 
-            content.appendChild(item);
+
+            content.appendChild(
+                item
+            );
         }
 
-        list.appendChild(group);
+
+        list.appendChild(
+            group
+        );
     }
 
-    // TÀI LIỆU KHÔNG CÒN DANH MỤC
-    const orphanDocs = documents.filter(doc =>
-        !categoriesCache.some(cat => cat.id === doc.category_id)
-    );
 
-    if (orphanDocs.length > 0) {
-        const { group, content } = createDocumentGroup(
-            "Tài liệu chưa phân loại",
-            orphanDocs.length
+    // ====================
+    // TÀI LIỆU KHÔNG CÓ DANH MỤC
+    // ====================
+
+    const orphanDocs =
+        documents.filter(
+            doc =>
+                !categoriesCache.some(
+                    cat =>
+                        cat.id ===
+                        doc.category_id
+                )
         );
 
-        for (const doc of orphanDocs) {
-            const item = document.createElement("div");
-            item.className = "item";
 
-            const title = document.createElement("h3");
-            title.textContent = doc.title;
+    if (
+        orphanDocs.length > 0
+    ) {
 
-            item.appendChild(title);
-            content.appendChild(item);
+        const {
+            group,
+            content
+        } =
+            createDocumentGroup(
+                "Tài liệu chưa phân loại",
+                orphanDocs.length
+            );
+
+
+        for (
+            const doc of orphanDocs
+        ) {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "item";
+
+
+            const title =
+                document.createElement(
+                    "h3"
+                );
+
+            title.textContent =
+                doc.title;
+
+
+            item.appendChild(
+                title
+            );
+
+
+            content.appendChild(
+                item
+            );
         }
 
-        list.appendChild(group);
+
+        list.appendChild(
+            group
+        );
     }
 }
 
-// TẢI LẠI TOÀN BỘ
+
+// ==================== REFRESH ====================
+
 async function refreshAll() {
+
     await loadCategories();
+
     await loadDocuments();
 }
 
-// KHỞI ĐỘNG
+
+// ==================== KHỞI ĐỘNG ====================
+
 async function init() {
-    const allowed = await checkAdmin();
 
-    if (!allowed) return;
+    const allowed =
+        await checkAdmin();
 
-    showMessage("Đã đăng nhập với quyền Admin.");
+
+    if (!allowed) {
+        return;
+    }
+
+
+    showMessage(
+        "Đã đăng nhập với quyền Admin."
+    );
+
+
     await refreshAll();
 }
 
-// CHỌN CÓ / KHÔNG MẬT KHẨU KHI TẠO DANH MỤC
+
+// ==================== CHỌN MẬT KHẨU ====================
+
 document.querySelectorAll(
     'input[name="new-category-security"]'
-).forEach(radio => {
-    radio.addEventListener("change", () => {
-        const passwordInput =
-            document.getElementById("new-category-password");
+).forEach(
+    radio => {
 
-        const protectedMode =
-            document.querySelector(
-                'input[name="new-category-security"]:checked'
-            )?.value === "protected";
+        radio.addEventListener(
+            "change",
+            () => {
 
-        passwordInput.style.display =
-            protectedMode ? "block" : "none";
+                const passwordInput =
+                    document.getElementById(
+                        "new-category-password"
+                    );
 
-        if (!protectedMode) {
-            passwordInput.value = "";
-        }
-    });
-});
 
-document.getElementById("document-category").addEventListener(
+                const protectedMode =
+                    document.querySelector(
+                        'input[name="new-category-security"]:checked'
+                    )?.value ===
+                    "protected";
+
+
+                passwordInput.style.display =
+                    protectedMode
+                        ? "block"
+                        : "none";
+
+
+                if (
+                    !protectedMode
+                ) {
+
+                    passwordInput.value =
+                        "";
+                }
+            }
+        );
+    }
+);
+
+
+// ==================== EVENTS ====================
+
+document.getElementById(
+    "document-category"
+).addEventListener(
     "change",
     updateUploadStorageInfo
 );
 
-document.getElementById("add-category").onclick = addCategory;
-document.getElementById("upload-document").onclick = uploadDocument;
 
-document.getElementById("logout").onclick = async () => {
-    await supabaseClient.auth.signOut();
-    window.location.href = "admin.html";
-};
+document.getElementById(
+    "add-category"
+).onclick =
+    addCategory;
+
+
+document.getElementById(
+    "upload-document"
+).onclick =
+    uploadDocument;
+
+
+document.getElementById(
+    "logout"
+).onclick =
+    async () => {
+
+        await supabaseClient
+            .auth
+            .signOut();
+
+        window.location.href =
+            "admin.html";
+    };
+
+
+// ==================== START ====================
 
 init();
+
 </script>
 
 </body>
