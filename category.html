@@ -211,9 +211,20 @@
                 renderDocuments(data.documents || []);
 
             } catch (error) {
-                console.error(error);
-                message.textContent =
-                    "Không thể xác thực. Vui lòng thử lại.";
+                console.error("Lỗi xác thực:", error);
+
+                let detail = error.message || "Lỗi không xác định";
+
+                if (error.context) {
+                    try {
+                        const response = await error.context.json();
+                        detail = response.error || JSON.stringify(response);
+                    } catch (e) {
+            // Giữ thông báo lỗi ban đầu
+                    }
+                }
+
+                message.textContent = "Lỗi: " + detail;
             } finally {
                 button.disabled = false;
             }
