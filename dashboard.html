@@ -1,19 +1,20 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Admin Dashboard | Kho Tài Liệu</title>
+<title>Admin Dashboard | Kho Tài Liệu</title>
 
-    <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css">
 
-    <style>
+<style>
 
-/* =========================================
+/* =====================================
    1. DASHBOARD
-========================================= */
+===================================== */
 
 .dashboard {
     max-width: 1200px;
@@ -41,7 +42,7 @@
 .hint {
     color: #999;
     font-size: 13px;
-    line-height: 1.6;
+    line-height: 1.7;
     margin: 10px 0;
 }
 
@@ -50,9 +51,9 @@
     padding: 15px 0;
 }
 
-/* =========================================
+/* =====================================
    2. INPUT
-========================================= */
+===================================== */
 
 input,
 select {
@@ -69,7 +70,7 @@ select {
 
 input:focus,
 select:focus {
-    border-color: #888;
+    border-color: #aaa;
 }
 
 input[type="checkbox"],
@@ -78,9 +79,9 @@ input[type="radio"] {
     margin-right: 8px;
 }
 
-/* =========================================
+/* =====================================
    3. BUTTON
-========================================= */
+===================================== */
 
 button {
     padding: 10px 15px;
@@ -138,9 +139,9 @@ button:disabled {
     color: white;
 }
 
-/* =========================================
+/* =====================================
    4. MESSAGE
-========================================= */
+===================================== */
 
 #message {
     padding: 14px;
@@ -153,9 +154,9 @@ button:disabled {
     overflow-wrap: anywhere;
 }
 
-/* =========================================
-   5. PASSWORD SETTINGS
-========================================= */
+/* =====================================
+   5. PASSWORD
+===================================== */
 
 .password-setting {
     margin: 15px 0;
@@ -179,9 +180,9 @@ button:disabled {
     display: none;
 }
 
-/* =========================================
+/* =====================================
    6. CATEGORY TREE
-========================================= */
+===================================== */
 
 .category-tree {
     margin-top: 15px;
@@ -233,12 +234,26 @@ button:disabled {
 }
 
 .category-badge {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 5px;
-    background: #303030;
-    color: #ccc;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 11px;
+    border-radius: 6px;
     font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .3px;
+}
+
+.category-badge.public {
+    background: #173d28;
+    color: #8de5ac;
+    border: 1px solid #358b53;
+}
+
+.category-badge.protected {
+    background: #481e1e;
+    color: #ffaaaa;
+    border: 1px solid #b94b4b;
 }
 
 .merge-checkbox {
@@ -261,34 +276,9 @@ button:disabled {
     line-height: 1.6;
 }
 
-/* =========================================
-   7. SECURITY STATUS
-========================================= */
-
-.category-security {
-    display: block;
-    padding: 12px 15px;
-    margin: 12px 0;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.category-security.protected {
-    background: #4a2020;
-    border: 1px solid #c94b4b;
-    color: #ffaaaa;
-}
-
-.category-security.public {
-    background: #1d402b;
-    border: 1px solid #3d9b60;
-    color: #9be5b2;
-}
-
-/* =========================================
-   8. DOCUMENT GROUP
-========================================= */
+/* =====================================
+   7. DOCUMENT GROUP
+===================================== */
 
 .document-group {
     margin: 12px 0;
@@ -343,14 +333,9 @@ button:disabled {
     display: block;
 }
 
-.document-empty {
-    color: #888;
-    padding: 12px;
-}
-
-/* =========================================
-   9. DOCUMENT ITEM
-========================================= */
+/* =====================================
+   8. DOCUMENT ITEM
+===================================== */
 
 .item {
     padding: 15px;
@@ -378,11 +363,50 @@ button:disabled {
     margin-top: 12px;
 }
 
-/* =========================================
-   10. RESPONSIVE
-========================================= */
+/* =====================================
+   9. MOVE DIALOG
+===================================== */
 
-@media(max-width: 600px) {
+.dialog-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0,0,0,.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.dialog-overlay.active {
+    display: flex;
+}
+
+.dialog-box {
+    width: 100%;
+    max-width: 450px;
+    padding: 24px;
+    background: #171717;
+    border: 1px solid #444;
+    border-radius: 14px;
+}
+
+.dialog-box h3 {
+    margin-bottom: 12px;
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+/* =====================================
+   10. RESPONSIVE
+===================================== */
+
+@media(max-width:600px) {
 
     .dashboard {
         padding: 12px;
@@ -420,7 +444,7 @@ button:disabled {
 
 }
 
-    </style>
+</style>
 </head>
 
 <body>
@@ -434,197 +458,206 @@ button:disabled {
 
 <main class="dashboard">
 
-    <p id="message">
-        Đang kiểm tra quyền Admin...
-    </p>
+<p id="message">
+    Đang kiểm tra quyền Admin...
+</p>
 
-    <!-- =================================
-         THÊM DANH MỤC
-    ================================== -->
 
-    <section class="admin-section">
+<!-- =====================================
+     THÊM DANH MỤC
+===================================== -->
 
-        <h2>THÊM DANH MỤC</h2>
+<section class="admin-section">
 
-        <input
-            id="new-category"
-            type="text"
-            placeholder="Tên danh mục mới"
-        >
+<h2>THÊM DANH MỤC</h2>
 
-        <select id="new-category-parent">
+<input
+    id="new-category"
+    type="text"
+    placeholder="Tên danh mục mới"
+>
 
-            <option value="">
-                📁 Tạo danh mục cấp cao nhất
-            </option>
+<select id="new-category-parent">
+    <option value="">📁 Tạo danh mục cấp cao nhất</option>
+</select>
 
-        </select>
+<div class="password-setting">
 
-        <div class="password-setting">
+<strong>BẢO VỆ DANH MỤC</strong>
 
-            <strong>BẢO VỆ DANH MỤC</strong>
+<label>
+<input
+    type="radio"
+    name="new-category-security"
+    value="public"
+    checked
+>
+🔓 Không yêu cầu mật khẩu
+</label>
 
-            <label>
-                <input
-                    type="radio"
-                    name="new-category-security"
-                    value="public"
-                    checked
-                >
-                🔓 Không yêu cầu mật khẩu
-            </label>
+<label>
+<input
+    type="radio"
+    name="new-category-security"
+    value="protected"
+>
+🔒 Yêu cầu mật khẩu
+</label>
 
-            <label>
-                <input
-                    type="radio"
-                    name="new-category-security"
-                    value="protected"
-                >
-                🔒 Yêu cầu mật khẩu
-            </label>
+<input
+    id="new-category-password"
+    class="password-input"
+    type="password"
+    placeholder="Mật khẩu (6–128 ký tự)"
+    autocomplete="new-password"
+>
 
-            <input
-                id="new-category-password"
-                class="password-input"
-                type="password"
-                placeholder="Mật khẩu (6–128 ký tự)"
-                autocomplete="new-password"
-            >
+<p class="hint">
+Mỗi danh mục có mật khẩu riêng.
+</p>
 
-            <p class="hint">
-                Mỗi danh mục có mật khẩu riêng.
-                Có thể thay đổi hoặc gỡ mật khẩu sau khi tạo.
-            </p>
+</div>
 
-        </div>
+<button class="primary" id="add-category">
++ Thêm danh mục
+</button>
 
-        <button
-            class="primary"
-            id="add-category"
-        >
-            + Thêm danh mục
-        </button>
+</section>
 
-    </section>
 
-    <!-- =================================
-         QUẢN LÝ DANH MỤC
-    ================================== -->
+<!-- =====================================
+     QUẢN LÝ DANH MỤC
+===================================== -->
 
-    <section class="admin-section">
+<section class="admin-section">
 
-        <h2>QUẢN LÝ DANH MỤC</h2>
+<h2>QUẢN LÝ DANH MỤC</h2>
 
-        <p class="hint">
-            Quản lý cây thư mục nhiều cấp.
-            Có thể tạo thư mục con, di chuyển, sắp xếp và gộp danh mục.
-        </p>
+<p class="hint">
+Quản lý cây thư mục nhiều cấp.
+</p>
 
-        <div
-            id="category-list"
-            class="category-tree"
-        >
-            Đang tải...
-        </div>
+<div id="category-list" class="category-tree">
+Đang tải...
+</div>
 
-        <div class="merge-panel">
+<div class="merge-panel">
 
-            <h3>GỘP DANH MỤC</h3>
+<h3>GỘP DANH MỤC</h3>
 
-            <p>
-                Chọn ít nhất hai danh mục.
-                Tài liệu trực tiếp sẽ được chuyển sang danh mục mới.
-                Các thư mục con sẽ được giữ nguyên cấu trúc.
-            </p>
+<p>
+Chọn ít nhất hai danh mục.
+Tài liệu trực tiếp sẽ được chuyển sang danh mục mới.
+Các thư mục con sẽ được giữ nguyên cấu trúc.
+</p>
 
-            <input
-                id="merge-category-name"
-                type="text"
-                placeholder="Tên danh mục mới sau khi gộp"
-            >
+<input
+    id="merge-category-name"
+    type="text"
+    placeholder="Tên danh mục mới sau khi gộp"
+>
 
-            <button
-                class="primary"
-                id="merge-categories"
-            >
-                Gộp danh mục đã chọn
-            </button>
+<button class="primary" id="merge-categories">
+Gộp danh mục đã chọn
+</button>
 
-        </div>
+</div>
 
-    </section>
+</section>
 
-    <!-- =================================
-         THÊM TÀI LIỆU
-    ================================== -->
 
-    <section class="admin-section">
+<!-- =====================================
+     THÊM TÀI LIỆU
+===================================== -->
 
-        <h2>THÊM TÀI LIỆU</h2>
+<section class="admin-section">
 
-        <input
-            id="document-title"
-            type="text"
-            placeholder="Tên tài liệu"
-        >
+<h2>THÊM TÀI LIỆU</h2>
 
-        <select id="document-category">
+<input
+    id="document-title"
+    type="text"
+    placeholder="Tên tài liệu"
+>
 
-            <option value="">
-                Chọn danh mục
-            </option>
+<select id="document-category">
+<option value="">Chọn danh mục</option>
+</select>
 
-        </select>
+<p class="hint" id="upload-storage-info">
+Chọn danh mục để xem chế độ lưu trữ.
+</p>
 
-        <p
-            class="hint"
-            id="upload-storage-info"
-        >
-            Chọn danh mục để xem chế độ lưu trữ.
-        </p>
+<input
+    id="document-file"
+    type="file"
+    accept=".pdf,.doc,.docx"
+>
 
-        <input
-            id="document-file"
-            type="file"
-            accept=".pdf,.doc,.docx"
-        >
+<p class="hint">
+Định dạng hỗ trợ: PDF, DOC, DOCX.
+Giới hạn 50 MB.
+</p>
 
-        <p class="hint">
-            Định dạng hỗ trợ: PDF, DOC, DOCX.
-            Giới hạn 50 MB.
-        </p>
+<button class="primary" id="upload-document">
+Tải tài liệu lên
+</button>
 
-        <button
-            class="primary"
-            id="upload-document"
-        >
-            Tải tài liệu lên
-        </button>
+</section>
 
-    </section>
 
-    <!-- =================================
-         QUẢN LÝ TÀI LIỆU
-    ================================== -->
+<!-- =====================================
+     QUẢN LÝ TÀI LIỆU
+===================================== -->
 
-    <section class="admin-section">
+<section class="admin-section">
 
-        <h2>QUẢN LÝ TÀI LIỆU</h2>
+<h2>QUẢN LÝ TÀI LIỆU</h2>
 
-        <div id="document-list">
-            Đang tải...
-        </div>
+<div id="document-list">
+Đang tải...
+</div>
 
-    </section>
+</section>
 
-    <button
-        class="logout-button"
-        id="logout"
-    >
-        Đăng xuất
-    </button>
+<button class="logout-button" id="logout">
+Đăng xuất
+</button>
 
 </main>
+
+
+<!-- =====================================
+     MOVE DIALOG
+===================================== -->
+
+<div class="dialog-overlay" id="move-dialog">
+
+<div class="dialog-box">
+
+<h3>DI CHUYỂN DANH MỤC</h3>
+
+<p class="hint" id="move-dialog-name"></p>
+
+<select id="move-target">
+<option value="">Chọn danh mục đích</option>
+</select>
+
+<div class="dialog-actions">
+
+<button class="secondary" id="move-cancel">
+Hủy
+</button>
+
+<button class="primary" id="move-confirm">
+Xác nhận
+</button>
+
+</div>
+
+</div>
+
+</div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -636,36 +669,32 @@ button:disabled {
 // ==========================================
 
 const SUPABASE_URL =
-    "https://axmgzhcozkwekjxbofoh.supabase.co";
+"https://axmgzhcozkwekjxbofoh.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_SQPDN_7N8IBG92iMWFSQ4A_3PYj9ykP";
+"sb_publishable_SQPDN_7N8IBG92iMWFSQ4A_3PYj9ykP";
 
 const ADMIN_UID =
-    "1ec8a1fa-7f6f-4626-9890-84aee80f2f4b";
+"1ec8a1fa-7f6f-4626-9890-84aee80f2f4b";
 
-const PUBLIC_BUCKET =
-    "study-documents";
-
-const PRIVATE_BUCKET =
-    "protected-documents";
-
-const FUNCTION_NAME =
-    "dynamic-responder";
+const PUBLIC_BUCKET = "study-documents";
+const PRIVATE_BUCKET = "protected-documents";
+const FUNCTION_NAME = "dynamic-responder";
 
 const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
 let categoriesCache = [];
 let documentsCache = [];
 
 let busy = false;
+let movingCategory = null;
 
 const message =
-    document.getElementById("message");
+document.getElementById("message");
 
 
 // ==========================================
@@ -673,9 +702,7 @@ const message =
 // ==========================================
 
 function showMessage(text) {
-
     message.textContent = text;
-
 }
 
 function escapeHTML(value) {
@@ -751,30 +778,20 @@ function getDocumentPath(doc) {
     }
 
     if (doc.file_url.startsWith("private://")) {
-
-        return doc.file_url.replace(
-            "private://",
-            ""
-        );
-
+        return doc.file_url.replace("private://", "");
     }
 
     const bucket = getDocumentBucket(doc);
 
     const markers = [
-
         `/storage/v1/object/public/${bucket}/`,
-
         `/storage/v1/object/sign/${bucket}/`,
-
         `/storage/v1/object/${bucket}/`
-
     ];
 
     for (const marker of markers) {
 
-        const index =
-            doc.file_url.indexOf(marker);
+        const index = doc.file_url.indexOf(marker);
 
         if (index !== -1) {
 
@@ -804,16 +821,14 @@ function getPublicUrl(bucket, path) {
 function getDocumentUrl(bucket, path) {
 
     if (bucket === PRIVATE_BUCKET) {
-
         return "private://" + path;
-
     }
 
     return getPublicUrl(bucket, path);
 
 }
 
-function getCategoryName(id) {
+function getDocumentName(id) {
 
     return categoriesCache.find(
         c => c.id === id
@@ -825,11 +840,8 @@ function sortCategories(list) {
 
     return [...list].sort((a, b) => {
 
-        const orderA =
-            Number(a.sort_order || 0);
-
-        const orderB =
-            Number(b.sort_order || 0);
+        const orderA = Number(a.sort_order ?? 0);
+        const orderB = Number(b.sort_order ?? 0);
 
         if (orderA !== orderB) {
             return orderA - orderB;
@@ -849,9 +861,7 @@ function setBusy(value) {
     document.querySelectorAll(
         ".dashboard button"
     ).forEach(button => {
-
         button.disabled = value;
-
     });
 
 }
@@ -877,7 +887,6 @@ async function checkAdmin() {
     ) {
 
         window.location.href = "admin.html";
-
         return false;
 
     }
@@ -898,24 +907,15 @@ async function callPasswordFunction(body) {
         error
     } = await supabaseClient.functions.invoke(
         FUNCTION_NAME,
-        {
-            body
-        }
+        { body }
     );
 
     if (error) {
-
-        throw new Error(
-            error.message ||
-            "Không thể kết nối Edge Function."
-        );
-
+        throw new Error(error.message);
     }
 
     if (data?.error) {
-
         throw new Error(data.error);
-
     }
 
     return data;
@@ -935,12 +935,8 @@ async function fetchCategories() {
     } = await supabaseClient
         .from("categories")
         .select("*")
-        .order("sort_order", {
-            ascending: true
-        })
-        .order("created_at", {
-            ascending: true
-        });
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: true });
 
     if (error) {
 
@@ -962,10 +958,8 @@ function getChildren(parentId) {
 
     return sortCategories(
         categoriesCache.filter(category =>
-
             (category.parent_id || null) ===
             (parentId || null)
-
         )
     );
 
@@ -983,11 +977,8 @@ function getDescendantIds(categoryId) {
             );
 
         children.forEach(child => {
-
             result.push(child.id);
-
             walk(child.id);
-
         });
 
     }
@@ -1015,14 +1006,14 @@ function buildCategoryOptions(selectedId = "") {
 
         getChildren(parentId).forEach(category => {
 
-            const prefix = "— ".repeat(depth);
-
             html += `
                 <option
                     value="${escapeHTML(category.id)}"
                     ${category.id === selectedId ? "selected" : ""}
                 >
-                    ${escapeHTML(prefix + category.name)}
+                    ${escapeHTML(
+                        "— ".repeat(depth) + category.name
+                    )}
                 </option>
             `;
 
@@ -1048,46 +1039,27 @@ async function createCategory(name, parentId = null) {
     const slugBase = makeSlug(name);
 
     if (!slugBase) {
-
         showMessage("Tên danh mục không hợp lệ.");
-
         return false;
-
     }
 
-    const slug =
-        slugBase + "-" + Date.now().toString(36);
-
-    const siblings =
-        categoriesCache.filter(c =>
-
-            (c.parent_id || null) ===
-            (parentId || null)
-
-        );
+    const siblings = categoriesCache.filter(c =>
+        (c.parent_id || null) === (parentId || null)
+    );
 
     const maxOrder = siblings.reduce(
-        (max, c) => Math.max(
-            max,
-            Number(c.sort_order || 0)
-        ),
+        (max, c) => Math.max(max, Number(c.sort_order ?? -1)),
         -1
     );
 
-    const {
-        error
-    } = await supabaseClient
+    const { error } = await supabaseClient
         .from("categories")
         .insert({
 
             name,
-
-            slug,
-
+            slug: slugBase + "-" + Date.now().toString(36),
             parent_id: parentId,
-
             sort_order: maxOrder + 1,
-
             requires_password: false
 
         });
@@ -1117,18 +1089,13 @@ async function createCategory(name, parentId = null) {
 
 async function addCategory() {
 
-    const input =
-        document.getElementById("new-category");
-
-    const passwordInput =
-        document.getElementById("new-category-password");
+    const input = document.getElementById("new-category");
+    const passwordInput = document.getElementById("new-category-password");
 
     const name = input.value.trim();
 
     const parentId =
-        document.getElementById(
-            "new-category-parent"
-        ).value || null;
+        document.getElementById("new-category-parent").value || null;
 
     const security =
         document.querySelector(
@@ -1138,25 +1105,16 @@ async function addCategory() {
     const password = passwordInput.value;
 
     if (!name) {
-
         showMessage("Hãy nhập tên danh mục.");
-
         return;
-
     }
 
     if (
         security === "protected" &&
-        (
-            password.length < 6 ||
-            password.length > 128
-        )
+        (password.length < 6 || password.length > 128)
     ) {
 
-        showMessage(
-            "Mật khẩu phải có từ 6 đến 128 ký tự."
-        );
-
+        showMessage("Mật khẩu phải có từ 6 đến 128 ký tự.");
         return;
 
     }
@@ -1164,26 +1122,16 @@ async function addCategory() {
     const slugBase = makeSlug(name);
 
     if (!slugBase) {
-
         showMessage("Tên danh mục không hợp lệ.");
-
         return;
-
     }
 
-    const siblings =
-        categoriesCache.filter(c =>
-
-            (c.parent_id || null) ===
-            (parentId || null)
-
-        );
+    const siblings = categoriesCache.filter(c =>
+        (c.parent_id || null) === (parentId || null)
+    );
 
     const maxOrder = siblings.reduce(
-        (max, c) => Math.max(
-            max,
-            Number(c.sort_order || 0)
-        ),
+        (max, c) => Math.max(max, Number(c.sort_order ?? -1)),
         -1
     );
 
@@ -1197,14 +1145,9 @@ async function addCategory() {
         .insert({
 
             name,
-
-            slug:
-                slugBase + "-" + Date.now().toString(36),
-
+            slug: slugBase + "-" + Date.now().toString(36),
             parent_id: parentId,
-
             sort_order: maxOrder + 1,
-
             requires_password: false
 
         })
@@ -1228,23 +1171,25 @@ async function addCategory() {
             await callPasswordFunction({
 
                 action: "set_password",
-
                 category_id: category.id,
-
                 password
 
             });
 
-        } catch (passwordError) {
+        } catch (error) {
 
-            await supabaseClient
-                .from("categories")
-                .delete()
-                .eq("id", category.id);
+            const { error: rollbackError } =
+                await supabaseClient
+                    .from("categories")
+                    .delete()
+                    .eq("id", category.id);
 
             showMessage(
                 "Không thể tạo mật khẩu: " +
-                passwordError.message
+                error.message +
+                (rollbackError
+                    ? ". Không thể tự động xóa danh mục vừa tạo."
+                    : ". Danh mục vừa tạo đã được hoàn tác.")
             );
 
             return;
@@ -1254,7 +1199,6 @@ async function addCategory() {
     }
 
     input.value = "";
-
     passwordInput.value = "";
 
     document.querySelector(
@@ -1285,13 +1229,9 @@ async function renameCategory(category) {
         category.name
     );
 
-    if (!newName?.trim()) {
-        return;
-    }
+    if (!newName?.trim()) return;
 
-    const {
-        error
-    } = await supabaseClient
+    const { error } = await supabaseClient
         .from("categories")
         .update({
             name: newName.trim()
@@ -1300,10 +1240,7 @@ async function renameCategory(category) {
 
     if (error) {
 
-        showMessage(
-            "Lỗi đổi tên: " + error.message
-        );
-
+        showMessage("Lỗi đổi tên: " + error.message);
         return;
 
     }
@@ -1322,22 +1259,13 @@ async function renameCategory(category) {
 async function moveCategory(category, parentId) {
 
     if (parentId === category.id) {
-
-        showMessage(
-            "Không thể đưa thư mục vào chính nó."
-        );
-
+        showMessage("Không thể đưa thư mục vào chính nó.");
         return;
-
     }
 
-    const descendants =
-        getDescendantIds(category.id);
+    const descendants = getDescendantIds(category.id);
 
-    if (
-        parentId &&
-        descendants.includes(parentId)
-    ) {
+    if (parentId && descendants.includes(parentId)) {
 
         showMessage(
             "Không thể đưa thư mục vào thư mục con của chính nó."
@@ -1347,31 +1275,21 @@ async function moveCategory(category, parentId) {
 
     }
 
-    const siblings =
-        categoriesCache.filter(c =>
-
-            (c.parent_id || null) ===
-            (parentId || null) &&
-            c.id !== category.id
-
-        );
+    const siblings = categoriesCache.filter(c =>
+        (c.parent_id || null) === (parentId || null) &&
+        c.id !== category.id
+    );
 
     const maxOrder = siblings.reduce(
-        (max, c) => Math.max(
-            max,
-            Number(c.sort_order || 0)
-        ),
+        (max, c) => Math.max(max, Number(c.sort_order ?? -1)),
         -1
     );
 
-    const {
-        error
-    } = await supabaseClient
+    const { error } = await supabaseClient
         .from("categories")
         .update({
 
             parent_id: parentId,
-
             sort_order: maxOrder + 1
 
         })
@@ -1379,15 +1297,16 @@ async function moveCategory(category, parentId) {
 
     if (error) {
 
-        showMessage(
-            "Lỗi di chuyển: " + error.message
-        );
-
+        showMessage("Lỗi di chuyển: " + error.message);
         return;
 
     }
 
-    showMessage("Đã di chuyển danh mục.");
+    showMessage(
+        parentId
+            ? "Đã di chuyển danh mục."
+            : "Đã đưa danh mục ra ngoài thành công."
+    );
 
     await refreshAll();
 
@@ -1395,108 +1314,216 @@ async function moveCategory(category, parentId) {
 
 
 // ==========================================
-// 11. REORDER CATEGORY
+// 11. IMPROVED REORDER CATEGORY
 // ==========================================
 
 async function reorderCategory(category, direction) {
 
-    const siblings =
-        getChildren(category.parent_id);
+    if (busy) return;
 
-    const index =
-        siblings.findIndex(c => c.id === category.id);
+    const siblings = getChildren(category.parent_id);
+
+    const index = siblings.findIndex(
+        c => c.id === category.id
+    );
+
+    if (index === -1) return;
 
     const targetIndex = index + direction;
 
     if (
         targetIndex < 0 ||
         targetIndex >= siblings.length
-    ) {
-        return;
-    }
+    ) return;
 
-    const other = siblings[targetIndex];
+    const reordered = [...siblings];
 
-    const firstOrder =
-        Number(category.sort_order || 0);
+    const [item] = reordered.splice(index, 1);
 
-    const secondOrder =
-        Number(other.sort_order || 0);
+    reordered.splice(targetIndex, 0, item);
 
-    const {
-        error: error1
-    } = await supabaseClient
-        .from("categories")
-        .update({
-            sort_order: secondOrder
-        })
-        .eq("id", category.id);
+    setBusy(true);
 
-    if (error1) {
+    showMessage("Đang cập nhật thứ tự danh mục...");
+
+    try {
+
+        /*
+           BƯỚC 1:
+           Gán giá trị tạm thời để tránh
+           trùng sort_order khi hoán đổi.
+        */
+
+        for (let i = 0; i < reordered.length; i++) {
+
+            const { error } = await supabaseClient
+                .from("categories")
+                .update({
+                    sort_order: -(i + 1)
+                })
+                .eq("id", reordered[i].id);
+
+            if (error) throw error;
+
+        }
+
+        /*
+           BƯỚC 2:
+           Ghi thứ tự chính thức.
+        */
+
+        for (let i = 0; i < reordered.length; i++) {
+
+            const { error } = await supabaseClient
+                .from("categories")
+                .update({
+                    sort_order: i
+                })
+                .eq("id", reordered[i].id);
+
+            if (error) throw error;
+
+        }
+
+        showMessage("Đã cập nhật thứ tự danh mục.");
+
+    } catch (error) {
 
         showMessage(
-            "Lỗi sắp xếp: " + error1.message
+            "Không thể sắp xếp danh mục: " + error.message
         );
 
-        return;
+    } finally {
 
-    }
-
-    const {
-        error: error2
-    } = await supabaseClient
-        .from("categories")
-        .update({
-            sort_order: firstOrder
-        })
-        .eq("id", other.id);
-
-    if (error2) {
-
-        showMessage(
-            "Lỗi sắp xếp: " + error2.message
-        );
+        setBusy(false);
 
         await refreshAll();
 
-        return;
-
     }
-
-    await refreshAll();
 
 }
 
 
 // ==========================================
-// 12. CATEGORY PASSWORD
+// 12. MOVE DIALOG
+// ==========================================
+
+function openMoveDialog(category) {
+
+    movingCategory = category;
+
+    const overlay =
+        document.getElementById("move-dialog");
+
+    const select =
+        document.getElementById("move-target");
+
+    document.getElementById(
+        "move-dialog-name"
+    ).textContent =
+        "Đang di chuyển: " + category.name;
+
+    select.innerHTML = `
+        <option value="">Chọn danh mục đích</option>
+    `;
+
+    const descendants = getDescendantIds(category.id);
+
+    categoriesCache.forEach(c => {
+
+        if (
+            c.id === category.id ||
+            descendants.includes(c.id)
+        ) return;
+
+        const option = document.createElement("option");
+
+        option.value = c.id;
+
+        option.textContent =
+            getCategoryPath(c.id);
+
+        select.appendChild(option);
+
+    });
+
+    overlay.classList.add("active");
+
+}
+
+function getCategoryPath(categoryId) {
+
+    const parts = [];
+
+    let current = categoriesCache.find(
+        c => c.id === categoryId
+    );
+
+    while (current) {
+
+        parts.unshift(current.name);
+
+        current = categoriesCache.find(
+            c => c.id === current.parent_id
+        );
+
+    }
+
+    return parts.join(" / ");
+
+}
+
+function closeMoveDialog() {
+
+    document.getElementById(
+        "move-dialog"
+    ).classList.remove("active");
+
+    movingCategory = null;
+
+}
+
+async function confirmMoveCategory() {
+
+    if (!movingCategory) return;
+
+    const parentId =
+        document.getElementById("move-target").value;
+
+    if (!parentId) {
+
+        showMessage("Hãy chọn danh mục đích.");
+        return;
+
+    }
+
+    const category = movingCategory;
+
+    closeMoveDialog();
+
+    await moveCategory(category, parentId);
+
+}
+
+
+// ==========================================
+// 13. CATEGORY PASSWORD
 // ==========================================
 
 async function migrateCategoryFiles(category, targetProtected) {
 
     const targetCategory = {
-
         ...category,
-
         requires_password: targetProtected
-
     };
 
-    const {
-        data: docs,
-        error
-    } = await supabaseClient
+    const { data: docs, error } = await supabaseClient
         .from("documents")
         .select("*")
         .eq("category_id", category.id);
 
     if (error) {
-
-        throw new Error(
-            "Không thể lấy danh sách tài liệu: " +
-            error.message
-        );
-
+        throw new Error(error.message);
     }
 
     for (const doc of docs || []) {
@@ -1516,9 +1543,7 @@ async function setCategoryPassword(category) {
         `Nhập mật khẩu cho "${category.name}" (6–128 ký tự):`
     );
 
-    if (newPassword === null) {
-        return;
-    }
+    if (newPassword === null) return;
 
     if (
         newPassword.length < 6 ||
@@ -1539,32 +1564,24 @@ async function setCategoryPassword(category) {
             "Đang chuyển tài liệu sang kho riêng tư..."
         );
 
-        await migrateCategoryFiles(
-            category,
-            true
-        );
+        await migrateCategoryFiles(category, true);
 
         await callPasswordFunction({
 
             action: "set_password",
-
             category_id: category.id,
-
             password: newPassword
 
         });
 
-        showMessage(
-            "Đã đặt / đổi mật khẩu thành công."
-        );
+        showMessage("Đã đặt / đổi mật khẩu thành công.");
 
         await refreshAll();
 
     } catch (error) {
 
         showMessage(
-            "Lỗi thiết lập mật khẩu: " +
-            error.message
+            "Lỗi thiết lập mật khẩu: " + error.message
         );
 
     }
@@ -1575,9 +1592,7 @@ async function removeCategoryPassword(category) {
 
     if (!confirm(
         `Gỡ mật khẩu sẽ chuyển tài liệu của "${category.name}" sang kho công khai. Tiếp tục?`
-    )) {
-        return;
-    }
+    )) return;
 
     try {
 
@@ -1585,30 +1600,23 @@ async function removeCategoryPassword(category) {
             "Đang chuyển tài liệu sang kho công khai..."
         );
 
-        await migrateCategoryFiles(
-            category,
-            false
-        );
+        await migrateCategoryFiles(category, false);
 
         await callPasswordFunction({
 
             action: "remove_password",
-
             category_id: category.id
 
         });
 
-        showMessage(
-            "Đã gỡ mật khẩu thành công."
-        );
+        showMessage("Đã gỡ mật khẩu thành công.");
 
         await refreshAll();
 
     } catch (error) {
 
         showMessage(
-            "Lỗi gỡ mật khẩu: " +
-            error.message
+            "Lỗi gỡ mật khẩu: " + error.message
         );
 
     }
@@ -1620,7 +1628,6 @@ async function manageCategoryPassword(category) {
     if (!category.requires_password) {
 
         await setCategoryPassword(category);
-
         return;
 
     }
@@ -1643,15 +1650,12 @@ async function manageCategoryPassword(category) {
 
 
 // ==========================================
-// 13. DELETE CATEGORY
+// 14. DELETE CATEGORY
 // ==========================================
 
 async function deleteCategory(category) {
 
-    const children =
-        getChildren(category.id);
-
-    if (children.length > 0) {
+    if (getChildren(category.id).length > 0) {
 
         showMessage(
             "Không thể xóa: hãy di chuyển hoặc xóa thư mục con trước."
@@ -1661,24 +1665,18 @@ async function deleteCategory(category) {
 
     }
 
-    const {
-        count,
-        error: countError
-    } = await supabaseClient
-        .from("documents")
-        .select("*", {
-            count: "exact",
-            head: true
-        })
-        .eq("category_id", category.id);
+    const { count, error: countError } =
+        await supabaseClient
+            .from("documents")
+            .select("*", {
+                count: "exact",
+                head: true
+            })
+            .eq("category_id", category.id);
 
     if (countError) {
 
-        showMessage(
-            "Không thể kiểm tra tài liệu: " +
-            countError.message
-        );
-
+        showMessage(countError.message);
         return;
 
     }
@@ -1695,23 +1693,16 @@ async function deleteCategory(category) {
 
     if (!confirm(
         `Bạn có chắc muốn xóa danh mục "${category.name}"?`
-    )) {
-        return;
-    }
+    )) return;
 
-    const {
-        error
-    } = await supabaseClient
+    const { error } = await supabaseClient
         .from("categories")
         .delete()
         .eq("id", category.id);
 
     if (error) {
 
-        showMessage(
-            "Lỗi xóa danh mục: " + error.message
-        );
-
+        showMessage("Lỗi xóa danh mục: " + error.message);
         return;
 
     }
@@ -1724,13 +1715,12 @@ async function deleteCategory(category) {
 
 
 // ==========================================
-// 14. CATEGORY TREE
+// 15. RENDER CATEGORY TREE
 // ==========================================
 
 function renderCategoryTree() {
 
-    const list =
-        document.getElementById("category-list");
+    const list = document.getElementById("category-list");
 
     list.innerHTML = "";
 
@@ -1747,71 +1737,47 @@ function renderCategoryTree() {
     }
 
     const selectedIds = new Set(
-
-        [
-            ...document.querySelectorAll(
-                ".merge-checkbox:checked"
-            )
-        ].map(input => input.value)
-
+        [...document.querySelectorAll(".merge-checkbox:checked")]
+            .map(input => input.value)
     );
 
     function createNode(category, depth = 0) {
 
-        const node =
-            document.createElement("div");
+        const node = document.createElement("div");
 
         node.className = "category-node";
 
-        const header =
-            document.createElement("div");
+        const header = document.createElement("div");
 
-        header.className =
-            "category-node-header";
+        header.className = "category-node-header";
 
-        const checkbox =
-            document.createElement("input");
+        const checkbox = document.createElement("input");
 
         checkbox.type = "checkbox";
-
-        checkbox.className =
-            "merge-checkbox";
-
+        checkbox.className = "merge-checkbox";
         checkbox.value = category.id;
+        checkbox.checked = selectedIds.has(category.id);
 
-        checkbox.checked =
-            selectedIds.has(category.id);
+        const name = document.createElement("span");
 
-        checkbox.title = "Chọn để gộp";
+        name.className = "category-node-name";
+        name.textContent = "📁 " + category.name;
 
-        const name =
-            document.createElement("span");
-
-        name.className =
-            "category-node-name";
-
-        name.textContent =
-            "📁 " + category.name;
-
-        const badge =
-            document.createElement("span");
+        const badge = document.createElement("span");
 
         badge.className =
-            "category-badge";
+            "category-badge " +
+            (category.requires_password ? "protected" : "public");
 
         badge.textContent =
             category.requires_password
-                ? "🔒 Riêng tư"
-                : "🔓 Công khai";
+                ? "🔒 RIÊNG TƯ"
+                : "🔓 CÔNG KHAI";
 
-        const depthLabel =
-            document.createElement("span");
+        const depthLabel = document.createElement("span");
 
-        depthLabel.className =
-            "category-depth";
-
-        depthLabel.textContent =
-            "Cấp " + (depth + 1);
+        depthLabel.className = "category-depth";
+        depthLabel.textContent = "Cấp " + (depth + 1);
 
         header.append(
             checkbox,
@@ -1822,21 +1788,17 @@ function renderCategoryTree() {
 
         node.appendChild(header);
 
-        const tools =
-            document.createElement("div");
+        const tools = document.createElement("div");
 
         tools.className = "category-tools";
 
 
         // TẠO THƯ MỤC CON
 
-        const addChild =
-            document.createElement("button");
+        const addChild = document.createElement("button");
 
         addChild.className = "primary";
-
-        addChild.textContent =
-            "+ Thư mục con";
+        addChild.textContent = "+ Thư mục con";
 
         addChild.onclick = async () => {
 
@@ -1844,9 +1806,7 @@ function renderCategoryTree() {
                 "Nhập tên thư mục con:"
             );
 
-            if (!childName?.trim()) {
-                return;
-            }
+            if (!childName?.trim()) return;
 
             await createCategory(
                 childName.trim(),
@@ -1858,24 +1818,17 @@ function renderCategoryTree() {
 
         // ĐỔI TÊN
 
-        const rename =
-            document.createElement("button");
+        const rename = document.createElement("button");
 
         rename.className = "secondary";
-
         rename.textContent = "Đổi tên";
 
-        rename.onclick = async () => {
-
-            await renameCategory(category);
-
-        };
+        rename.onclick = () => renameCategory(category);
 
 
         // MẬT KHẨU
 
-        const password =
-            document.createElement("button");
+        const password = document.createElement("button");
 
         password.className = "secondary";
 
@@ -1884,164 +1837,87 @@ function renderCategoryTree() {
                 ? "Quản lý mật khẩu"
                 : "Đặt mật khẩu";
 
-        password.onclick = async () => {
-
-            await manageCategoryPassword(category);
-
-        };
+        password.onclick = () =>
+            manageCategoryPassword(category);
 
 
         // DI CHUYỂN
 
-        const move =
-            document.createElement("button");
+        const move = document.createElement("button");
 
         move.className = "move-button";
-
         move.textContent = "Di chuyển";
 
-        move.onclick = async () => {
-
-            const descendants =
-                getDescendantIds(category.id);
-
-            const choices =
-                categoriesCache.filter(c =>
-
-                    c.id !== category.id &&
-                    !descendants.includes(c.id)
-
-                );
-
-            let options =
-                "0. Đưa ra ngoài cùng\n\n";
-
-            choices.forEach((c, index) => {
-
-                options +=
-                    `${index + 1}. ${c.name} | ID: ${c.id}\n`;
-
-            });
-
-            const answer = prompt(
-                "Chọn danh mục cha mới:\n\n" +
-                options +
-                "\nNhập ID của danh mục đích hoặc 0:"
-            );
-
-            if (answer === null) {
-                return;
-            }
-
-            let parentId = null;
-
-            if (
-                answer.trim() !== "0" &&
-                answer.trim() !== ""
-            ) {
-
-                const match =
-                    choices.find(c =>
-                        c.id === answer.trim()
-                    );
-
-                if (!match) {
-
-                    showMessage(
-                        "ID danh mục không hợp lệ."
-                    );
-
-                    return;
-
-                }
-
-                parentId = match.id;
-
-            }
-
-            await moveCategory(
-                category,
-                parentId
-            );
-
-        };
+        move.onclick = () =>
+            openMoveDialog(category);
 
 
         // ĐƯA RA NGOÀI
 
-        const promote =
-            document.createElement("button");
+        const promote = document.createElement("button");
 
         promote.className = "secondary";
+        promote.textContent = "↥ Đưa ra ngoài";
 
-        promote.textContent = "Đưa ra ngoài";
+        promote.disabled = !category.parent_id;
 
         promote.onclick = async () => {
 
-            await moveCategory(
-                category,
-                null
-            );
+            if (!category.parent_id) return;
+
+            if (!confirm(
+                `Đưa "${category.name}" ra ngoài thành danh mục cấp 1?`
+            )) return;
+
+            await moveCategory(category, null);
 
         };
 
 
-        // SẮP XẾP LÊN
+        // LÊN
 
-        const up =
-            document.createElement("button");
+        const up = document.createElement("button");
 
         up.className = "secondary";
-
         up.textContent = "↑";
-
         up.title = "Chuyển lên";
 
-        up.onclick = async () => {
+        const siblings = getChildren(category.parent_id);
 
-            await reorderCategory(
-                category,
-                -1
-            );
+        const index = siblings.findIndex(
+            c => c.id === category.id
+        );
 
-        };
+        up.disabled = index <= 0;
+
+        up.onclick = () =>
+            reorderCategory(category, -1);
 
 
-        // SẮP XẾP XUỐNG
+        // XUỐNG
 
-        const down =
-            document.createElement("button");
+        const down = document.createElement("button");
 
         down.className = "secondary";
-
         down.textContent = "↓";
-
         down.title = "Chuyển xuống";
 
-        down.onclick = async () => {
+        down.disabled =
+            index === -1 || index >= siblings.length - 1;
 
-            await reorderCategory(
-                category,
-                1
-            );
-
-        };
+        down.onclick = () =>
+            reorderCategory(category, 1);
 
 
         // XÓA
 
-        const remove =
-            document.createElement("button");
+        const remove = document.createElement("button");
 
         remove.className = "danger";
-
         remove.textContent = "Xóa";
 
-        remove.onclick = async () => {
-
-            await deleteCategory(category);
-
-        };
+        remove.onclick = () =>
+            deleteCategory(category);
 
 
         tools.append(
@@ -2060,8 +1936,7 @@ function renderCategoryTree() {
 
         // THƯ MỤC CON
 
-        const children =
-            getChildren(category.id);
+        const children = getChildren(category.id);
 
         if (children.length > 0) {
 
@@ -2099,26 +1974,19 @@ function renderCategoryTree() {
 
 
 // ==========================================
-// 15. CATEGORY SELECTS
+// 16. CATEGORY SELECTS
 // ==========================================
 
 function updateCategorySelects() {
 
     const parentSelect =
-        document.getElementById(
-            "new-category-parent"
-        );
+        document.getElementById("new-category-parent");
 
     const documentSelect =
-        document.getElementById(
-            "document-category"
-        );
+        document.getElementById("document-category");
 
-    const previousParent =
-        parentSelect.value;
-
-    const previousDocument =
-        documentSelect.value;
+    const previousParent = parentSelect.value;
+    const previousDocument = documentSelect.value;
 
     parentSelect.innerHTML =
         buildCategoryOptions(previousParent);
@@ -2130,14 +1998,13 @@ function updateCategorySelects() {
 
         getChildren(parentId).forEach(category => {
 
-            const option =
-                document.createElement("option");
+            const option = document.createElement("option");
 
             option.value = category.id;
 
             option.textContent =
                 "— ".repeat(depth) +
-                (category.requires_password ? "🔒 " : "📁 ") +
+                (category.requires_password ? "🔒 " : "🔓 ") +
                 category.name;
 
             option.selected =
@@ -2159,17 +2026,14 @@ function updateCategorySelects() {
 
 
 // ==========================================
-// 16. LOAD CATEGORIES
+// 17. LOAD CATEGORIES
 // ==========================================
 
 async function loadCategories() {
 
-    const success =
-        await fetchCategories();
+    const success = await fetchCategories();
 
-    if (!success) {
-        return false;
-    }
+    if (!success) return false;
 
     renderCategoryTree();
 
@@ -2181,25 +2045,20 @@ async function loadCategories() {
 
 
 // ==========================================
-// 17. MOVE DOCUMENT STORAGE
+// 18. MOVE DOCUMENT STORAGE
 // ==========================================
 
 async function moveDocumentStorage(doc, targetCategory) {
 
-    const sourceBucket =
-        getDocumentBucket(doc);
+    const sourceBucket = getDocumentBucket(doc);
+    const targetBucket = getTargetBucket(targetCategory);
 
-    const targetBucket =
-        getTargetBucket(targetCategory);
-
-    const sourcePath =
-        getDocumentPath(doc);
+    const sourcePath = getDocumentPath(doc);
 
     if (!sourcePath) {
 
         throw new Error(
-            "Không xác định được đường dẫn file: " +
-            doc.title
+            "Không xác định được đường dẫn file: " + doc.title
         );
 
     }
@@ -2208,59 +2067,40 @@ async function moveDocumentStorage(doc, targetCategory) {
 
     if (sourceBucket === targetBucket) {
 
-        const {
-            error
-        } = await supabaseClient
+        const { error } = await supabaseClient
             .from("documents")
             .update({
 
-                category_id:
-                    targetCategory.id,
-
-                storage_bucket:
-                    targetBucket,
-
-                storage_path:
-                    sourcePath,
-
-                file_url:
-                    getDocumentUrl(
-                        targetBucket,
-                        sourcePath
-                    )
+                category_id: targetCategory.id,
+                storage_bucket: targetBucket,
+                storage_path: sourcePath,
+                file_url: getDocumentUrl(targetBucket, sourcePath)
 
             })
             .eq("id", doc.id);
 
-        if (error) {
-            throw error;
-        }
+        if (error) throw error;
 
         return true;
 
     }
 
-
     // KHÁC BUCKET
 
-    const {
-        data: fileData,
-        error: downloadError
-    } = await supabaseClient.storage
-        .from(sourceBucket)
-        .download(sourcePath);
+    const { data: fileData, error: downloadError } =
+        await supabaseClient.storage
+            .from(sourceBucket)
+            .download(sourcePath);
 
     if (downloadError) {
 
         throw new Error(
-            "Không tải được file nguồn: " +
-            downloadError.message
+            "Không tải được file nguồn: " + downloadError.message
         );
 
     }
 
-    const fileName =
-        sourcePath.split("/").pop();
+    const fileName = sourcePath.split("/").pop();
 
     const newPath =
         targetCategory.id +
@@ -2269,14 +2109,10 @@ async function moveDocumentStorage(doc, targetCategory) {
         "-" +
         fileName;
 
-    const {
-        error: uploadError
-    } = await supabaseClient.storage
-        .from(targetBucket)
-        .upload(
-            newPath,
-            fileData
-        );
+    const { error: uploadError } =
+        await supabaseClient.storage
+            .from(targetBucket)
+            .upload(newPath, fileData);
 
     if (uploadError) {
 
@@ -2287,29 +2123,18 @@ async function moveDocumentStorage(doc, targetCategory) {
 
     }
 
-    const {
-        error: updateError
-    } = await supabaseClient
-        .from("documents")
-        .update({
+    const { error: updateError } =
+        await supabaseClient
+            .from("documents")
+            .update({
 
-            category_id:
-                targetCategory.id,
+                category_id: targetCategory.id,
+                storage_bucket: targetBucket,
+                storage_path: newPath,
+                file_url: getDocumentUrl(targetBucket, newPath)
 
-            storage_bucket:
-                targetBucket,
-
-            storage_path:
-                newPath,
-
-            file_url:
-                getDocumentUrl(
-                    targetBucket,
-                    newPath
-                )
-
-        })
-        .eq("id", doc.id);
+            })
+            .eq("id", doc.id);
 
     if (updateError) {
 
@@ -2324,20 +2149,12 @@ async function moveDocumentStorage(doc, targetCategory) {
 
     }
 
-    // CHỈ XÓA FILE CŨ SAU KHI DATABASE CẬP NHẬT
-
-    const {
-        error: removeError
-    } = await supabaseClient.storage
-        .from(sourceBucket)
-        .remove([sourcePath]);
+    const { error: removeError } =
+        await supabaseClient.storage
+            .from(sourceBucket)
+            .remove([sourcePath]);
 
     if (removeError) {
-
-        console.error(
-            "Không xóa được file nguồn:",
-            removeError.message
-        );
 
         showMessage(
             "Đã chuyển file nhưng file cũ chưa xóa được: " +
@@ -2352,60 +2169,45 @@ async function moveDocumentStorage(doc, targetCategory) {
 
 
 // ==========================================
-// 18. MERGE CATEGORIES
+// 19. MERGE CATEGORIES
 // ==========================================
 
 async function mergeCategories() {
 
+    if (busy) return;
+
     const selectedIds = [
-
-        ...document.querySelectorAll(
-            ".merge-checkbox:checked"
-        )
-
+        ...document.querySelectorAll(".merge-checkbox:checked")
     ].map(input => input.value);
 
     const newName =
-        document.getElementById(
-            "merge-category-name"
-        ).value.trim();
+        document.getElementById("merge-category-name")
+            .value.trim();
 
     if (selectedIds.length < 2) {
 
-        showMessage(
-            "Hãy chọn ít nhất hai danh mục."
-        );
-
+        showMessage("Hãy chọn ít nhất hai danh mục.");
         return;
 
     }
 
     if (!newName) {
 
-        showMessage(
-            "Hãy nhập tên danh mục mới."
-        );
-
+        showMessage("Hãy nhập tên danh mục mới.");
         return;
 
     }
 
-    const selected =
-        categoriesCache.filter(c =>
-            selectedIds.includes(c.id)
-        );
+    const selected = categoriesCache.filter(c =>
+        selectedIds.includes(c.id)
+    );
 
     if (selected.length !== selectedIds.length) {
 
-        showMessage(
-            "Danh mục được chọn không còn tồn tại."
-        );
-
+        showMessage("Danh mục được chọn không còn tồn tại.");
         return;
 
     }
-
-    // KIỂM TRA BẢO MẬT
 
     const securityModes = new Set(
         selected.map(c => !!c.requires_password)
@@ -2414,7 +2216,7 @@ async function mergeCategories() {
     if (securityModes.size > 1) {
 
         showMessage(
-            "Không thể gộp danh mục công khai và riêng tư cùng lúc. Hãy thống nhất chế độ bảo mật trước."
+            "Không thể gộp danh mục công khai và riêng tư cùng lúc."
         );
 
         return;
@@ -2429,33 +2231,26 @@ async function mergeCategories() {
     if (protectedMode) {
 
         newPassword = prompt(
-            "Các danh mục được chọn đều riêng tư.\nNhập mật khẩu cho danh mục mới (6–128 ký tự):"
+            "Nhập mật khẩu cho danh mục mới (6–128 ký tự):"
         );
 
-        if (newPassword === null) {
-            return;
-        }
+        if (newPassword === null) return;
 
         if (
             newPassword.length < 6 ||
             newPassword.length > 128
         ) {
 
-            showMessage(
-                "Mật khẩu phải có từ 6 đến 128 ký tự."
-            );
-
+            showMessage("Mật khẩu phải có từ 6 đến 128 ký tự.");
             return;
 
         }
 
     }
 
+    // KIỂM TRA CHA - CON
 
-    // KHÔNG CHO CHỌN CHA VÀ CON
-
-    const selectedSet =
-        new Set(selectedIds);
+    const selectedSet = new Set(selectedIds);
 
     for (const category of selected) {
 
@@ -2473,13 +2268,11 @@ async function mergeCategories() {
 
             }
 
-            const parent =
-                categoriesCache.find(
-                    c => c.id === parentId
-                );
+            const parent = categoriesCache.find(
+                c => c.id === parentId
+            );
 
-            parentId =
-                parent?.parent_id || null;
+            parentId = parent?.parent_id || null;
 
         }
 
@@ -2487,104 +2280,66 @@ async function mergeCategories() {
 
     if (!confirm(
         `Tạo danh mục "${newName}" và chuyển dữ liệu của ${selected.length} danh mục đã chọn?`
-    )) {
-        return;
-    }
+    )) return;
 
-    showMessage("Đang tạo danh mục mới...");
+    setBusy(true);
 
+    let newCategory = null;
 
-    // TẠO DANH MỤC
+    try {
 
-    const {
-        data: newCategory,
-        error: createError
-    } = await supabaseClient
-        .from("categories")
-        .insert({
+        showMessage("Đang tạo danh mục mới...");
 
-            name: newName,
+        // TẠO DANH MỤC
 
-            slug:
-                makeSlug(newName) +
-                "-" +
-                Date.now().toString(36),
+        const { data, error } = await supabaseClient
+            .from("categories")
+            .insert({
 
-            parent_id: null,
+                name: newName,
+                slug: makeSlug(newName) + "-" + Date.now().toString(36),
+                parent_id: null,
+                sort_order: categoriesCache.length,
+                requires_password: false
 
-            sort_order: categoriesCache.length,
+            })
+            .select()
+            .single();
 
-            requires_password: false
+        if (error) throw error;
 
-        })
-        .select()
-        .single();
+        newCategory = data;
 
-    if (createError) {
+        // ĐẶT MẬT KHẨU
 
-        showMessage(
-            "Không thể tạo danh mục mới: " +
-            createError.message
-        );
-
-        return;
-
-    }
-
-
-    // ĐẶT MẬT KHẨU CHO DANH MỤC MỚI
-
-    if (protectedMode) {
-
-        try {
+        if (protectedMode) {
 
             await callPasswordFunction({
 
                 action: "set_password",
-
                 category_id: newCategory.id,
-
                 password: newPassword
 
             });
 
-        } catch (error) {
-
-            showMessage(
-                "Không thể đặt mật khẩu cho danh mục mới: " +
-                error.message +
-                ". Các danh mục nguồn vẫn được giữ nguyên."
-            );
-
-            return;
-
         }
 
-    }
+        const targetCategory = {
+            ...newCategory,
+            requires_password: protectedMode
+        };
 
-    const targetCategory = {
+        // CHUYỂN TÀI LIỆU
 
-        ...newCategory,
+        let movedCount = 0;
 
-        requires_password: protectedMode
+        for (const category of selected) {
 
-    };
-
-
-    // CHUYỂN TÀI LIỆU
-
-    let movedCount = 0;
-
-    for (const category of selected) {
-
-        const docs =
-            documentsCache.filter(
+            const docs = documentsCache.filter(
                 d => d.category_id === category.id
             );
 
-        for (const doc of docs) {
-
-            try {
+            for (const doc of docs) {
 
                 await moveDocumentStorage(
                     doc,
@@ -2593,111 +2348,80 @@ async function mergeCategories() {
 
                 movedCount++;
 
-            } catch (error) {
-
-                showMessage(
-                    `Gộp tạm dừng sau ${movedCount} tài liệu. Lỗi: ${error.message}. Các danh mục nguồn vẫn được giữ lại.`
-                );
-
-                await refreshAll();
-
-                return;
-
             }
 
         }
 
-    }
+        // CHUYỂN THƯ MỤC CON
 
+        for (const category of selected) {
 
-    // CHUYỂN THƯ MỤC CON
+            const { error } = await supabaseClient
+                .from("categories")
+                .update({
+                    parent_id: newCategory.id
+                })
+                .eq("parent_id", category.id);
 
-    for (const category of selected) {
-
-        const {
-            error
-        } = await supabaseClient
-            .from("categories")
-            .update({
-                parent_id: newCategory.id
-            })
-            .eq("parent_id", category.id);
-
-        if (error) {
-
-            showMessage(
-                "Đã chuyển tài liệu nhưng lỗi chuyển thư mục con: " +
-                error.message
-            );
-
-            await refreshAll();
-
-            return;
+            if (error) throw error;
 
         }
 
-    }
+        // XÓA DANH MỤC NGUỒN
 
+        for (const category of selected) {
 
-    // XÓA DANH MỤC NGUỒN
+            const { error } = await supabaseClient
+                .from("categories")
+                .delete()
+                .eq("id", category.id);
 
-    for (const category of selected) {
-
-        const {
-            error
-        } = await supabaseClient
-            .from("categories")
-            .delete()
-            .eq("id", category.id);
-
-        if (error) {
-
-            showMessage(
-                "Đã chuyển dữ liệu nhưng không xóa được danh mục cũ: " +
-                error.message
-            );
-
-            await refreshAll();
-
-            return;
+            if (error) throw error;
 
         }
 
+        document.getElementById(
+            "merge-category-name"
+        ).value = "";
+
+        showMessage(
+            `Đã gộp thành công ${selected.length} danh mục và chuyển ${movedCount} tài liệu.`
+        );
+
+    } catch (error) {
+
+        showMessage(
+            "Gộp danh mục chưa hoàn tất: " +
+            error.message +
+            ". Các dữ liệu đã chuyển trước đó cần được kiểm tra."
+        );
+
+    } finally {
+
+        setBusy(false);
+
+        await refreshAll();
+
     }
-
-    document.getElementById(
-        "merge-category-name"
-    ).value = "";
-
-    showMessage(
-        `Đã gộp thành công ${selected.length} danh mục và chuyển ${movedCount} tài liệu.`
-    );
-
-    await refreshAll();
 
 }
 
 
 // ==========================================
-// 19. UPDATE STORAGE INFORMATION
+// 20. STORAGE INFORMATION
 // ==========================================
 
 function updateUploadStorageInfo() {
 
     const categoryId =
-        document.getElementById(
-            "document-category"
-        ).value;
+        document.getElementById("document-category").value;
 
     const info =
-        document.getElementById(
-            "upload-storage-info"
-        );
+        document.getElementById("upload-storage-info");
 
-    const category =
-        categoriesCache.find(
-            c => c.id === categoryId
-        );
+    const category = categoriesCache.find(
+        c => c.id === categoryId
+    );
 
     if (!category) {
 
@@ -2717,25 +2441,22 @@ function updateUploadStorageInfo() {
 
 
 // ==========================================
-// 20. UPLOAD DOCUMENT
+// 21. UPLOAD DOCUMENT
 // ==========================================
 
 async function uploadDocument() {
 
+    if (busy) return;
+
     const title =
-        document.getElementById(
-            "document-title"
-        ).value.trim();
+        document.getElementById("document-title")
+            .value.trim();
 
     const categoryId =
-        document.getElementById(
-            "document-category"
-        ).value;
+        document.getElementById("document-category").value;
 
     const file =
-        document.getElementById(
-            "document-file"
-        ).files[0];
+        document.getElementById("document-file").files[0];
 
     if (!title || !categoryId || !file) {
 
@@ -2749,147 +2470,107 @@ async function uploadDocument() {
 
     if (!/\.(pdf|doc|docx)$/i.test(file.name)) {
 
-        showMessage(
-            "Chỉ chấp nhận PDF, DOC, DOCX."
-        );
-
+        showMessage("Chỉ chấp nhận PDF, DOC, DOCX.");
         return;
 
     }
 
     if (file.size > 50 * 1024 * 1024) {
 
-        showMessage(
-            "File vượt quá giới hạn 50 MB."
-        );
-
+        showMessage("File vượt quá giới hạn 50 MB.");
         return;
 
     }
 
-    const category =
-        categoriesCache.find(
-            c => c.id === categoryId
-        );
+    const category = categoriesCache.find(
+        c => c.id === categoryId
+    );
 
     if (!category) {
 
-        showMessage(
-            "Không tìm thấy danh mục."
-        );
-
+        showMessage("Không tìm thấy danh mục.");
         return;
 
     }
 
-    const bucket =
-        getTargetBucket(category);
+    const bucket = getTargetBucket(category);
 
-    const safeName =
-        file.name.replace(
-            /[^a-zA-Z0-9._-]/g,
-            "_"
-        );
-
-    const path =
-        categoryId +
-        "/" +
-        Date.now() +
-        "-" +
-        safeName;
-
-    showMessage("Đang tải tài liệu lên...");
-
-    const {
-        error: uploadError
-    } = await supabaseClient.storage
-        .from(bucket)
-        .upload(
-            path,
-            file
-        );
-
-    if (uploadError) {
-
-        showMessage(
-            "Lỗi tải file: " +
-            uploadError.message
-        );
-
-        return;
-
-    }
-
-    const fileUrl =
-        getDocumentUrl(bucket, path);
-
-    const {
-        error
-    } = await supabaseClient
-        .from("documents")
-        .insert({
-
-            category_id: categoryId,
-
-            title,
-
-            file_url: fileUrl,
-
-            file_type:
-                file.name
-                    .split(".")
-                    .pop()
-                    .toLowerCase(),
-
-            storage_bucket: bucket,
-
-            storage_path: path
-
-        });
-
-    if (error) {
-
-        await supabaseClient.storage
-            .from(bucket)
-            .remove([path]);
-
-        showMessage(
-            "Lỗi lưu thông tin: " +
-            error.message
-        );
-
-        return;
-
-    }
-
-    document.getElementById(
-        "document-title"
-    ).value = "";
-
-    document.getElementById(
-        "document-file"
-    ).value = "";
-
-    showMessage(
-        "Đã tải tài liệu thành công."
+    const safeName = file.name.replace(
+        /[^a-zA-Z0-9._-]/g,
+        "_"
     );
 
-    await refreshAll();
+    const path =
+        categoryId + "/" + Date.now() + "-" + safeName;
+
+    setBusy(true);
+
+    try {
+
+        showMessage("Đang tải tài liệu lên...");
+
+        const { error: uploadError } =
+            await supabaseClient.storage
+                .from(bucket)
+                .upload(path, file);
+
+        if (uploadError) throw uploadError;
+
+        const fileUrl = getDocumentUrl(bucket, path);
+
+        const { error } = await supabaseClient
+            .from("documents")
+            .insert({
+
+                category_id: categoryId,
+                title,
+                file_url: fileUrl,
+                file_type: file.name.split(".").pop().toLowerCase(),
+                storage_bucket: bucket,
+                storage_path: path
+
+            });
+
+        if (error) {
+
+            await supabaseClient.storage
+                .from(bucket)
+                .remove([path]);
+
+            throw error;
+
+        }
+
+        document.getElementById("document-title").value = "";
+        document.getElementById("document-file").value = "";
+
+        showMessage("Đã tải tài liệu thành công.");
+
+    } catch (error) {
+
+        showMessage(
+            "Lỗi tải tài liệu: " + error.message
+        );
+
+    } finally {
+
+        setBusy(false);
+
+        await refreshAll();
+
+    }
 
 }
 
 
 // ==========================================
-// 21. DOCUMENT VIEW URL
+// 22. DOCUMENT VIEW URL
 // ==========================================
 
 async function getDocumentViewUrl(doc) {
 
-    const bucket =
-        getDocumentBucket(doc);
-
-    const path =
-        getDocumentPath(doc);
+    const bucket = getDocumentBucket(doc);
+    const path = getDocumentPath(doc);
 
     if (!path) {
 
@@ -2900,27 +2581,15 @@ async function getDocumentViewUrl(doc) {
     }
 
     if (bucket === PUBLIC_BUCKET) {
-
-        return getPublicUrl(
-            bucket,
-            path
-        );
-
+        return getPublicUrl(bucket, path);
     }
 
-    const {
-        data,
-        error
-    } = await supabaseClient.storage
-        .from(bucket)
-        .createSignedUrl(
-            path,
-            3600
-        );
+    const { data, error } =
+        await supabaseClient.storage
+            .from(bucket)
+            .createSignedUrl(path, 3600);
 
-    if (error) {
-        throw error;
-    }
+    if (error) throw error;
 
     return data.signedUrl;
 
@@ -2928,30 +2597,26 @@ async function getDocumentViewUrl(doc) {
 
 
 // ==========================================
-// 22. DOCUMENT EXTENSION
+// 23. DOCUMENT EXTENSION
 // ==========================================
 
 function getDocumentExtension(doc) {
 
-    const path =
-        getDocumentPath(doc) || "";
+    const path = getDocumentPath(doc) || "";
 
-    const fileName =
-        path.split("/").pop() || "";
+    const fileName = path.split("/").pop() || "";
 
-    const extension =
-        fileName.includes(".")
-            ? fileName.split(".").pop().toLowerCase()
-            : "";
+    const extension = fileName.includes(".")
+        ? fileName.split(".").pop().toLowerCase()
+        : "";
 
     if (["pdf", "doc", "docx"].includes(extension)) {
         return extension;
     }
 
-    const fileType =
-        (doc.file_type || "")
-            .replace(".", "")
-            .toLowerCase();
+    const fileType = (doc.file_type || "")
+        .replace(".", "")
+        .toLowerCase();
 
     if (["pdf", "doc", "docx"].includes(fileType)) {
         return fileType;
@@ -2963,22 +2628,15 @@ function getDocumentExtension(doc) {
 
 function getDownloadName(doc) {
 
-    let name = String(
-        doc.title || "tai-lieu"
-    );
+    let name = String(doc.title || "tai-lieu");
 
-    const extension =
-        getDocumentExtension(doc);
+    const extension = getDocumentExtension(doc);
 
     if (
         extension &&
-        !name.toLowerCase().endsWith(
-            "." + extension
-        )
+        !name.toLowerCase().endsWith("." + extension)
     ) {
-
         name += "." + extension;
-
     }
 
     return name;
@@ -2987,102 +2645,64 @@ function getDownloadName(doc) {
 
 
 // ==========================================
-// 23. CREATE DOCUMENT GROUP
+// 24. DOCUMENT GROUP
 // ==========================================
 
-function createDocumentGroup(
-    name,
-    count,
-    icon = "📁"
-) {
+function createDocumentGroup(name, count, icon = "📁") {
 
-    const group =
-        document.createElement("div");
+    const group = document.createElement("div");
 
-    group.className =
-        "document-group";
+    group.className = "document-group";
 
-    const header =
-        document.createElement("button");
+    const header = document.createElement("button");
 
     header.type = "button";
+    header.className = "document-group-header";
+    header.setAttribute("aria-expanded", "false");
 
-    header.className =
-        "document-group-header";
+    const arrow = document.createElement("span");
 
-    header.setAttribute(
-        "aria-expanded",
-        "false"
-    );
-
-    const arrow =
-        document.createElement("span");
-
-    arrow.className =
-        "document-arrow";
-
+    arrow.className = "document-arrow";
     arrow.textContent = "›";
 
-    const groupName =
-        document.createElement("span");
+    const groupName = document.createElement("span");
 
-    groupName.className =
-        "document-group-name";
+    groupName.className = "document-group-name";
+    groupName.textContent = `${icon} ${name}`;
 
-    groupName.textContent =
-        `${icon} ${name}`;
+    const countElement = document.createElement("span");
 
-    const countElement =
-        document.createElement("span");
+    countElement.className = "document-count";
+    countElement.textContent = `${count} tài liệu`;
 
-    countElement.className =
-        "document-count";
+    header.append(arrow, groupName, countElement);
 
-    countElement.textContent =
-        `${count} tài liệu`;
+    const content = document.createElement("div");
 
-    header.append(
-        arrow,
-        groupName,
-        countElement
-    );
-
-    const content =
-        document.createElement("div");
-
-    content.className =
-        "document-group-content";
+    content.className = "document-group-content";
 
     header.onclick = () => {
 
-        const isOpen =
-            group.classList.toggle("open");
+        const isOpen = group.classList.toggle("open");
 
         header.setAttribute(
             "aria-expanded",
             String(isOpen)
         );
 
-        arrow.textContent =
-            isOpen ? "⌄" : "›";
+        arrow.textContent = isOpen ? "⌄" : "›";
 
     };
 
-    group.append(
-        header,
-        content
-    );
+    group.append(header, content);
 
-    return {
-        group,
-        content
-    };
+    return { group, content };
 
 }
 
 
 // ==========================================
-// 24. RENAME DOCUMENT
+// 25. RENAME DOCUMENT
 // ==========================================
 
 async function renameDocument(doc) {
@@ -3092,13 +2712,9 @@ async function renameDocument(doc) {
         doc.title
     );
 
-    if (!newTitle?.trim()) {
-        return;
-    }
+    if (!newTitle?.trim()) return;
 
-    const {
-        error
-    } = await supabaseClient
+    const { error } = await supabaseClient
         .from("documents")
         .update({
             title: newTitle.trim()
@@ -3107,11 +2723,7 @@ async function renameDocument(doc) {
 
     if (error) {
 
-        showMessage(
-            "Lỗi đổi tên: " +
-            error.message
-        );
-
+        showMessage("Lỗi đổi tên: " + error.message);
         return;
 
     }
@@ -3124,78 +2736,63 @@ async function renameDocument(doc) {
 
 
 // ==========================================
-// 25. MOVE DOCUMENT
+// 26. MOVE DOCUMENT
 // ==========================================
 
 async function changeDocumentCategory(doc) {
 
-    const choices =
-        categoriesCache
-            .filter(c => c.id !== doc.category_id)
-            .map(c =>
-                `${c.id} | ${c.name} ${
-                    c.requires_password
-                        ? "(Riêng tư)"
-                        : "(Công khai)"
-                }`
-            )
-            .join("\n");
-
-    if (!choices) {
-
-        showMessage(
-            "Không có danh mục đích."
-        );
-
-        return;
-
-    }
-
-    const selected = prompt(
-        "Nhập ID danh mục muốn chuyển đến:\n\n" +
-        choices
+    const choices = categoriesCache.filter(
+        c => c.id !== doc.category_id
     );
 
-    if (!selected) {
-        return;
-    }
+    if (!choices.length) {
 
-    const targetId =
-        selected.split("|")[0].trim();
-
-    const target =
-        categoriesCache.find(
-            c => c.id === targetId
-        );
-
-    if (!target) {
-
-        showMessage(
-            "ID danh mục không hợp lệ."
-        );
-
+        showMessage("Không có danh mục đích.");
         return;
 
     }
+
+    let options = "Chọn danh mục muốn chuyển đến:\n\n";
+
+    choices.forEach((c, index) => {
+
+        options +=
+            `${index + 1}. ${getCategoryPath(c.id)} ` +
+            `${c.requires_password ? "(Riêng tư)" : "(Công khai)"}\n`;
+
+    });
+
+    const answer = prompt(options);
+
+    if (answer === null) return;
+
+    const index = Number(answer) - 1;
+
+    if (
+        !Number.isInteger(index) ||
+        index < 0 ||
+        index >= choices.length
+    ) {
+
+        showMessage("Lựa chọn không hợp lệ.");
+        return;
+
+    }
+
+    const target = choices[index];
 
     try {
 
-        await moveDocumentStorage(
-            doc,
-            target
-        );
+        await moveDocumentStorage(doc, target);
 
-        showMessage(
-            "Đã chuyển tài liệu thành công."
-        );
+        showMessage("Đã chuyển tài liệu thành công.");
 
         await refreshAll();
 
     } catch (error) {
 
         showMessage(
-            "Lỗi chuyển tài liệu: " +
-            error.message
+            "Lỗi chuyển tài liệu: " + error.message
         );
 
     }
@@ -3204,21 +2801,20 @@ async function changeDocumentCategory(doc) {
 
 
 // ==========================================
-// 26. PREVIEW DOCUMENT
+// 27. PREVIEW DOCUMENT
 // ==========================================
 
 async function previewDocument(doc) {
 
-    const previewWindow =
-        window.open(
-            "about:blank",
-            "_blank"
-        );
+    const previewWindow = window.open(
+        "about:blank",
+        "_blank"
+    );
 
     if (!previewWindow) {
 
         showMessage(
-            "Trình duyệt đã chặn cửa sổ xem trước. Hãy cho phép popup."
+            "Trình duyệt đã chặn cửa sổ xem trước."
         );
 
         return;
@@ -3229,28 +2825,22 @@ async function previewDocument(doc) {
 
         previewWindow.opener = null;
 
-        const url =
-            await getDocumentViewUrl(doc);
+        const url = await getDocumentViewUrl(doc);
 
-        const extension =
-            getDocumentExtension(doc);
+        const extension = getDocumentExtension(doc);
 
         if (
             extension === "doc" ||
             extension === "docx"
         ) {
 
-            const officeUrl =
+            previewWindow.location.href =
                 "https://view.officeapps.live.com/op/view.aspx?src=" +
                 encodeURIComponent(url);
 
-            previewWindow.location.href =
-                officeUrl;
-
         } else if (extension === "pdf") {
 
-            previewWindow.location.href =
-                url;
+            previewWindow.location.href = url;
 
         } else {
 
@@ -3264,17 +2854,14 @@ async function previewDocument(doc) {
 
         }
 
-        showMessage(
-            "Đang mở tài liệu: " + doc.title
-        );
+        showMessage("Đang mở tài liệu: " + doc.title);
 
     } catch (error) {
 
         previewWindow.close();
 
         showMessage(
-            "Không thể xem trước: " +
-            error.message
+            "Không thể xem trước: " + error.message
         );
 
     }
@@ -3283,52 +2870,35 @@ async function previewDocument(doc) {
 
 
 // ==========================================
-// 27. DOWNLOAD DOCUMENT
+// 28. DOWNLOAD DOCUMENT
 // ==========================================
 
 async function downloadDocument(doc) {
 
     try {
 
-        showMessage(
-            "Đang tải: " + doc.title
-        );
+        showMessage("Đang tải: " + doc.title);
 
-        const bucket =
-            getDocumentBucket(doc);
-
-        const path =
-            getDocumentPath(doc);
+        const bucket = getDocumentBucket(doc);
+        const path = getDocumentPath(doc);
 
         if (!path) {
-
-            throw new Error(
-                "Không xác định được đường dẫn file."
-            );
-
+            throw new Error("Không xác định được đường dẫn file.");
         }
 
-        const {
-            data,
-            error
-        } = await supabaseClient.storage
-            .from(bucket)
-            .download(path);
+        const { data, error } =
+            await supabaseClient.storage
+                .from(bucket)
+                .download(path);
 
-        if (error) {
-            throw error;
-        }
+        if (error) throw error;
 
-        const blobUrl =
-            URL.createObjectURL(data);
+        const blobUrl = URL.createObjectURL(data);
 
-        const link =
-            document.createElement("a");
+        const link = document.createElement("a");
 
         link.href = blobUrl;
-
-        link.download =
-            getDownloadName(doc);
+        link.download = getDownloadName(doc);
 
         document.body.appendChild(link);
 
@@ -3337,21 +2907,17 @@ async function downloadDocument(doc) {
         link.remove();
 
         setTimeout(() => {
-
             URL.revokeObjectURL(blobUrl);
-
         }, 3000);
 
         showMessage(
-            "Đã bắt đầu tải: " +
-            getDownloadName(doc)
+            "Đã bắt đầu tải: " + getDownloadName(doc)
         );
 
     } catch (error) {
 
         showMessage(
-            "Không thể tải tài liệu: " +
-            error.message
+            "Không thể tải tài liệu: " + error.message
         );
 
     }
@@ -3360,36 +2926,29 @@ async function downloadDocument(doc) {
 
 
 // ==========================================
-// 28. DELETE DOCUMENT
+// 29. DELETE DOCUMENT
 // ==========================================
 
 async function deleteDocument(doc) {
 
     if (!confirm(
         `Bạn có chắc muốn xóa "${doc.title}"?`
-    )) {
-        return;
-    }
+    )) return;
 
-    const bucket =
-        getDocumentBucket(doc);
-
-    const path =
-        getDocumentPath(doc);
+    const bucket = getDocumentBucket(doc);
+    const path = getDocumentPath(doc);
 
     if (path) {
 
-        const {
-            error: storageError
-        } = await supabaseClient.storage
-            .from(bucket)
-            .remove([path]);
+        const { error: storageError } =
+            await supabaseClient.storage
+                .from(bucket)
+                .remove([path]);
 
         if (storageError) {
 
             showMessage(
-                "Lỗi xóa file: " +
-                storageError.message
+                "Lỗi xóa file: " + storageError.message
             );
 
             return;
@@ -3398,9 +2957,7 @@ async function deleteDocument(doc) {
 
     }
 
-    const {
-        error
-    } = await supabaseClient
+    const { error } = await supabaseClient
         .from("documents")
         .delete()
         .eq("id", doc.id);
@@ -3408,8 +2965,7 @@ async function deleteDocument(doc) {
     if (error) {
 
         showMessage(
-            "Lỗi xóa dữ liệu: " +
-            error.message
+            "Lỗi xóa dữ liệu: " + error.message
         );
 
         return;
@@ -3424,31 +2980,25 @@ async function deleteDocument(doc) {
 
 
 // ==========================================
-// 29. RENDER DOCUMENT ITEM
+// 30. DOCUMENT ITEM
 // ==========================================
 
 function createDocumentItem(doc, category) {
 
-    const item =
-        document.createElement("div");
+    const item = document.createElement("div");
 
     item.className = "item";
 
-    const title =
-        document.createElement("h3");
+    const title = document.createElement("h3");
 
-    title.textContent =
-        doc.title;
+    title.textContent = doc.title;
 
-    const categoryText =
-        document.createElement("p");
+    const categoryText = document.createElement("p");
 
     categoryText.textContent =
-        "Danh mục: " +
-        (category?.name || "Không rõ");
+        "Danh mục: " + (category?.name || "Không rõ");
 
-    const storageStatus =
-        document.createElement("p");
+    const storageStatus = document.createElement("p");
 
     storageStatus.className = "status";
 
@@ -3458,95 +3008,44 @@ function createDocumentItem(doc, category) {
             : "🔓 Kho công khai";
 
 
-    // XEM TRƯỚC
+    const view = document.createElement("button");
 
-    const view =
-        document.createElement("button");
-
-    view.className =
-        "document-preview";
-
-    view.textContent =
-        "👁 Xem trước";
-
-    view.onclick = () => {
-
-        previewDocument(doc);
-
-    };
+    view.className = "document-preview";
+    view.textContent = "👁 Xem trước";
+    view.onclick = () => previewDocument(doc);
 
 
-    // TẢI XUỐNG
+    const download = document.createElement("button");
 
-    const download =
-        document.createElement("button");
-
-    download.className =
-        "document-download";
-
-    download.textContent =
-        "⬇ Tải xuống";
-
-    download.onclick = () => {
-
-        downloadDocument(doc);
-
-    };
+    download.className = "document-download";
+    download.textContent = "⬇ Tải xuống";
+    download.onclick = () => downloadDocument(doc);
 
 
-    // ĐỔI TÊN
-
-    const rename =
-        document.createElement("button");
+    const rename = document.createElement("button");
 
     rename.className = "primary";
-
     rename.textContent = "Đổi tên";
-
-    rename.onclick = () => {
-
-        renameDocument(doc);
-
-    };
+    rename.onclick = () => renameDocument(doc);
 
 
-    // CHUYỂN DANH MỤC
-
-    const move =
-        document.createElement("button");
+    const move = document.createElement("button");
 
     move.className = "move-button";
-
     move.textContent = "Chuyển danh mục";
-
-    move.onclick = () => {
-
-        changeDocumentCategory(doc);
-
-    };
+    move.onclick = () => changeDocumentCategory(doc);
 
 
-    // XÓA
-
-    const remove =
-        document.createElement("button");
+    const remove = document.createElement("button");
 
     remove.className = "danger";
-
     remove.textContent = "Xóa tài liệu";
-
-    remove.onclick = () => {
-
-        deleteDocument(doc);
-
-    };
+    remove.onclick = () => deleteDocument(doc);
 
 
-    const actions =
-        document.createElement("div");
+    const actions = document.createElement("div");
 
-    actions.className =
-        "document-actions";
+    actions.className = "document-actions";
 
     actions.append(
         view,
@@ -3569,33 +3068,26 @@ function createDocumentItem(doc, category) {
 
 
 // ==========================================
-// 30. LOAD DOCUMENTS
+// 31. LOAD DOCUMENTS
 // ==========================================
 
 async function loadDocuments() {
 
-    const {
-        data,
-        error
-    } = await supabaseClient
+    const { data, error } = await supabaseClient
         .from("documents")
         .select("*")
         .order("created_at", {
             ascending: false
         });
 
-    const list =
-        document.getElementById(
-            "document-list"
-        );
+    const list = document.getElementById("document-list");
 
     list.innerHTML = "";
 
     if (error) {
 
         list.textContent =
-            "Lỗi tải tài liệu: " +
-            error.message;
+            "Lỗi tải tài liệu: " + error.message;
 
         return;
 
@@ -3618,40 +3110,26 @@ async function loadDocuments() {
 
     }
 
-    // TỪNG DANH MỤC
-
     for (const category of categoriesCache) {
 
-        const docs =
-            documentsCache.filter(
-                d => d.category_id === category.id
-            );
+        const docs = documentsCache.filter(
+            d => d.category_id === category.id
+        );
 
-        const {
-            group,
-            content
-        } = createDocumentGroup(
+        const { group, content } = createDocumentGroup(
 
             category.name,
-
             docs.length,
-
-            category.requires_password
-                ? "🔒"
-                : "🔓"
+            category.requires_password ? "🔒" : "🔓"
 
         );
 
         if (docs.length === 0) {
 
-            const empty =
-                document.createElement("p");
+            const empty = document.createElement("p");
 
-            empty.className =
-                "document-empty";
-
-            empty.textContent =
-                "Chưa có tài liệu trong mục này.";
+            empty.className = "document-empty";
+            empty.textContent = "Chưa có tài liệu trong mục này.";
 
             content.appendChild(empty);
 
@@ -3660,10 +3138,7 @@ async function loadDocuments() {
         docs.forEach(doc => {
 
             content.appendChild(
-                createDocumentItem(
-                    doc,
-                    category
-                )
+                createDocumentItem(doc, category)
             );
 
         });
@@ -3672,25 +3147,19 @@ async function loadDocuments() {
 
     }
 
-
     // TÀI LIỆU CHƯA PHÂN LOẠI
 
-    const orphanDocs =
-        documentsCache.filter(doc =>
+    const orphanDocs = documentsCache.filter(doc =>
 
-            !categoriesCache.some(
-                category =>
-                    category.id === doc.category_id
-            )
+        !categoriesCache.some(
+            category => category.id === doc.category_id
+        )
 
-        );
+    );
 
     if (orphanDocs.length > 0) {
 
-        const {
-            group,
-            content
-        } = createDocumentGroup(
+        const { group, content } = createDocumentGroup(
             "Tài liệu chưa phân loại",
             orphanDocs.length,
             "⚠️"
@@ -3712,17 +3181,14 @@ async function loadDocuments() {
 
 
 // ==========================================
-// 31. REFRESH
+// 32. REFRESH
 // ==========================================
 
 async function refreshAll() {
 
-    const success =
-        await loadCategories();
+    const success = await loadCategories();
 
-    if (!success) {
-        return;
-    }
+    if (!success) return;
 
     await loadDocuments();
 
@@ -3730,31 +3196,25 @@ async function refreshAll() {
 
 
 // ==========================================
-// 32. INITIALIZATION
+// 33. INITIALIZATION
 // ==========================================
 
 async function init() {
 
     try {
 
-        const allowed =
-            await checkAdmin();
+        const allowed = await checkAdmin();
 
-        if (!allowed) {
-            return;
-        }
+        if (!allowed) return;
 
-        showMessage(
-            "Đã đăng nhập với quyền Admin."
-        );
+        showMessage("Đã đăng nhập với quyền Admin.");
 
         await refreshAll();
 
     } catch (error) {
 
         showMessage(
-            "Lỗi khởi động Dashboard: " +
-            error.message
+            "Lỗi khởi động Dashboard: " + error.message
         );
 
     }
@@ -3763,84 +3223,81 @@ async function init() {
 
 
 // ==========================================
-// 33. PASSWORD RADIO EVENTS
+// 34. PASSWORD RADIO EVENTS
 // ==========================================
 
 document.querySelectorAll(
     'input[name="new-category-security"]'
 ).forEach(radio => {
 
-    radio.addEventListener(
-        "change",
-        () => {
+    radio.addEventListener("change", () => {
 
-            const passwordInput =
-                document.getElementById(
-                    "new-category-password"
-                );
+        const passwordInput =
+            document.getElementById("new-category-password");
 
-            const protectedMode =
-                document.querySelector(
-                    'input[name="new-category-security"]:checked'
-                )?.value === "protected";
+        const protectedMode =
+            document.querySelector(
+                'input[name="new-category-security"]:checked'
+            )?.value === "protected";
 
-            passwordInput.style.display =
-                protectedMode
-                    ? "block"
-                    : "none";
+        passwordInput.style.display =
+            protectedMode ? "block" : "none";
 
-            if (!protectedMode) {
-
-                passwordInput.value = "";
-
-            }
-
+        if (!protectedMode) {
+            passwordInput.value = "";
         }
-    );
+
+    });
 
 });
 
 
 // ==========================================
-// 34. EVENTS
+// 35. EVENTS
 // ==========================================
 
-document.getElementById(
-    "add-category"
-).onclick = addCategory;
+document.getElementById("add-category").onclick =
+    addCategory;
 
+document.getElementById("upload-document").onclick =
+    uploadDocument;
 
-document.getElementById(
-    "upload-document"
-).onclick = uploadDocument;
+document.getElementById("merge-categories").onclick =
+    mergeCategories;
 
+document.getElementById("document-category")
+    .addEventListener(
+        "change",
+        updateUploadStorageInfo
+    );
 
-document.getElementById(
-    "merge-categories"
-).onclick = mergeCategories;
+document.getElementById("move-cancel").onclick =
+    closeMoveDialog;
 
+document.getElementById("move-confirm").onclick =
+    confirmMoveCategory;
 
-document.getElementById(
-    "document-category"
-).addEventListener(
-    "change",
-    updateUploadStorageInfo
-);
+document.getElementById("move-dialog")
+    .addEventListener("click", event => {
 
+        if (event.target.id === "move-dialog") {
+            closeMoveDialog();
+        }
 
-document.getElementById(
-    "logout"
-).onclick = async () => {
+    });
 
-    await supabaseClient.auth.signOut();
+document.getElementById("logout").onclick =
+    async () => {
 
-    window.location.href = "admin.html";
+        await supabaseClient.auth.signOut();
 
-};
+        window.location.href = "admin.html";
+
+    };
 
 
 // ==========================================
-// 35. START
+// 36. START
 // ==========================================
 
 init();
