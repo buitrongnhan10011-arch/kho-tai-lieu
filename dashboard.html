@@ -525,85 +525,6 @@ Mỗi danh mục có mật khẩu riêng.
 </section>
 
 
-<!-- =====================================
-     QUẢN LÝ DANH MỤC
-===================================== -->
-
-<section class="admin-section">
-
-<h2>QUẢN LÝ DANH MỤC</h2>
-
-<p class="hint">
-Quản lý cây thư mục nhiều cấp.
-</p>
-
-<div id="category-list" class="category-tree">
-Đang tải...
-</div>
-
-<div class="merge-panel">
-
-<h3>GỘP DANH MỤC</h3>
-
-<p>
-Chọn ít nhất hai danh mục.
-Tài liệu trực tiếp sẽ được chuyển sang danh mục mới.
-Các thư mục con sẽ được giữ nguyên cấu trúc.
-</p>
-
-<input
-    id="merge-category-name"
-    type="text"
-    placeholder="Tên danh mục mới sau khi gộp"
->
-
-<button class="primary" id="merge-categories">
-Gộp danh mục đã chọn
-</button>
-
-</div>
-
-</section>
-
-
-<!-- =====================================
-     THÊM TÀI LIỆU
-===================================== -->
-
-<section class="admin-section">
-
-<h2>THÊM TÀI LIỆU</h2>
-
-<input
-    id="document-title"
-    type="text"
-    placeholder="Tên tài liệu"
->
-
-<select id="document-category">
-<option value="">Chọn danh mục</option>
-</select>
-
-<p class="hint" id="upload-storage-info">
-Chọn danh mục để xem chế độ lưu trữ.
-</p>
-
-<input
-    id="document-file"
-    type="file"
-    accept=".pdf,.doc,.docx"
->
-
-<p class="hint">
-Định dạng hỗ trợ: PDF, DOC, DOCX.
-Giới hạn 50 MB.
-</p>
-
-<button class="primary" id="upload-document">
-Tải tài liệu lên
-</button>
-
-</section>
 \<!-- =====================================      QUẢN LÝ TÀI LIỆU ===================================== -->
 
 \<section class="admin-section document-management">
@@ -611,15 +532,13 @@ Tải tài liệu lên
 ```
 <div class="document-heading">
     <h2>QUẢN LÝ TÀI LIỆU</h2>
-    <span class="document-total" id="document-total">
-        Đang tải...
-    </span>
+    <span id="document-total">Đang tải...</span>
 </div>
 
 <!-- THANH CÔNG CỤ -->
 <div class="document-toolbar">
 
-    <label class="document-select-all">
+    <label>
         <input type="checkbox" id="select-all-documents">
         Chọn tất cả file
     </label>
@@ -638,7 +557,7 @@ Tải tài liệu lên
 
 </div>
 
-<!-- CÂY THƯ MỤC -->
+<!-- DANH SÁCH TÀI LIỆU -->
 <div id="document-list" class="document-tree">
     Đang tải tài liệu...
 </div>
@@ -646,7 +565,285 @@ Tải tài liệu lên
 
 \</section>
 
-\<style>  /\* =====================================    DOCUMENT MANAGEMENT ===================================== \*/  .document-management {     width: 100%; }  .document-heading {     display: flex;     justify-content: space-between;     align-items: center;     gap: 15px;     margin-bottom: 22px; }  .document-heading h2 {     margin: 0; }  .document-total {     color: #999;     font-size: 13px; }  /\* TOOLBAR \*/  .document-toolbar {     display: flex;     align-items: center;     flex-wrap: wrap;     gap: 18px;     padding: 16px;     margin-bottom: 20px;     background: #101010;     border: 1px solid #292929;     border-radius: 12px; }  .document-select-all {     display: flex;     align-items: center;     gap: 8px;     cursor: pointer;     color: #eee; }  .document-toolbar input, .document-tree input {     accent-color: #fff;     width: 16px;     height: 16px;     cursor: pointer; }  #document-selection-count {     color: #aaa;     font-size: 13px; }  .bulk-delete-button {     margin-left: auto;     padding: 10px 15px;     border: 1px solid #6b2929;     border-radius: 8px;     background: #351414;     color: #ff7777;     cursor: pointer;     transition: .2s; }  .bulk-delete-button\:hover\:not(\:disabled) {     background: #631c1c; }  .bulk-delete-button\:disabled {     opacity: .4;     cursor: not-allowed; }  /\* TREE \*/  .document-tree {     display: flex;     flex-direction: column;     gap: 9px; }  .document-category {     border: 1px solid #292929;     border-radius: 11px;     background: #101010;     overflow: hidden; }  .document-category-header {     display: flex;     align-items: center;     gap: 11px;     padding: 15px;     min-height: 54px;     position: relative; }  .document-category-header\:hover {     background: #191919; }  .document-folder-toggle {     border: none;     background: transparent;     color: #aaa;     cursor: pointer;     font-size: 13px;     width: 18px; }  .document-folder-name {     color: #eee;     font-size: 14px;     font-weight: 600;     flex: 1; }  .document-folder-count {     color: #888;     font-size: 12px;     white-space: nowrap; }  /\* MULTI SELECT BUTTON \*/  .document-multi-button {     width: 29px;     height: 29px;     border: 1px solid #353535;     border-radius: 7px;     background: #191919;     color: #aaa;     cursor: pointer;     transition: .2s; }  .document-multi-button\:hover, .document-multi-button.active {     color: white;     border-color: #777;     background: #292929; }  /\* CHILDREN \*/  .document-category-children {     padding: 0 10px 10px 25px; }  .document-category-children.collapsed {     display: none; }  /\* FILE \*/  .document-file {     display: flex;     align-items: center;     gap: 10px;     padding: 11px 13px;     margin-top: 5px;     background: #171717;     border: 1px solid #252525;     border-radius: 8px;     transition: .2s; }  .document-file\:hover {     background: #222;     border-color: #444; }  .document-file-name {     flex: 1;     color: #ddd;     font-size: 13px;     overflow-wrap: anywhere; }  .document-file-icon {     font-size: 17px; }  .document-file-actions {     display: flex;     gap: 6px; }  .document-file-actions button {     border: 1px solid #333;     border-radius: 6px;     background: #202020;     color: #ccc;     padding: 6px 9px;     cursor: pointer; }  .document-file-actions button\:hover {     background: #333; }  /\* NESTED LEVEL \*/  .document-category-children .document-category {     margin-top: 8px;     border-color: #252525; }  /\* EMPTY \*/  .document-empty {     padding: 25px;     text-align: center;     color: #777; }  /\* RESPONSIVE \*/  @media(max-width: 600px) {      .document-toolbar {         gap: 12px;     }      .bulk-delete-button {         margin-left: 0;     }      .document-category-header {         padding: 12px 9px;         gap: 7px;     }      .document-category-children {         padding-left: 13px;     }  }  \</style>
+\<style>
+
+/\* =====================================
+&#x20;  DOCUMENT MANAGEMENT
+\===================================== \*/
+
+.document-management {
+&#x20;   width: 100%;
+}
+
+.document-heading {
+&#x20;   display: flex;
+&#x20;   justify-content: space-between;
+&#x20;   align-items: center;
+&#x20;   margin-bottom: 20px;
+}
+
+.document-heading h2 {
+&#x20;   margin: 0;
+}
+
+\#document-total {
+&#x20;   color: #999;
+&#x20;   font-size: 13px;
+}
+
+
+/\* =====================================
+&#x20;  TOOLBAR
+\===================================== \*/
+
+.document-toolbar {
+&#x20;   display: flex;
+&#x20;   align-items: center;
+&#x20;   flex-wrap: wrap;
+&#x20;   gap: 15px;
+&#x20;   padding: 15px;
+&#x20;   margin-bottom: 20px;
+&#x20;   background: #101010;
+&#x20;   border: 1px solid #292929;
+&#x20;   border-radius: 12px;
+}
+
+.document-toolbar input,
+.document-file-select {
+&#x20;   accent-color: white;
+&#x20;   width: 16px;
+&#x20;   height: 16px;
+&#x20;   cursor: pointer;
+}
+
+\#document-selection-count {
+&#x20;   color: #aaa;
+&#x20;   font-size: 13px;
+}
+
+.bulk-delete-button {
+&#x20;   margin-left: auto;
+&#x20;   padding: 9px 14px;
+&#x20;   border: 1px solid #713030;
+&#x20;   border-radius: 8px;
+&#x20;   background: #351414;
+&#x20;   color: #ff7777;
+&#x20;   cursor: pointer;
+&#x20;   transition: 0.2s;
+}
+
+.bulk-delete-button\:hover\:not(\:disabled) {
+&#x20;   background: #631c1c;
+}
+
+.bulk-delete-button\:disabled {
+&#x20;   opacity: 0.4;
+&#x20;   cursor: not-allowed;
+}
+
+
+/\* =====================================
+&#x20;  TREE STRUCTURE
+\===================================== \*/
+
+.document-tree {
+&#x20;   display: flex;
+&#x20;   flex-direction: column;
+&#x20;   gap: 10px;
+}
+
+.document-category {
+&#x20;   background: #101010;
+&#x20;   border: 1px solid #292929;
+&#x20;   border-radius: 11px;
+&#x20;   overflow: hidden;
+}
+
+.document-category-header {
+&#x20;   display: flex;
+&#x20;   align-items: center;
+&#x20;   gap: 10px;
+&#x20;   padding: 14px;
+&#x20;   min-height: 52px;
+}
+
+.document-category-header\:hover {
+&#x20;   background: #191919;
+}
+
+.document-folder-toggle {
+&#x20;   width: 22px;
+&#x20;   border: none;
+&#x20;   background: transparent;
+&#x20;   color: #aaa;
+&#x20;   cursor: pointer;
+&#x20;   font-size: 13px;
+}
+
+.document-folder-name {
+&#x20;   flex: 1;
+&#x20;   color: #eee;
+&#x20;   font-size: 14px;
+&#x20;   font-weight: 600;
+}
+
+.document-folder-count {
+&#x20;   color: #888;
+&#x20;   font-size: 12px;
+&#x20;   white-space: nowrap;
+}
+
+
+/\* =====================================
+&#x20;  FOLDER ACTIONS
+\===================================== \*/
+
+.document-folder-actions {
+&#x20;   display: flex;
+&#x20;   align-items: center;
+&#x20;   gap: 6px;
+}
+
+.document-folder-actions button {
+&#x20;   padding: 6px 9px;
+&#x20;   border: 1px solid #353535;
+&#x20;   border-radius: 6px;
+&#x20;   background: #1c1c1c;
+&#x20;   color: #ccc;
+&#x20;   font-size: 11px;
+&#x20;   cursor: pointer;
+&#x20;   transition: 0.2s;
+}
+
+.document-folder-actions button\:hover {
+&#x20;   background: #333;
+}
+
+.document-folder-actions .folder-delete {
+&#x20;   color: #ff7777;
+&#x20;   border-color: #603030;
+}
+
+
+/\* =====================================
+&#x20;  CHILDREN
+\===================================== \*/
+
+.document-category-children {
+&#x20;   padding: 0 12px 12px 26px;
+}
+
+.document-category-children.collapsed {
+&#x20;   display: none;
+}
+
+.document-category-children .document-category {
+&#x20;   margin-top: 8px;
+}
+
+
+/\* =====================================
+&#x20;  FILE
+\===================================== \*/
+
+.document-file {
+&#x20;   display: flex;
+&#x20;   align-items: center;
+&#x20;   gap: 10px;
+&#x20;   padding: 11px 12px;
+&#x20;   margin-top: 6px;
+&#x20;   background: #181818;
+&#x20;   border: 1px solid #292929;
+&#x20;   border-radius: 8px;
+&#x20;   transition: 0.2s;
+}
+
+.document-file\:hover {
+&#x20;   background: #222;
+&#x20;   border-color: #444;
+}
+
+.document-file-icon {
+&#x20;   font-size: 17px;
+}
+
+.document-file-name {
+&#x20;   flex: 1;
+&#x20;   color: #ddd;
+&#x20;   font-size: 13px;
+&#x20;   overflow-wrap: anywhere;
+}
+
+
+/\* =====================================
+&#x20;  SMALL SQUARE SELECT BUTTON
+\===================================== \*/
+
+.document-file-select {
+&#x20;   appearance: none;
+&#x20;   width: 19px;
+&#x20;   height: 19px;
+&#x20;   min-width: 19px;
+&#x20;   border: 1px solid #666;
+&#x20;   border-radius: 5px;
+&#x20;   background: transparent;
+&#x20;   cursor: pointer;
+&#x20;   position: relative;
+}
+
+.document-file-select\:checked {
+&#x20;   background: white;
+&#x20;   border-color: white;
+}
+
+.document-file-select\:checked::after {
+&#x20;   content: "✓";
+&#x20;   position: absolute;
+&#x20;   color: black;
+&#x20;   font-size: 13px;
+&#x20;   font-weight: bold;
+&#x20;   left: 3px;
+&#x20;   top: -1px;
+}
+
+
+/\* =====================================
+&#x20;  EMPTY STATE
+\===================================== \*/
+
+.document-empty {
+&#x20;   padding: 25px;
+&#x20;   text-align: center;
+&#x20;   color: #777;
+}
+
+
+/\* =====================================
+&#x20;  RESPONSIVE
+\===================================== \*/
+
+@media (max-width: 600px) {
+
+&#x20;   .document-toolbar {
+&#x20;       gap: 10px;
+&#x20;   }
+
+&#x20;   .bulk-delete-button {
+&#x20;       margin-left: 0;
+&#x20;   }
+
+&#x20;   .document-category-children {
+&#x20;       padding-left: 12px;
+&#x20;   }
+
+&#x20;   .document-folder-actions button {
+&#x20;       padding: 5px 6px;
+&#x20;       font-size: 10px;
+&#x20;   }
+
+}
+
+\</style>
 
 <!-- =====================================
      ĐĂNG XUẤT
