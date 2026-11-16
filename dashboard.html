@@ -607,49 +607,46 @@ Tải tài liệu lên
 
 
 <!-- =====================================
-    QUẢN LÝ TÀI LIỆU
+     QUẢN LÝ TÀI LIỆU
 ===================================== -->
 
-<section class="admin-section">
+<section class="admin-section document-management">
 
-<h2>QUẢN LÝ TÀI LIỆU</h2>
-    <h2>QUẢN LÝ TÀI LIỆU</h2>
+    <div class="document-heading">
+        <h2>QUẢN LÝ TÀI LIỆU</h2>
+        <span id="document-total">Đang tải...</span>
+    </div>
 
-<div id="document-list">
-Đang tải...
-</div>
-    <!-- THANH CÔNG CỤ TÀI LIỆU -->
+    <!-- THANH CÔNG CỤ -->
+
     <div class="document-toolbar">
 
         <label class="document-select-all">
             <input type="checkbox" id="select-all-documents">
-            Chọn tất cả
+            Chọn tất cả file
         </label>
 
-        <span
-            id="document-selection-count"
-            class="document-selection-count"
-        >
+        <span id="document-selection-count">
             Đã chọn: 0 tài liệu
         </span>
 
         <button
             id="bulk-delete-documents"
-            class="bulk-delete-button"
+            class="danger"
             disabled
         >
-            🗑 Xóa tài liệu đã chọn
+            🗑 Xóa file đã chọn
         </button>
 
     </div>
 
+    <!-- DANH SÁCH TÀI LIỆU -->
+
     <div id="document-list">
-        Đang tải...
+        Đang tải tài liệu...
     </div>
 
 </section>
-
-
 <!-- =====================================
      ĐĂNG XUẤT
 ===================================== -->
