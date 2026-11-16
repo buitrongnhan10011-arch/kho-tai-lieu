@@ -2180,47 +2180,44 @@ async function mergeCategories() {
         ...document.querySelectorAll(".merge-checkbox:checked")
     ].map(input => input.value);
 
-    const newName =
-        document.getElementById("merge-category-name")
-            .value.trim();
+    const nameInput = document.getElementById("merge-category-name");
+
+    const newName = nameInput.value.trim();
+
+    // KIỂM TRA SỐ LƯỢNG DANH MỤC
 
     if (selectedIds.length < 2) {
-
         showMessage("Hãy chọn ít nhất hai danh mục.");
         return;
-
     }
 
     if (!newName) {
-
         showMessage("Hãy nhập tên danh mục mới.");
         return;
-
     }
+
+    // LẤY DANH MỤC ĐƯỢC CHỌN
 
     const selected = categoriesCache.filter(c =>
         selectedIds.includes(c.id)
     );
 
     if (selected.length !== selectedIds.length) {
-
         showMessage("Danh mục được chọn không còn tồn tại.");
         return;
-
     }
+
+    // KIỂM TRA CHẾ ĐỘ BẢO MẬT
 
     const securityModes = new Set(
         selected.map(c => !!c.requires_password)
     );
 
     if (securityModes.size > 1) {
-
         showMessage(
             "Không thể gộp danh mục công khai và riêng tư cùng lúc."
         );
-
         return;
-
     }
 
     const protectedMode =
@@ -2240,12 +2237,11 @@ async function mergeCategories() {
             newPassword.length < 6 ||
             newPassword.length > 128
         ) {
-
-            showMessage("Mật khẩu phải có từ 6 đến 128 ký tự.");
+            showMessage(
+                "Mật khẩu phải có từ 6 đến 128 ký tự."
+            );
             return;
-
         }
-
     }
 
     // KIỂM TRA CHA - CON
@@ -2265,7 +2261,6 @@ async function mergeCategories() {
                 );
 
                 return;
-
             }
 
             const parent = categoriesCache.find(
@@ -2273,14 +2268,16 @@ async function mergeCategories() {
             );
 
             parentId = parent?.parent_id || null;
-
         }
-
     }
+
+    // XÁC NHẬN
 
     if (!confirm(
         `Tạo danh mục "${newName}" và chuyển dữ liệu của ${selected.length} danh mục đã chọn?`
-    )) return;
+    )) {
+        return;
+    }
 
     setBusy(true);
 
@@ -2290,16 +2287,25 @@ async function mergeCategories() {
 
         showMessage("Đang tạo danh mục mới...");
 
-        // TẠO DANH MỤC
+        // ==========================================
+        // 1. TẠO DANH MỤC MỚI
+        // ==========================================
 
         const { data, error } = await supabaseClient
             .from("categories")
             .insert({
 
                 name: newName,
-                slug: makeSlug(newName) + "-" + Date.now().toString(36),
+
+                slug:
+                    makeSlug(newName) +
+                    "-" +
+                    Date.now().toString(36),
+
                 parent_id: null,
+
                 sort_order: categoriesCache.length,
+
                 requires_password: false
 
             })
@@ -2310,18 +2316,21 @@ async function mergeCategories() {
 
         newCategory = data;
 
-        // ĐẶT MẬT KHẨU
+        // ==========================================
+        // 2. ĐẶT MẬT KHẨU NẾU LÀ DANH MỤC RIÊNG TƯ
+        // ==========================================
 
         if (protectedMode) {
 
             await callPasswordFunction({
 
                 action: "set_password",
+
                 category_id: newCategory.id,
+
                 password: newPassword
 
             });
-
         }
 
         const targetCategory = {
@@ -2329,7 +2338,9 @@ async function mergeCategories() {
             requires_password: protectedMode
         };
 
-        // CHUYỂN TÀI LIỆU
+        // ==========================================
+        // 3. CHUYỂN TÀI LIỆU TRỰC TIẾP
+        // ==========================================
 
         let movedCount = 0;
 
@@ -2347,53 +2358,113 @@ async function mergeCategories() {
                 );
 
                 movedCount++;
+            }
+        }
 
+        // ==========================================
+        // 4. LẤY TOÀN BỘ THƯ MỤC CON TRỰC TIẾP
+        // ==========================================
+
+        showMessage("Đang chuyển các thư mục con...");
+
+        const { data: childCategories, error: childError } =
+            await supabaseClient
+                .from("categories")
+                .select("id, name, parent_id")
+                .in("parent_id", selectedIds);
+
+        if (childError) throw childError;
+
+        // ==========================================
+        // 5. CHUYỂN THƯ MỤC CON SANG DANH MỤC MỚI
+        // ==========================================
+
+        if (childCategories && childCategories.length > 0) {
+
+            const childIds = childCategories.map(
+                child => child.id
+            );
+
+            const { data: updatedChildren, error: updateError } =
+                await supabaseClient
+                    .from("categories")
+                    .update({
+                        parent_id: newCategory.id
+                    })
+                    .in("id", childIds)
+                    .select("id");
+
+            if (updateError) throw updateError;
+
+            // KIỂM TRA SỐ LƯỢNG ĐÃ CHUYỂN
+
+            if (
+                !updatedChildren ||
+                updatedChildren.length !== childCategories.length
+            ) {
+
+                throw new Error(
+                    "Không thể chuyển toàn bộ thư mục con. " +
+                    "Hãy kiểm tra quyền UPDATE trong Supabase RLS. " +
+                    "Không xóa các danh mục nguồn."
+                );
+            }
+        }
+
+        // ==========================================
+        // 6. XÓA CÁC DANH MỤC CHA CŨ
+        // CHỈ THỰC HIỆN SAU KHI CHUYỂN THÀNH CÔNG
+        // ==========================================
+
+        showMessage("Đang hoàn tất gộp danh mục...");
+
+        for (const category of selected) {
+
+            // KIỂM TRA LẠI CÒN THƯ MỤC CON KHÔNG
+
+            const { data: remainingChildren, error: checkError } =
+                await supabaseClient
+                    .from("categories")
+                    .select("id")
+                    .eq("parent_id", category.id);
+
+            if (checkError) throw checkError;
+
+            if (remainingChildren && remainingChildren.length > 0) {
+
+                throw new Error(
+                    `Danh mục "${category.name}" vẫn còn thư mục con. Không thể xóa.`
+                );
             }
 
-        }
-
-        // CHUYỂN THƯ MỤC CON
-
-        for (const category of selected) {
-
-            const { error } = await supabaseClient
-                .from("categories")
-                .update({
-                    parent_id: newCategory.id
-                })
-                .eq("parent_id", category.id);
-
-            if (error) throw error;
-
-        }
-
-        // XÓA DANH MỤC NGUỒN
-
-        for (const category of selected) {
-
-            const { error } = await supabaseClient
+            const { error: deleteError } = await supabaseClient
                 .from("categories")
                 .delete()
                 .eq("id", category.id);
 
-            if (error) throw error;
-
+            if (deleteError) throw deleteError;
         }
 
-        document.getElementById(
-            "merge-category-name"
-        ).value = "";
+        // ==========================================
+        // 7. HOÀN TẤT
+        // ==========================================
+
+        nameInput.value = "";
 
         showMessage(
-            `Đã gộp thành công ${selected.length} danh mục và chuyển ${movedCount} tài liệu.`
+            `Đã gộp thành công ${selected.length} danh mục, ` +
+            `chuyển ${movedCount} tài liệu và ` +
+            `giữ nguyên ${childCategories?.length || 0} thư mục con.`
         );
 
     } catch (error) {
 
+        console.error("Lỗi gộp danh mục:", error);
+
         showMessage(
             "Gộp danh mục chưa hoàn tất: " +
             error.message +
-            ". Các dữ liệu đã chuyển trước đó cần được kiểm tra."
+            ". Hãy kiểm tra dữ liệu trước khi thử lại."
         );
 
     } finally {
@@ -2401,12 +2472,8 @@ async function mergeCategories() {
         setBusy(false);
 
         await refreshAll();
-
     }
-
 }
-
-
 // ==========================================
 // 20. STORAGE INFORMATION
 // ==========================================
