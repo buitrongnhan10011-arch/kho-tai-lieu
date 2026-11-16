@@ -605,23 +605,52 @@ Tải tài liệu lên
 
 </section>
 
-
 <!-- =====================================
      QUẢN LÝ TÀI LIỆU
 ===================================== -->
 
 <section class="admin-section">
 
-<h2>QUẢN LÝ TÀI LIỆU</h2>
+    <h2>QUẢN LÝ TÀI LIỆU</h2>
 
-<div id="document-list">
-Đang tải...
-</div>
+    <!-- THANH CÔNG CỤ TÀI LIỆU -->
+    <div class="document-toolbar">
+
+        <label class="document-select-all">
+            <input type="checkbox" id="select-all-documents">
+            Chọn tất cả
+        </label>
+
+        <span
+            id="document-selection-count"
+            class="document-selection-count"
+        >
+            Đã chọn: 0 tài liệu
+        </span>
+
+        <button
+            id="bulk-delete-documents"
+            class="bulk-delete-button"
+            disabled
+        >
+            🗑 Xóa tài liệu đã chọn
+        </button>
+
+    </div>
+
+    <div id="document-list">
+        Đang tải...
+    </div>
 
 </section>
 
+
+<!-- =====================================
+     ĐĂNG XUẤT
+===================================== -->
+
 <button class="logout-button" id="logout">
-Đăng xuất
+    Đăng xuất
 </button>
 
 </main>
@@ -633,29 +662,29 @@ Tải tài liệu lên
 
 <div class="dialog-overlay" id="move-dialog">
 
-<div class="dialog-box">
+    <div class="dialog-box">
 
-<h3>DI CHUYỂN DANH MỤC</h3>
+        <h3>DI CHUYỂN DANH MỤC</h3>
 
-<p class="hint" id="move-dialog-name"></p>
+        <p class="hint" id="move-dialog-name"></p>
 
-<select id="move-target">
-<option value="">Chọn danh mục đích</option>
-</select>
+        <select id="move-target">
+            <option value="">Chọn danh mục đích</option>
+        </select>
 
-<div class="dialog-actions">
+        <div class="dialog-actions">
 
-<button class="secondary" id="move-cancel">
-Hủy
-</button>
+            <button class="secondary" id="move-cancel">
+                Hủy
+            </button>
 
-<button class="primary" id="move-confirm">
-Xác nhận
-</button>
+            <button class="primary" id="move-confirm">
+                Xác nhận
+            </button>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
 </div>
 
@@ -663,7 +692,6 @@ Xác nhận
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-
 // ==========================================
 // 1. SUPABASE CONFIGURATION
 // ==========================================
