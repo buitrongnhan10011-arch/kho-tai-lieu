@@ -1855,7 +1855,9 @@ function renderCategoryTree() {
 
         tools.className = "category-tools";
 
+        // ==================================
         // TẠO THƯ MỤC CON
+        // ==================================
 
         const addChild = document.createElement("button");
 
@@ -1877,7 +1879,9 @@ function renderCategoryTree() {
 
         };
 
+        // ==================================
         // ĐỔI TÊN
+        // ==================================
 
         const rename = document.createElement("button");
 
@@ -1887,7 +1891,9 @@ function renderCategoryTree() {
         rename.onclick = () =>
             renameCategory(category);
 
+        // ==================================
         // MẬT KHẨU
+        // ==================================
 
         const password = document.createElement("button");
 
@@ -1901,7 +1907,9 @@ function renderCategoryTree() {
         password.onclick = () =>
             manageCategoryPassword(category);
 
+        // ==================================
         // DI CHUYỂN
+        // ==================================
 
         const move = document.createElement("button");
 
@@ -1911,7 +1919,9 @@ function renderCategoryTree() {
         move.onclick = () =>
             openMoveDialog(category);
 
+        // ==================================
         // ĐƯA RA NGOÀI
+        // ==================================
 
         const promote = document.createElement("button");
 
@@ -1932,7 +1942,9 @@ function renderCategoryTree() {
 
         };
 
+        // ==================================
         // LÊN / XUỐNG
+        // ==================================
 
         const siblings = getChildren(category.parent_id);
 
@@ -1962,7 +1974,27 @@ function renderCategoryTree() {
         down.onclick = () =>
             reorderCategory(category, 1);
 
-        // Không tạo nút xóa danh mục.
+        // ==================================
+        // XÓA DANH MỤC
+        // ==================================
+
+        const deleteButton = document.createElement("button");
+
+        deleteButton.className = "delete-category-btn";
+        deleteButton.textContent = "🗑 Xóa";
+
+        deleteButton.title =
+            "Xóa danh mục và toàn bộ thư mục con";
+
+        deleteButton.onclick = async () => {
+
+            await deleteCategoryTree(category.id);
+
+        };
+
+        // ==================================
+        // HIỂN THỊ CÁC NÚT
+        // ==================================
 
         tools.append(
             addChild,
@@ -1971,12 +2003,15 @@ function renderCategoryTree() {
             move,
             promote,
             up,
-            down
+            down,
+            deleteButton
         );
 
         node.appendChild(tools);
 
+        // ==================================
         // THƯ MỤC CON
+        // ==================================
 
         const children = getChildren(category.id);
 
@@ -2013,8 +2048,6 @@ function renderCategoryTree() {
     });
 
 }
-
-
 // ==========================================
 // 15. CATEGORY SELECTS
 // ==========================================
