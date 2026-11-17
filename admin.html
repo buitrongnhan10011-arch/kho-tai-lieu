@@ -1,10 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Admin - Kho tài liệu</title>
+
     <link rel="stylesheet" href="css/style.css">
 
     <style>
@@ -43,17 +45,51 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .admin-box button:hover {
+            background: #ddd;
+        }
+
+        .admin-home-btn {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            margin-top: 12px;
+            background: transparent;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 6px;
+            text-align: center;
+            text-decoration: none;
+            box-sizing: border-box;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .admin-home-btn:hover {
+            background: white;
+            color: black;
+            border-color: white;
         }
 
         #message {
             text-align: center;
             margin-top: 15px;
             color: #ff7777;
+            min-height: 20px;
+        }
+
+        #message.success {
+            color: #70df91;
         }
     </style>
 </head>
 
 <body>
+
+    <!-- HEADER -->
 
     <header>
         <div class="header-content">
@@ -62,15 +98,22 @@
         </div>
     </header>
 
+
+    <!-- MAIN -->
+
     <main>
+
         <div class="admin-box">
+
             <h2>ĐĂNG NHẬP</h2>
 
             <form id="login-form">
+
                 <input
                     type="email"
                     id="email"
                     placeholder="Email Admin"
+                    autocomplete="username"
                     required
                 >
 
@@ -78,76 +121,159 @@
                     type="password"
                     id="password"
                     placeholder="Mật khẩu"
+                    autocomplete="current-password"
                     required
                 >
 
-                <button type="submit">Đăng nhập</button>
+                <button type="submit" id="login-button">
+                    Đăng nhập
+                </button>
+
             </form>
 
+
+            <!-- QUAY LẠI TRANG CHỦ -->
+
+            <a href="index.html" class="admin-home-btn">
+                ← QUAY LẠI TRANG CHỦ
+            </a>
+
+
             <p id="message"></p>
+
         </div>
+
     </main>
+
+
+    <!-- SUPABASE -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
     <script>
-        const SUPABASE_URL = "https://axmgzhcozkwekjxbofoh.supabase.co";
 
-        const SUPABASE_KEY = "sb_publishable_SQPDN_7N8IBG92iMWFSQ4A_3PYj9ykP";
+        // =====================================
+        // SUPABASE CONFIGURATION
+        // =====================================
 
-        const supabaseClient = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
+        const SUPABASE_URL =
+            "https://axmgzhcozkwekjxbofoh.supabase.co";
 
-        const ADMIN_UID = "1ec8a1fa-7f6f-4626-9890-84aee80f2f4b";
+        const SUPABASE_KEY =
+            "sb_publishable_SQPDN_7N8IBG92iMWFSQ4A_3PYj9ykP";
 
-        document.getElementById("login-form").addEventListener("submit", async function(event) {
-            event.preventDefault();
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
 
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const message = document.getElementById("message");
 
-            message.textContent = "Đang đăng nhập...";
+        // =====================================
+        // ADMIN UID
+        // =====================================
 
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password
+        const ADMIN_UID =
+            "1ec8a1fa-7f6f-4626-9890-84aee80f2f4b";
+
+
+        // =====================================
+        // LOGIN
+        // =====================================
+
+        document
+            .getElementById("login-form")
+            .addEventListener("submit", async function(event) {
+
+                event.preventDefault();
+
+                const email =
+                    document.getElementById("email").value.trim();
+
+                const password =
+                    document.getElementById("password").value;
+
+                const message =
+                    document.getElementById("message");
+
+                const loginButton =
+                    document.getElementById("login-button");
+
+                message.className = "";
+                message.textContent = "Đang đăng nhập...";
+
+                loginButton.disabled = true;
+                loginButton.textContent = "Đang xử lý...";
+
+                try {
+
+                    // ĐĂNG NHẬP SUPABASE
+
+                    const { data, error } =
+                        await supabaseClient.auth.signInWithPassword({
+
+                            email: email,
+                            password: password
+
+                        });
+
+                    if (error) {
+                        throw error;
+                    }
+
+
+                    // KIỂM TRA QUYỀN ADMIN
+
+                    if (
+                        !data.user ||
+                        data.user.id !== ADMIN_UID
+                    ) {
+
+                        await supabaseClient.auth.signOut();
+
+                        throw new Error(
+                            "Tài khoản không có quyền Admin."
+                        );
+
+                    }
+
+
+                    // ĐĂNG NHẬP THÀNH CÔNG
+
+                    message.className = "success";
+
+                    message.textContent =
+                        "Đăng nhập thành công! Đang chuyển trang...";
+
+                    setTimeout(() => {
+
+                        window.location.href = "dashboard.html";
+
+                    }, 1000);
+
+
+                } catch (error) {
+
+                    console.error("LOGIN ERROR:", error);
+
+                    message.className = "";
+
+                    message.textContent =
+                        error.message === "Invalid login credentials"
+                            ? "Email hoặc mật khẩu không chính xác."
+                            : error.message;
+
+                    loginButton.disabled = false;
+
+                    loginButton.textContent = "Đăng nhập";
+
+                }
+
             });
 
-            if (error) {
-                message.textContent = "Email hoặc mật khẩu không chính xác.";
-                return;
-            }
-
-            if (data.user.id !== ADMIN_UID) {
-                await supabaseClient.auth.signOut();
-                message.textContent = "Tài khoản không có quyền Admin.";
-                return;
-            }
-
-            message.textContent = "Đăng nhập thành công!";
-
-            setTimeout(() => {
-                window.location.href = "dashboard.html";
-            }, 1000);
-        });
     </script>
 
 </body>
+
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
