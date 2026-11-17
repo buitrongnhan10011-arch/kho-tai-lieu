@@ -3191,7 +3191,6 @@ function getCategoryTreePostOrder(categoryId) {
     return result;
 }
 
-
 // ==========================================
 // 32. DELETE CATEGORY TREE
 // ==========================================
@@ -3212,24 +3211,26 @@ async function deleteCategoryTree(categoryId) {
     let tree;
 
     try {
+
         tree = getCategoryTreePostOrder(categoryId);
+
     } catch (error) {
+
         showMessage(error.message);
         return;
+
     }
 
     const categoryIds = tree.map(item => item.id);
 
-    const docs = documentsCache.filter(
-        doc => categoryIds.includes(doc.category_id)
-    );
+    // XÁC NHẬN XÓA
 
     const confirmed = confirm(
         "XÁC NHẬN XÓA DANH MỤC\n\n" +
         "Danh mục: " + category.name + "\n" +
-        "Số danh mục sẽ xóa: " + tree.length + "\n" +
-        "Số tài liệu sẽ xóa: " + docs.length + "\n\n" +
-        "Toàn bộ thư mục con và tài liệu bên trong sẽ bị xóa.\n\n" +
+        "Số danh mục và thư mục con: " + tree.length + "\n\n" +
+        "Toàn bộ tài liệu và tệp bên trong cũng sẽ bị xóa.\n\n" +
+        "Hành động này không thể hoàn tác.\n\n" +
         "Bạn có chắc chắn muốn tiếp tục?"
     );
 
@@ -3239,30 +3240,120 @@ async function deleteCategoryTree(categoryId) {
 
     try {
 
-        // 1. Xóa toàn bộ tài liệu trong cây danh mục
-        await deleteMultipleDocuments(
-            docs,
-            `Xóa toàn bộ tài liệu thuộc danh mục "${category.name}" và các thư mục con.`
-        );
+        // ==================================
+        // 1. LẤY TOÀN BỘ TÀI LIỆU
+        // ==================================
 
-        // 2. Kiểm tra lại tài liệu còn tồn tại
-        const { data: remainingDocs, error: checkError } =
-            await supabaseClient
+        showMessage("Đang kiểm tra tài liệu...");
+
+        const {
+            data: docs,
+            error: docsError
+        } = await supabaseClient
+            .from("documents")
+            .select("*")
+            .in("category_id", categoryIds);
+
+        if (docsError) throw docsError;
+
+        const documents = docs || [];
+
+        // ==================================
+        // 2. NHÓM FILE THEO STORAGE BUCKET
+        // ==================================
+
+        const storageGroups = new Map();
+
+        for (const doc of documents) {
+
+            const bucket = doc.storage_bucket;
+            const path = doc.storage_path;
+
+            if (!bucket || !path) {
+
+                throw new Error(
+                    "Không xác định được đường dẫn Storage của tài liệu: " +
+                    (doc.title || doc.id)
+                );
+
+            }
+
+            if (!storageGroups.has(bucket)) {
+                storageGroups.set(bucket, []);
+            }
+
+            storageGroups.get(bucket).push(path);
+
+        }
+
+        // ==================================
+        // 3. XÓA FILE TRONG STORAGE
+        // ==================================
+
+        showMessage("Đang xóa các tệp trong Storage...");
+
+        for (const [bucket, paths] of storageGroups) {
+
+            for (let i = 0; i < paths.length; i += 100) {
+
+                const batch = paths.slice(i, i + 100);
+
+                const { error } = await supabaseClient
+                    .storage
+                    .from(bucket)
+                    .remove(batch);
+
+                if (error) throw error;
+
+            }
+
+        }
+
+        // ==================================
+        // 4. XÓA TÀI LIỆU TRONG DATABASE
+        // ==================================
+
+        if (documents.length > 0) {
+
+            showMessage("Đang xóa dữ liệu tài liệu...");
+
+            const { error } = await supabaseClient
                 .from("documents")
-                .select("id")
+                .delete()
                 .in("category_id", categoryIds);
 
-        if (checkError) {
-            throw checkError;
+            if (error) throw error;
+
         }
+
+        // ==================================
+        // 5. KIỂM TRA TÀI LIỆU CÒN LẠI
+        // ==================================
+
+        const {
+            data: remainingDocs,
+            error: checkError
+        } = await supabaseClient
+            .from("documents")
+            .select("id")
+            .in("category_id", categoryIds);
+
+        if (checkError) throw checkError;
 
         if (remainingDocs && remainingDocs.length > 0) {
+
             throw new Error(
-                "Vẫn còn tài liệu chưa được xóa. Danh mục được giữ nguyên."
+                "Vẫn còn tài liệu chưa được xóa. Kiểm tra quyền DELETE của Database."
             );
+
         }
 
-        // 3. Xóa danh mục từ con lên cha
+        // ==================================
+        // 6. XÓA DANH MỤC TỪ CON LÊN CHA
+        // ==================================
+
+        showMessage("Đang xóa cây danh mục...");
+
         for (const item of tree) {
 
             const { error } = await supabaseClient
@@ -3270,27 +3361,44 @@ async function deleteCategoryTree(categoryId) {
                 .delete()
                 .eq("id", item.id);
 
-            if (error) {
-                throw error;
-            }
+            if (error) throw error;
+
         }
 
-        showMessage("Đã xóa danh mục và toàn bộ thư mục con.");
+        // ==================================
+        // 7. CẬP NHẬT GIAO DIỆN
+        // ==================================
 
-        await loadCategories();
-        await loadDocuments();
+        documentsCache = documentsCache.filter(
+            doc => !categoryIds.includes(doc.category_id)
+        );
+
+        selectedDocumentIds.clear();
+
+        showMessage(
+            "Đã xóa thành công danh mục, toàn bộ thư mục con và tài liệu bên trong."
+        );
+
+        await refreshAll();
 
     } catch (error) {
 
-        console.error("DELETE CATEGORY ERROR:", error);
+        console.error(
+            "DELETE CATEGORY TREE ERROR:",
+            error
+        );
 
         showMessage(
-            "Không thể hoàn tất xóa danh mục: " + error.message
+            "Không thể hoàn tất xóa danh mục: " +
+            error.message
         );
 
     } finally {
+
         setBusy(false);
+
     }
+
 }
 
 // ==========================================
