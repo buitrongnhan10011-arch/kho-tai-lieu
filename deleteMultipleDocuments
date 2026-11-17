@@ -3294,28 +3294,188 @@ async function deleteCategoryTree(categoryId) {
 }
 
 // ==========================================
-// 30. DELETE ALL IN CATEGORY
+// DELETE MULTIPLE DOCUMENTS
 // ==========================================
 
-async function deleteCategoryDocuments(categoryId) {
+async function deleteMultipleDocuments(
+    docs,
+    message = "Xóa tài liệu đã chọn.",
+    options = {}
+) {
 
-    const docs = documentsCache.filter(
-        doc => doc.category_id === categoryId
-    );
+    if (!Array.isArray(docs) || docs.length === 0) {
+        showMessage("Không có tài liệu để xóa.");
+        return false;
+    }
 
-    const category = categoriesCache.find(
-        c => c.id === categoryId
-    );
+    const wasBusy = busy;
 
-    if (!category) return;
+    if (wasBusy && !options.allowBusy) {
+        return false;
+    }
 
-    await deleteMultipleDocuments(
-        docs,
-        `Xóa tất cả file trực tiếp trong mục "${category.name}".`
-    );
+    const documentIds = docs.map(doc => doc.id);
+
+    // Xác nhận nếu chưa được xác nhận trước đó
+
+    if (!options.skipConfirm) {
+
+        const confirmed = confirm(
+            "XÁC NHẬN XÓA TÀI LIỆU\n\n" +
+            message + "\n\n" +
+            "Số tài liệu: " + docs.length + "\n\n" +
+            "Bạn có chắc chắn muốn tiếp tục?"
+        );
+
+        if (!confirmed) return false;
+
+    }
+
+    if (!wasBusy) {
+        setBusy(true);
+    }
+
+    try {
+
+        // ==================================
+        // 1. PHÂN NHÓM FILE THEO BUCKET
+        // ==================================
+
+        const storageGroups = new Map();
+
+        for (const doc of docs) {
+
+            const bucket = doc.storage_bucket;
+            const path = doc.storage_path;
+
+            if (!bucket || !path) {
+
+                throw new Error(
+                    `Không xác định được bucket hoặc đường dẫn của tài liệu "${doc.title}".`
+                );
+
+            }
+
+            if (!storageGroups.has(bucket)) {
+                storageGroups.set(bucket, []);
+            }
+
+            storageGroups.get(bucket).push(path);
+
+        }
+
+        showMessage("Đang xóa tệp trong Storage...");
+
+        // ==================================
+        // 2. XÓA FILE TRONG STORAGE
+        // ==================================
+
+        for (const [bucket, paths] of storageGroups) {
+
+            // Chia thành từng nhóm 100 file
+
+            for (let i = 0; i < paths.length; i += 100) {
+
+                const batch = paths.slice(i, i + 100);
+
+                const { error } = await supabaseClient
+                    .storage
+                    .from(bucket)
+                    .remove(batch);
+
+                if (error) {
+
+                    throw new Error(
+                        `Không thể xóa file trong bucket "${bucket}": ${error.message}`
+                    );
+
+                }
+
+            }
+
+        }
+
+        // ==================================
+        // 3. XÓA DATABASE
+        // ==================================
+
+        showMessage("Đang xóa dữ liệu tài liệu...");
+
+        const { error: deleteError } = await supabaseClient
+            .from("documents")
+            .delete()
+            .in("id", documentIds);
+
+        if (deleteError) {
+            throw deleteError;
+        }
+
+        // ==================================
+        // 4. KIỂM TRA LẠI
+        // ==================================
+
+        const { data: remaining, error: checkError } =
+            await supabaseClient
+                .from("documents")
+                .select("id")
+                .in("id", documentIds);
+
+        if (checkError) {
+            throw checkError;
+        }
+
+        if (remaining && remaining.length > 0) {
+
+            throw new Error(
+                "Một số tài liệu vẫn còn trong Database. Hãy kiểm tra quyền DELETE của Supabase."
+            );
+
+        }
+
+        // ==================================
+        // 5. CẬP NHẬT CACHE
+        // ==================================
+
+        documentsCache = documentsCache.filter(
+            doc => !documentIds.includes(doc.id)
+        );
+
+        documentIds.forEach(id => {
+            selectedDocumentIds.delete(id);
+        });
+
+        showMessage(
+            `Đã xóa thành công ${docs.length} tài liệu.`
+        );
+
+        if (!options.skipRefresh) {
+            await refreshAll();
+        }
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "DELETE MULTIPLE DOCUMENTS ERROR:",
+            error
+        );
+
+        showMessage(
+            "Lỗi xóa tài liệu: " + error.message
+        );
+
+        return false;
+
+    } finally {
+
+        if (!wasBusy) {
+            setBusy(false);
+        }
+
+    }
 
 }
-
 
 // ==========================================
 // 31. DELETE SELECTED DOCUMENTS
