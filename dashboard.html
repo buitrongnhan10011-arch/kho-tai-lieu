@@ -3122,78 +3122,143 @@ async function deleteDocument(doc, ask = true) {
 
 
 // ==========================================
-// 29. DELETE MULTIPLE DOCUMENTS
+// 31. DELETE CATEGORY TREE
 // ==========================================
 
-async function deleteMultipleDocuments(docs, title) {
+function getCategoryTreePostOrder(categoryId) {
+
+    const result = [];
+    const visited = new Set();
+
+    function walk(id) {
+
+        if (visited.has(id)) {
+            throw new Error("Phát hiện danh mục bị lặp hoặc có vòng lặp.");
+        }
+
+        visited.add(id);
+
+        const children = categoriesCache.filter(
+            category => category.parent_id === id
+        );
+
+        children.forEach(child => walk(child.id));
+
+        const category = categoriesCache.find(
+            item => item.id === id
+        );
+
+        if (category) {
+            result.push(category);
+        }
+    }
+
+    walk(categoryId);
+
+    return result;
+}
+
+
+// ==========================================
+// 32. DELETE CATEGORY TREE
+// ==========================================
+
+async function deleteCategoryTree(categoryId) {
 
     if (busy) return;
 
-    if (!docs.length) {
+    const category = categoriesCache.find(
+        item => item.id === categoryId
+    );
 
-        showMessage("Không có file để xóa.");
+    if (!category) {
+        showMessage("Không tìm thấy danh mục.");
         return;
-
     }
 
+    let tree;
+
+    try {
+        tree = getCategoryTreePostOrder(categoryId);
+    } catch (error) {
+        showMessage(error.message);
+        return;
+    }
+
+    const categoryIds = tree.map(item => item.id);
+
+    const docs = documentsCache.filter(
+        doc => categoryIds.includes(doc.category_id)
+    );
+
     const confirmed = confirm(
-        `BẠN CÓ CHẮC CHẮN?\n\n` +
-        `${title}\n\n` +
-        `Số file sẽ xóa: ${docs.length}\n\n` +
-        `Thao tác này không thể hoàn tác.`
+        "XÁC NHẬN XÓA DANH MỤC\n\n" +
+        "Danh mục: " + category.name + "\n" +
+        "Số danh mục sẽ xóa: " + tree.length + "\n" +
+        "Số tài liệu sẽ xóa: " + docs.length + "\n\n" +
+        "Toàn bộ thư mục con và tài liệu bên trong sẽ bị xóa.\n\n" +
+        "Bạn có chắc chắn muốn tiếp tục?"
     );
 
     if (!confirmed) return;
 
     setBusy(true);
 
-    let deleted = 0;
-    let failed = 0;
-
     try {
 
-        showMessage("Đang xóa tài liệu...");
+        // 1. Xóa toàn bộ tài liệu trong cây danh mục
+        await deleteMultipleDocuments(
+            docs,
+            `Xóa toàn bộ tài liệu thuộc danh mục "${category.name}" và các thư mục con.`
+        );
 
-        for (const doc of docs) {
+        // 2. Kiểm tra lại tài liệu còn tồn tại
+        const { data: remainingDocs, error: checkError } =
+            await supabaseClient
+                .from("documents")
+                .select("id")
+                .in("category_id", categoryIds);
 
-            try {
-
-                await deleteDocument(doc, false);
-
-                deleted++;
-
-            } catch (error) {
-
-                console.error(
-                    "Lỗi xóa file:",
-                    doc.title,
-                    error
-                );
-
-                failed++;
-
-            }
-
+        if (checkError) {
+            throw checkError;
         }
 
-        selectedDocumentIds.clear();
+        if (remainingDocs && remainingDocs.length > 0) {
+            throw new Error(
+                "Vẫn còn tài liệu chưa được xóa. Danh mục được giữ nguyên."
+            );
+        }
+
+        // 3. Xóa danh mục từ con lên cha
+        for (const item of tree) {
+
+            const { error } = await supabaseClient
+                .from("categories")
+                .delete()
+                .eq("id", item.id);
+
+            if (error) {
+                throw error;
+            }
+        }
+
+        showMessage("Đã xóa danh mục và toàn bộ thư mục con.");
+
+        await loadCategories();
+        await loadDocuments();
+
+    } catch (error) {
+
+        console.error("DELETE CATEGORY ERROR:", error);
 
         showMessage(
-            `Kết quả xóa tài liệu:\n` +
-            `Đã xóa: ${deleted} file.\n` +
-            `Thất bại: ${failed} file.`
+            "Không thể hoàn tất xóa danh mục: " + error.message
         );
 
     } finally {
-
         setBusy(false);
-
-        await refreshAll();
-
     }
-
 }
-
 
 // ==========================================
 // 30. DELETE ALL IN CATEGORY
