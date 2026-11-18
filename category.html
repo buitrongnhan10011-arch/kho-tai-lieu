@@ -436,13 +436,60 @@
                 font-size: 18px;
             }
         }
-
-    </style>
-
-</head>
-
-
-<body>
+        /* =====================================
+           CÂN ĐỐI GIAO DIỆN TRANG DANH MỤC
+        ===================================== */
+        
+        .category-page header {
+            min-height: 320px;
+        }
+        
+        .category-page main {
+            margin: 60px auto;
+        }
+        
+        .category-page .categories {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+        
+        /* Tiêu đề khu vực tài liệu */
+        .category-page .document-section-heading {
+            grid-column: 1 / -1;
+            width: 100%;
+            margin: 15px 0 0;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #292929;
+            font-size: 20px;
+        }
+        
+        /* Thẻ thư mục và tài liệu */
+        .category-page .category-card {
+            min-height: 190px;
+            padding: 28px;
+        }
+        
+        /* Giao diện điện thoại */
+        @media (max-width: 700px) {
+            .category-page .categories {
+                grid-template-columns: 1fr;
+            }
+        
+            .category-page header {
+                min-height: 280px;
+            }
+        
+            .category-page main {
+                width: 88%;
+                margin: 40px auto;
+            }
+        }
+            </style>
+        
+        </head>
+        
+        
+        <body class="category-page">
 
     <!-- =====================================
          HEADER
